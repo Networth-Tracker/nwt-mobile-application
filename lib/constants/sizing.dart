@@ -1,7 +1,15 @@
+class AppPadding {
+  final double horizontal;
+  final double vertical;
+
+  const AppPadding({required this.horizontal, required this.vertical});
+}
+
 class AppSizing {
-  static final padding = {
-    'scaffold': {"horizontal": 25.0, "vertical": 0.0},
-    'button':{"vertical": 12.0, "horizontal":0.0},
-    'input':{"vertical": 12.0, "horizontal":0.0}
-  };
+  static const double scaffoldHorizontalPadding = 25.0;
+  static const double scaffoldVerticalPadding = 0.0;
+  static const double buttonHorizontalPadding = 0.0;
+  static const double buttonVerticalPadding = 12.0;
+  static const double inputHorizontalPadding = 0.0;
+  static const double inputVerticalPadding = 12.0;
 }
