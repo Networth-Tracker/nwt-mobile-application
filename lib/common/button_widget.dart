@@ -113,7 +113,7 @@ class AppButton extends StatelessWidget {
       case AppButtonSize.medium:
         return const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0);
       case AppButtonSize.large:
-        return const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0);
+        return const EdgeInsets.symmetric(horizontal: 24.0, vertical: .0);
     }
   }
 
@@ -125,7 +125,7 @@ class AppButton extends StatelessWidget {
       case AppButtonSize.medium:
         return 16.0;
       case AppButtonSize.large:
-        return 18.0;
+        return 16.0;
     }
   }
 

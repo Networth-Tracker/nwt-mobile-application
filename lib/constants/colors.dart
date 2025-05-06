@@ -10,7 +10,7 @@ class AppColors {
     'text': {
       'primary': Colors.black,
       'secondary': const Color.fromRGBO(70, 71, 72, 1),
-      'tertiary': Colors.grey,
+      'tertiary': Color.fromRGBO(0, 51, 78, 1),
     },
     'button': {
       'primary': {

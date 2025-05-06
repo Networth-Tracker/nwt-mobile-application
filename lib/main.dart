@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
+      themeMode: ThemeMode.light,
 
       home: const OnboardingScreen(),
     );

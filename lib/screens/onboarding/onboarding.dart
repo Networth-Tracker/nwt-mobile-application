@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:nwt_app/common/button_widget.dart';
 import 'package:nwt_app/common/text_widget.dart';
+import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/sizing.dart';
 
 class OnboardingScreen extends StatelessWidget {
@@ -16,27 +17,38 @@ class OnboardingScreen extends StatelessWidget {
             horizontal: AppSizing.scaffoldHorizontalPadding,
           ),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              Column(
                 children: [
-                  SvgPicture.asset('assets/svgs/onboarding/onboarding_01.svg'),
+                  SizedBox(height: 160),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        'assets/svgs/onboarding/onboarding_01.svg',
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 60),
+                  AppText(
+                    "Empowering Your Financial Growth",
+                    variant: AppTextVariant.headline2,
+                    lineHeight: 1.2,
+                    weight: AppTextWeight.semiBold,
+                    colorType: AppTextColorType.tertiary,
+                  ),
+                  SizedBox(height: 16),
+                  AppText(
+                    "Manage your money confidently using our intuitive tools and personalized insights.",
+                    variant: AppTextVariant.bodyMedium,
+                    lineHeight: 1.3,
+                    weight: AppTextWeight.semiBold,
+                    colorType: AppTextColorType.secondary,
+                  ),
                 ],
               ),
-              CustomTextWidget(
-                text: "Empowering Your Financial Growth",
-                fontSize: 28,
-                fontWeight: FontWeight.w600,
-                lineHeight: 1.3,
-              ),
-              SizedBox(height: 16),
-              CustomTextWidget(
-                text:
-                    "Manage your money confidently using our intuitive tools and personalized insights.",
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                lineHeight: 1.3,
-              ),
+
               SizedBox(height: 16),
               Row(
                 children: [
@@ -44,7 +56,7 @@ class OnboardingScreen extends StatelessWidget {
                     child: AppButton(
                       text: 'Get Started',
                       variant: AppButtonVariant.primary,
-                      size: AppButtonSize.medium,
+                      size: AppButtonSize.large,
                       onPressed: () {},
                     ),
                   ),
