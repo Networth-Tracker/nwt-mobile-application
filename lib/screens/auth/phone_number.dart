@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:nwt_app/common/button_widget.dart';
 import 'package:nwt_app/common/input_decorator.dart';
 import 'package:nwt_app/common/key_pad.dart';
 import 'package:nwt_app/common/text_widget.dart';
 import 'package:nwt_app/constants/sizing.dart';
+import 'package:nwt_app/screens/auth/otp_verify.dart';
 
 class PhoneNumberInputScreen extends StatefulWidget {
   const PhoneNumberInputScreen({super.key});
@@ -102,6 +104,7 @@ class _PhoneNumberInputScreenState extends State<PhoneNumberInputScreen> {
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
                               ),
+                              forceErrorText: "Invalid Number",
                               decoration: primaryInputDecoration(
                                 "Enter your phone number",
                               ),
@@ -115,9 +118,7 @@ class _PhoneNumberInputScreenState extends State<PhoneNumberInputScreen> {
                                   text: 'Send OTP',
                                   variant: AppButtonVariant.primary,
                                   size: AppButtonSize.large,
-                                  onPressed: () {
-                                    // handle OTP send
-                                  },
+                                  onPressed: () => Get.to(() => const PhoneOTPVerifyScreen()),
                                 ),
                               ),
                             ],
