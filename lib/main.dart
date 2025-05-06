@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nwt_app/constants/theme.dart';
 import 'package:nwt_app/screens/onboarding/onboarding.dart';
+import 'package:nwt_app/services/global_storage.dart';
 
-void main() {
+void main() async {
+  await StorageService.init();
   runApp(const MyApp());
 }
 
@@ -24,7 +26,7 @@ class MyApp extends StatelessWidget {
           fontFamily: 'Poppins',
         ),
       ),
-      themeMode: ThemeMode.dark,
+      themeMode: ThemeMode.light,
       home: const OnboardingScreen(),
     );
   }
