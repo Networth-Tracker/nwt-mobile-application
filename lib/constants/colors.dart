@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  static final lightTheme = {
+  static final Map<String, Map<String, dynamic>> lightTheme = {
     'base': {
       'background': Colors.white,
       'primary': Colors.blue,
@@ -9,7 +9,7 @@ class AppColors {
     },
     'text': {
       'primary': Colors.black,
-      'secondary': Color.fromRGBO(70, 71, 72, 1),
+      'secondary': const Color.fromRGBO(70, 71, 72, 1),
       'tertiary': Colors.grey,
     },
     'button': {
@@ -22,20 +22,20 @@ class AppColors {
     'input': {
       'primary': {
         'background': Colors.transparent,
-        'border': Color.fromRGBO(197, 201, 208, 1),
-        'text': Color.fromRGBO(70, 71, 72, 1),
+        'border': const Color.fromRGBO(197, 201, 208, 1),
+        'text': const Color.fromRGBO(70, 71, 72, 1),
       },
       'secondary': {
-        'background': Color.fromRGBO(245, 245, 245, 1),
-        'border': Colors.white.withValues(alpha: 0.2),
-        'text': Color.fromRGBO(70, 71, 72, 1),
+        'background': const Color.fromRGBO(245, 245, 245, 1),
+        'border': Colors.white.withAlpha(51), // alpha 0.2 of 255 = ~51
+        'text': const Color.fromRGBO(70, 71, 72, 1),
       },
     },
   };
 
-  static final darkTheme = {
+  static final Map<String, Map<String, dynamic>> darkTheme = {
     'base': {
-      'background': Color.fromRGBO(45, 46, 47, 1),
+      'background': const Color.fromRGBO(45, 46, 47, 1),
       'primary': Colors.tealAccent,
     },
     'text': {
@@ -46,13 +46,13 @@ class AppColors {
     'button': {
       'primary': {
         "text": Colors.white,
-        "background": Color.fromRGBO(45, 55, 119, 1),
-        "border": Color.fromRGBO(45, 55, 119, 1),
+        "background": const Color.fromRGBO(45, 55, 119, 1),
+        "border": const Color.fromRGBO(45, 55, 119, 1),
       },
     },
     'input': {
       'background': Colors.transparent,
-      'border': Colors.white.withValues(alpha: 0.2),
+      'border': Colors.white.withAlpha(51),
       'text': Colors.white,
     },
   };
