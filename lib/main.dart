@@ -13,9 +13,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Networth Tracker',
-      theme: AppTheme.lightTheme,
+      theme: AppTheme.lightTheme.copyWith(
+        textTheme: ThemeData.light().textTheme.apply(
+          fontFamily: 'Poppins',
+        ),
+      ),
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
+
       home: const OnboardingScreen(),
     );
   }
