@@ -84,11 +84,8 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> {
   // Verify OTP and proceed
   void _verifyOTP() {
     if (_otpCode.length == 6) {
-      // Here you would typically verify the OTP with your backend
-      // For now, just proceed to the next screen
       Get.to(() => const PhoneNumberInputScreen());
     } else {
-      // Show a snackbar or dialog indicating incomplete OTP
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please enter the complete 6-digit OTP'),
@@ -100,8 +97,6 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> {
 
   // Handle resend OTP functionality
   void _resendOTP() {
-    // Here you would implement the logic to resend OTP
-    // For now, just show a snackbar
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('OTP resent successfully!'),

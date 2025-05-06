@@ -22,7 +22,8 @@ class MyApp extends StatelessWidget {
       ),
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.light,
-      home: const PhoneOTPVerifyScreen(),
+      home: const OnboardingScreen(),
     );
   }
 }
+  
