@@ -6,6 +6,12 @@ class AppTheme {
     brightness: Brightness.light,
     scaffoldBackgroundColor: AppColors.lightTheme['base']!['background'] as Color,
     primaryColor: AppColors.lightTheme['base']!['primary'] as Color,
+    // Set cursor color to black for all input fields
+    textSelectionTheme: const TextSelectionThemeData(
+      cursorColor: Colors.black,
+      selectionColor: Colors.black12,
+      selectionHandleColor: Colors.black54,
+    ),
     textTheme: TextTheme(
       bodyLarge: TextStyle(
         color: AppColors.lightTheme['text']!['primary'] as Color,
@@ -48,6 +54,12 @@ class AppTheme {
     brightness: Brightness.dark,
     scaffoldBackgroundColor: AppColors.darkTheme['base']!['background'] as Color,
     primaryColor: AppColors.darkTheme['base']!['primary'] as Color,
+    // Set cursor color to black for dark theme as well
+    textSelectionTheme: const TextSelectionThemeData(
+      cursorColor: Colors.black,
+      selectionColor: Colors.black12,
+      selectionHandleColor: Colors.black54,
+    ),
     textTheme: TextTheme(
       bodyLarge: TextStyle(
         color: AppColors.darkTheme['text']!['primary'] as Color,
