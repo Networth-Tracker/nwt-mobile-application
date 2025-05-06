@@ -32,20 +32,25 @@ class OnboardingScreen extends StatelessWidget {
                     ],
                   ),
                   SizedBox(height: 60),
-                  AppText(
-                    "Empowering Your Financial Growth",
+                  AnimatedAppText(
+                    text: "Empowering Your Financial Growth",
                     variant: AppTextVariant.headline2,
                     lineHeight: 1.2,
                     weight: AppTextWeight.semiBold,
                     colorType: AppTextColorType.tertiary,
+                    beginOffset: Offset(0, 30),
+                    duration: Duration(milliseconds: 1000),
                   ),
                   SizedBox(height: 16),
-                  AppText(
-                    "Manage your money confidently using our intuitive tools and personalized insights.",
+                  AnimatedAppText(
+                    text:
+                        "Manage your money confidently using our intuitive tools and personalized insights.",
                     variant: AppTextVariant.bodyMedium,
                     lineHeight: 1.3,
                     weight: AppTextWeight.semiBold,
                     colorType: AppTextColorType.secondary,
+                    duration: Duration(milliseconds: 1000),
+                    delay: Duration(milliseconds: 1500),
                   ),
                 ],
               ),
@@ -56,9 +61,11 @@ class OnboardingScreen extends StatelessWidget {
                   Expanded(
                     child: AppButton(
                       text: 'Get Started',
+                      isLoading: true,
                       variant: AppButtonVariant.primary,
                       size: AppButtonSize.large,
-                      onPressed: () => Get.to(() => const PhoneNumberInputScreen()),
+                      onPressed:
+                          () => Get.to(() => const PhoneNumberInputScreen()),
                     ),
                   ),
                 ],

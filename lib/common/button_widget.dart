@@ -1,18 +1,8 @@
 import 'package:flutter/material.dart';
 
-enum AppButtonVariant {
-  primary,
-  secondary,
-  outlined,
-  text,
-  destructive,
-}
+enum AppButtonVariant { primary, secondary, outlined, text, destructive }
 
-enum AppButtonSize {
-  small,
-  medium,
-  large,
-}
+enum AppButtonSize { small, medium, large }
 
 class AppButton extends StatelessWidget {
   final String text;
@@ -25,6 +15,8 @@ class AppButton extends StatelessWidget {
   final IconData? trailingIcon;
   final double? customBorderRadius;
   final EdgeInsets? customPadding;
+  final bool isLoading;
+  final Color? loadingIndicatorColor;
 
   const AppButton({
     super.key,
@@ -38,19 +30,21 @@ class AppButton extends StatelessWidget {
     this.trailingIcon,
     this.customBorderRadius,
     this.customPadding,
+    this.isLoading = false,
+    this.loadingIndicatorColor,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
-    
+
     // Get button styles based on variant
     final buttonStyle = _getButtonStyle(context);
-    
+
     // Get padding based on size
     final buttonPadding = customPadding ?? _getButtonPadding();
-    
+
     // Get border radius
     final borderRadius = customBorderRadius ?? 8.0;
 
@@ -60,49 +54,80 @@ class AppButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: buttonStyle.backgroundColor,
           foregroundColor: buttonStyle.textColor,
-          disabledBackgroundColor: isDarkMode 
-              ? Colors.grey.shade800
-              : Colors.grey.shade300,
-          disabledForegroundColor: isDarkMode
-              ? Colors.grey.shade500
-              : Colors.grey.shade500,
+          disabledBackgroundColor:
+              isDarkMode ? Colors.grey.shade800 : Colors.grey.shade300,
+          disabledForegroundColor:
+              isDarkMode ? Colors.grey.shade500 : Colors.grey.shade500,
           padding: buttonPadding,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(borderRadius),
             side: BorderSide(
               color: buttonStyle.borderColor,
-              width: buttonStyle.variant == AppButtonVariant.outlined ? 2.0 : 1.0,
+              width:
+                  buttonStyle.variant == AppButtonVariant.outlined ? 2.0 : 1.0,
             ),
           ),
           elevation: buttonStyle.variant == AppButtonVariant.text ? 0 : 0,
         ),
-        onPressed: isDisabled ? null : onPressed,
-        child: Row(
-          mainAxisSize: isFullWidth ? MainAxisSize.max : MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (leadingIcon != null) ...[
-              Icon(leadingIcon, size: _getIconSize()),
-              SizedBox(width: 8),
-            ],
-            Text(
-              text,
-              style: TextStyle(
-                color: isDisabled
-                    ? (isDarkMode ? Colors.grey.shade500 : Colors.grey.shade600)
-                    : buttonStyle.textColor,
-                fontWeight: FontWeight.w600,
-                fontSize: _getTextSize(),
-              ),
-            ),
-            if (trailingIcon != null) ...[
-              SizedBox(width: 8),
-              Icon(trailingIcon, size: _getIconSize()),
-            ],
-          ],
-        ),
+        onPressed: (isDisabled || isLoading) ? null : onPressed,
+        child:
+            isLoading
+                ? _buildLoadingIndicator()
+                : _buildButtonContent(buttonStyle, isDarkMode),
       ),
     );
+  }
+
+  // Build loading indicator
+  Widget _buildLoadingIndicator() {
+    final double size = _getLoaderSize();
+
+    return SizedBox(
+      height: size,
+      width: size,
+      child: const CircularProgressIndicator(strokeWidth: 4.0, color: Colors.white, strokeCap: StrokeCap.round,),
+    );
+  }
+
+  // Build button content (text and icons)
+  Widget _buildButtonContent(_ButtonStyle buttonStyle, bool isDarkMode) {
+    return Row(
+      mainAxisSize: isFullWidth ? MainAxisSize.max : MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        if (leadingIcon != null) ...[
+          Icon(leadingIcon, size: _getIconSize()),
+          SizedBox(width: 8),
+        ],
+        Text(
+          text,
+          style: TextStyle(
+            color:
+                isDisabled
+                    ? (isDarkMode ? Colors.grey.shade500 : Colors.grey.shade600)
+                    : buttonStyle.textColor,
+            fontWeight: FontWeight.w600,
+            fontSize: _getTextSize(),
+          ),
+        ),
+        if (trailingIcon != null) ...[
+          SizedBox(width: 8),
+          Icon(trailingIcon, size: _getIconSize()),
+        ],
+      ],
+    );
+  }
+
+  // Get loader size based on button size
+  double _getLoaderSize() {
+    switch (size) {
+      case AppButtonSize.small:
+        return 16.0;
+      case AppButtonSize.medium:
+        return 14.0;
+      case AppButtonSize.large:
+        return 22.0;
+    }
   }
 
   // Get button padding based on size
@@ -145,7 +170,7 @@ class AppButton extends StatelessWidget {
   _ButtonStyle _getButtonStyle(BuildContext context) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
-    
+
     if (isDarkMode) {
       // Dark theme styles
       final colors = _getDarkThemeColors(context);
@@ -232,24 +257,34 @@ class AppButton extends StatelessWidget {
   // Light theme color helper
   _ThemeColors _getLightThemeColors(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return _ThemeColors(
-      primary: theme.elevatedButtonTheme.style?.backgroundColor?.resolve({}) ?? Colors.black,
-      text: theme.elevatedButtonTheme.style?.foregroundColor?.resolve({}) ?? Colors.white,
-      border: theme.elevatedButtonTheme.style?.side?.resolve({})?.color ?? 
-        const Color.fromRGBO(197, 201, 208, 1),
+      primary:
+          theme.elevatedButtonTheme.style?.backgroundColor?.resolve({}) ??
+          Colors.black,
+      text:
+          theme.elevatedButtonTheme.style?.foregroundColor?.resolve({}) ??
+          Colors.white,
+      border:
+          theme.elevatedButtonTheme.style?.side?.resolve({})?.color ??
+          const Color.fromRGBO(197, 201, 208, 1),
     );
   }
 
   // Dark theme color helper
   _ThemeColors _getDarkThemeColors(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return _ThemeColors(
-      primary: theme.elevatedButtonTheme.style?.backgroundColor?.resolve({}) ?? 
-        const Color.fromRGBO(45, 55, 119, 1),
-      text: theme.elevatedButtonTheme.style?.foregroundColor?.resolve({}) ?? Colors.white,
-      border: theme.elevatedButtonTheme.style?.side?.resolve({})?.color ?? Colors.white.withAlpha(51),
+      primary:
+          theme.elevatedButtonTheme.style?.backgroundColor?.resolve({}) ??
+          const Color.fromRGBO(45, 55, 119, 1),
+      text:
+          theme.elevatedButtonTheme.style?.foregroundColor?.resolve({}) ??
+          Colors.white,
+      border:
+          theme.elevatedButtonTheme.style?.side?.resolve({})?.color ??
+          Colors.white.withAlpha(51),
     );
   }
 }

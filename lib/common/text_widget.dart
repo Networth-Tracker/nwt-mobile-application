@@ -18,19 +18,13 @@ enum AppTextVariant {
   labelSmall,
 }
 
-enum AppTextWeight {
-  light,
-  regular,
-  medium,
-  semiBold,
-  bold,
-}
+enum AppTextWeight { light, regular, medium, semiBold, bold }
 
 enum AppTextColorType {
   primary,
   secondary,
   tertiary,
-  muted,  // Added muted color type
+  muted, // Added muted color type
   button,
   custom,
 }
@@ -70,7 +64,7 @@ class AppText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TextStyle style = _getTextStyle(context);
-    
+
     // Return selectable text if requested
     if (selectable) {
       return SelectableText(
@@ -80,21 +74,17 @@ class AppText extends StatelessWidget {
         maxLines: maxLines,
       );
     }
-    
+
     // Return regular text or rich text if children exist
     if (children != null && children!.isNotEmpty) {
       return Text.rich(
-        TextSpan(
-          text: text,
-          style: style,
-          children: children,
-        ),
+        TextSpan(text: text, style: style, children: children),
         textAlign: textAlign,
         maxLines: maxLines,
         overflow: overflow,
       );
     }
-    
+
     return Text(
       text,
       style: style,
@@ -107,16 +97,16 @@ class AppText extends StatelessWidget {
   TextStyle _getTextStyle(BuildContext context) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
-    
+
     // Get base style for the variant
     TextStyle baseStyle = _getBaseStyle(theme);
-    
+
     // Apply weight
     FontWeight fontWeight = _resolveFontWeight();
-    
+
     // Apply color based on theme and variant
     Color textColor = _resolveTextColor(theme, isDarkMode);
-    
+
     // Create final style by combining all properties
     return baseStyle.copyWith(
       color: textColor,
@@ -207,41 +197,47 @@ class AppText extends StatelessWidget {
     }
 
     final colorTheme = isDarkMode ? AppColors.darkTheme : AppColors.lightTheme;
-    
+
     // Get color from AppColors based on colorType
     switch (colorType) {
       case AppTextColorType.primary:
-        if (colorTheme['text'] != null && colorTheme['text']!['primary'] != null) {
+        if (colorTheme['text'] != null &&
+            colorTheme['text']!['primary'] != null) {
           return colorTheme['text']!['primary'];
         }
         return isDarkMode ? Colors.white : Colors.black;
-      
+
       case AppTextColorType.secondary:
-        if (colorTheme['text'] != null && colorTheme['text']!['secondary'] != null) {
+        if (colorTheme['text'] != null &&
+            colorTheme['text']!['secondary'] != null) {
           return colorTheme['text']!['secondary'];
         }
-        return isDarkMode ? Colors.white.withValues(alpha: 0.87) : const Color.fromRGBO(70, 71, 72, 1);
-      
+        return isDarkMode
+            ? Colors.white.withValues(alpha: 0.87)
+            : const Color.fromRGBO(70, 71, 72, 1);
+
       case AppTextColorType.tertiary:
-        if (colorTheme['text'] != null && colorTheme['text']!['tertiary'] != null) {
+        if (colorTheme['text'] != null &&
+            colorTheme['text']!['tertiary'] != null) {
           return colorTheme['text']!['tertiary'];
         }
         return isDarkMode ? Colors.white.withValues(alpha: 0.6) : Colors.grey;
-      
-      case AppTextColorType.muted:  // Added muted color type handler
-        if (colorTheme['text'] != null && colorTheme['text']!['muted'] != null) {
+
+      case AppTextColorType.muted: // Added muted color type handler
+        if (colorTheme['text'] != null &&
+            colorTheme['text']!['muted'] != null) {
           return colorTheme['text']!['muted'];
         }
-        return const Color.fromRGBO(124, 125, 126, 1);  // Default muted color
-      
+        return const Color.fromRGBO(124, 125, 126, 1); // Default muted color
+
       case AppTextColorType.button:
-        if (colorTheme['button'] != null && 
-            colorTheme['button']!['primary'] != null && 
+        if (colorTheme['button'] != null &&
+            colorTheme['button']!['primary'] != null &&
             colorTheme['button']!['primary']['text'] != null) {
           return colorTheme['button']!['primary']['text'];
         }
         return isDarkMode ? Colors.white : Colors.black;
-      
+
       case AppTextColorType.custom:
         // Fall back to variant-based colors if custom is selected but no color provided
         return _getVariantBasedColor(theme, isDarkMode);
@@ -255,9 +251,11 @@ class AppText extends StatelessWidget {
         case AppTextVariant.bodyLarge:
           return theme.textTheme.bodyLarge?.color ?? Colors.white;
         case AppTextVariant.bodyMedium:
-          return theme.textTheme.bodyMedium?.color ?? Colors.white.withValues(alpha: 0.87);
+          return theme.textTheme.bodyMedium?.color ??
+              Colors.white.withValues(alpha: 0.87);
         case AppTextVariant.bodySmall:
-          return theme.textTheme.bodySmall?.color ?? Colors.white.withValues(alpha: 0.6);
+          return theme.textTheme.bodySmall?.color ??
+              Colors.white.withValues(alpha: 0.6);
         case AppTextVariant.headline1:
         case AppTextVariant.headline2:
         case AppTextVariant.headline3:
@@ -278,7 +276,8 @@ class AppText extends StatelessWidget {
         case AppTextVariant.bodyLarge:
           return theme.textTheme.bodyLarge?.color ?? Colors.black;
         case AppTextVariant.bodyMedium:
-          return theme.textTheme.bodyMedium?.color ?? const Color.fromRGBO(70, 71, 72, 1);
+          return theme.textTheme.bodyMedium?.color ??
+              const Color.fromRGBO(70, 71, 72, 1);
         case AppTextVariant.bodySmall:
           return theme.textTheme.bodySmall?.color ?? Colors.grey;
         case AppTextVariant.headline1:
@@ -300,10 +299,12 @@ class AppText extends StatelessWidget {
   }
 
   // Factory constructors for common text styles with appropriate default color types
-  factory AppText.headline1(String text, {
+  factory AppText.headline1(
+    String text, {
     Key? key,
     Color? color,
-    AppTextColorType colorType = AppTextColorType.primary, // Default to primary for headlines
+    AppTextColorType colorType =
+        AppTextColorType.primary, // Default to primary for headlines
     TextAlign? textAlign,
     AppTextWeight? weight,
     double? lineHeight,
@@ -321,8 +322,9 @@ class AppText extends StatelessWidget {
     maxLines: maxLines,
     overflow: overflow,
   );
-  
-  factory AppText.headline2(String text, {
+
+  factory AppText.headline2(
+    String text, {
     Key? key,
     Color? color,
     AppTextColorType colorType = AppTextColorType.primary,
@@ -343,8 +345,9 @@ class AppText extends StatelessWidget {
     maxLines: maxLines,
     overflow: overflow,
   );
-  
-  factory AppText.headline3(String text, {
+
+  factory AppText.headline3(
+    String text, {
     Key? key,
     Color? color,
     AppTextColorType colorType = AppTextColorType.primary,
@@ -365,8 +368,9 @@ class AppText extends StatelessWidget {
     maxLines: maxLines,
     overflow: overflow,
   );
-  
-  factory AppText.headline4(String text, {
+
+  factory AppText.headline4(
+    String text, {
     Key? key,
     Color? color,
     AppTextColorType colorType = AppTextColorType.primary,
@@ -387,11 +391,13 @@ class AppText extends StatelessWidget {
     maxLines: maxLines,
     overflow: overflow,
   );
-  
-  factory AppText.caption(String text, {
+
+  factory AppText.caption(
+    String text, {
     Key? key,
     Color? color,
-    AppTextColorType colorType = AppTextColorType.tertiary, // Default to tertiary for captions
+    AppTextColorType colorType =
+        AppTextColorType.tertiary, // Default to tertiary for captions
     TextAlign? textAlign,
     AppTextWeight? weight,
     double? lineHeight,
@@ -409,8 +415,9 @@ class AppText extends StatelessWidget {
     maxLines: maxLines,
     overflow: overflow,
   );
-  
-  factory AppText.button(String text, {
+
+  factory AppText.button(
+    String text, {
     Key? key,
     Color? color,
     AppTextColorType colorType = AppTextColorType.button,
@@ -427,9 +434,10 @@ class AppText extends StatelessWidget {
     weight: weight ?? AppTextWeight.semiBold,
     lineHeight: lineHeight,
   );
-  
+
   // Added factory constructor for muted text
-  factory AppText.muted(String text, {
+  factory AppText.muted(
+    String text, {
     Key? key,
     Color? color,
     AppTextColorType colorType = AppTextColorType.muted,
@@ -451,4 +459,93 @@ class AppText extends StatelessWidget {
     maxLines: maxLines,
     overflow: overflow,
   );
+}
+
+
+class AnimatedAppText extends StatefulWidget {
+  final String text;
+  final Duration duration;
+  final Duration delay;
+  final Offset beginOffset;
+  final Curve curve;
+  final AppTextVariant variant;
+  final AppTextWeight? weight;
+  final AppTextColorType colorType;
+  final Color? color;
+  final TextAlign? textAlign;
+  final double? lineHeight;
+  final int? maxLines;
+  final TextOverflow? overflow;
+
+  const AnimatedAppText({
+    super.key,
+    required this.text,
+    this.duration = const Duration(milliseconds: 600),
+    this.delay = Duration.zero,
+    this.beginOffset = const Offset(0, 20),
+    this.curve = Curves.easeOut,
+    this.variant = AppTextVariant.bodyMedium,
+    this.weight,
+    this.color,
+    this.colorType = AppTextColorType.primary,
+    this.textAlign,
+    this.lineHeight,
+    this.maxLines,
+    this.overflow,
+  });
+
+  @override
+  State<AnimatedAppText> createState() => _AnimatedAppTextState();
+}
+
+class _AnimatedAppTextState extends State<AnimatedAppText> {
+  bool _shouldAnimate = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.delay == Duration.zero) {
+      _shouldAnimate = true;
+    } else {
+      Future.delayed(widget.delay, () {
+        if (mounted) {
+          setState(() => _shouldAnimate = true);
+        }
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_shouldAnimate) return const SizedBox.shrink();
+
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: widget.duration,
+      curve: widget.curve,
+      builder: (context, value, child) {
+        return Opacity(
+          opacity: value,
+          child: Transform.translate(
+            offset: Offset(
+              widget.beginOffset.dx * (1 - value),
+              widget.beginOffset.dy * (1 - value),
+            ),
+            child: child,
+          ),
+        );
+      },
+      child: AppText(
+        widget.text,
+        variant: widget.variant,
+        weight: widget.weight,
+        color: widget.color,
+        colorType: widget.colorType,
+        textAlign: widget.textAlign,
+        lineHeight: widget.lineHeight,
+        maxLines: widget.maxLines,
+        overflow: widget.overflow,
+      ),
+    );
+  }
 }
