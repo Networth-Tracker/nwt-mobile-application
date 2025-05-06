@@ -11,6 +11,7 @@ class AppColors {
       'primary': Colors.black,
       'secondary': const Color.fromRGBO(70, 71, 72, 1),
       'tertiary': Color.fromRGBO(0, 51, 78, 1),
+      'muted': Color.fromRGBO(124, 125, 126, 1)
     },
     'button': {
       'primary': {
@@ -42,6 +43,8 @@ class AppColors {
       'primary': Colors.black,
       'secondary': Colors.grey,
       'tertiary': Colors.grey,
+      'muted': Color.fromRGBO(124, 125, 126, 1)
+
     },
     'button': {
       'primary': {

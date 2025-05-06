@@ -30,6 +30,7 @@ enum AppTextColorType {
   primary,
   secondary,
   tertiary,
+  muted,  // Added muted color type
   button,
   custom,
 }
@@ -227,6 +228,12 @@ class AppText extends StatelessWidget {
         }
         return isDarkMode ? Colors.white.withValues(alpha: 0.6) : Colors.grey;
       
+      case AppTextColorType.muted:  // Added muted color type handler
+        if (colorTheme['text'] != null && colorTheme['text']!['muted'] != null) {
+          return colorTheme['text']!['muted'];
+        }
+        return const Color.fromRGBO(124, 125, 126, 1);  // Default muted color
+      
       case AppTextColorType.button:
         if (colorTheme['button'] != null && 
             colorTheme['button']!['primary'] != null && 
@@ -419,5 +426,29 @@ class AppText extends StatelessWidget {
     textAlign: textAlign,
     weight: weight ?? AppTextWeight.semiBold,
     lineHeight: lineHeight,
+  );
+  
+  // Added factory constructor for muted text
+  factory AppText.muted(String text, {
+    Key? key,
+    Color? color,
+    AppTextColorType colorType = AppTextColorType.muted,
+    TextAlign? textAlign,
+    AppTextWeight? weight,
+    AppTextVariant variant = AppTextVariant.bodySmall,
+    double? lineHeight,
+    int? maxLines,
+    TextOverflow? overflow,
+  }) => AppText(
+    text,
+    key: key,
+    variant: variant,
+    color: color,
+    colorType: colorType,
+    textAlign: textAlign,
+    weight: weight,
+    lineHeight: lineHeight,
+    maxLines: maxLines,
+    overflow: overflow,
   );
 }
