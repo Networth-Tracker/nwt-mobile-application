@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nwt_app/constants/theme.dart';
-import 'package:nwt_app/screens/auth/otp_verify.dart';
 import 'package:nwt_app/screens/onboarding/onboarding.dart';
 
 void main() {
