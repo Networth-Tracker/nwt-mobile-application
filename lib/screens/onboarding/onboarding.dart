@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:nwt_app/common/button_widget.dart';
 import 'package:nwt_app/common/text_widget.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/sizing.dart';
+import 'package:nwt_app/screens/auth/phone_number.dart';
 
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});
@@ -57,7 +59,7 @@ class OnboardingScreen extends StatelessWidget {
                       text: 'Get Started',
                       variant: AppButtonVariant.primary,
                       size: AppButtonSize.large,
-                      onPressed: () {},
+                      onPressed: () => Get.to(() => const PhoneNumberInputScreen()),
                     ),
                   ),
                 ],

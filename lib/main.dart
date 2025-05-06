@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:nwt_app/constants/theme.dart';
 import 'package:nwt_app/screens/onboarding/onboarding.dart';
 
@@ -11,7 +12,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'Networth Tracker',
       theme: AppTheme.lightTheme.copyWith(
         textTheme: ThemeData.light().textTheme.apply(
@@ -20,7 +21,6 @@ class MyApp extends StatelessWidget {
       ),
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.light,
-
       home: const OnboardingScreen(),
     );
   }
