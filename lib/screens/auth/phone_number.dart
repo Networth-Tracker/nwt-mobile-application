@@ -7,6 +7,7 @@ import 'package:nwt_app/common/key_pad.dart';
 import 'package:nwt_app/common/text_widget.dart';
 import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/screens/auth/otp_verify.dart';
+import 'package:nwt_app/utils/validators.dart';
 
 class PhoneNumberInputScreen extends StatefulWidget {
   const PhoneNumberInputScreen({super.key});
@@ -97,6 +98,8 @@ class _PhoneNumberInputScreenState extends State<PhoneNumberInputScreen> {
                           AbsorbPointer(
                             // prevents keyboard from opening
                             child: TextFormField(
+                              autovalidateMode: AutovalidateMode.onUserInteraction,
+                              validator: AppValidators.validatePhone,
                               controller: _phoneController,
                               keyboardType: TextInputType.none,
                               style: const TextStyle(
@@ -104,7 +107,6 @@ class _PhoneNumberInputScreenState extends State<PhoneNumberInputScreen> {
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
                               ),
-                              forceErrorText: "Invalid Number",
                               decoration: primaryInputDecoration(
                                 "Enter your phone number",
                               ),
