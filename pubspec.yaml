@@ -12,6 +12,7 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.8
   flutter_svg: ^2.1.0
+  flutter_launcher_icons: ^0.14.3
 
 dev_dependencies:
   flutter_test:
@@ -21,6 +22,7 @@ dev_dependencies:
 flutter:
   assets:
     - assets/svgs/onboarding/
+    - assets/app/
   uses-material-design: true
   fonts:
     - family: Poppins
@@ -70,3 +72,12 @@ flutter:
         - asset: assets/fonts/Poppins-BlackItalic.ttf
           weight: 900
           style: italic
+
+
+flutter_launcher_icons:
+  image_path_android: "assets/app/main_1.png"
+  image_path_ios: "assets/app/main_1.png"
+  android: true # can specify file name here e.g. "ic_launcher"
+  ios: true # can specify file name here e.g. "My-Launcher-Icon"
+  remove_alpha_ios: true
+  background_color: "#00334E"    
