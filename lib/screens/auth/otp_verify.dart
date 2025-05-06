@@ -1,18 +1,26 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:get/route_manager.dart';
 import 'package:lottie/lottie.dart';
 import 'package:nwt_app/common/button_widget.dart';
 import 'package:nwt_app/common/input_decorator.dart';
 import 'package:nwt_app/common/key_pad.dart';
 import 'package:nwt_app/common/text_widget.dart';
+import 'package:nwt_app/constants/api.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/screens/auth/pan_card_verification.dart';
-import 'package:nwt_app/screens/auth/phone_number.dart';
-import 'package:nwt_app/screens/auth/user_pofile.dart';
+import 'package:http/http.dart' as http;
+import 'package:nwt_app/utils/api_helpers.dart';
 
 class PhoneOTPVerifyScreen extends StatefulWidget {
-  const PhoneOTPVerifyScreen({super.key});
+  final String phoneNumber;
+
+  const PhoneOTPVerifyScreen({
+    Key? key, 
+    required this.phoneNumber,
+  }) : super(key: key);
 
   @override
   State<PhoneOTPVerifyScreen> createState() => _PhoneOTPVerifyScreenState();
@@ -30,6 +38,12 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> {
 
   // Current active input index
   int _currentIndex = 0;
+  
+  // API Helper
+  final APIHelper _apiHelper = APIHelper();
+  
+  // Loading state
+  bool _isLoading = false;
 
   // Complete OTP code
   String get _otpCode {
@@ -83,28 +97,155 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> {
     }
   }
 
-  // Verify OTP and proceed
-  void _verifyOTP() {
-    if (_otpCode.length == 6) {
-      Get.to(() => const PanCardVerification());
-    } else {
+  // Verify OTP and proceed with API call
+  Future<void> _verifyOTP() async {
+    if (_otpCode.length != 6) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please enter the complete 6-digit OTP'),
           duration: Duration(seconds: 2),
         ),
       );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // Prepare payload
+      final Map<String, dynamic> payload = {
+        "phoneNumber": widget.phoneNumber,
+        "otp": _otpCode,
+      };
+
+      // Call API to verify OTP
+      final http.Response? response = await _apiHelper.post(
+        ApiURLs.verifyOTP,
+        payload,
+      );
+
+      if (response != null) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          // Extract token if available
+          if (responseData.containsKey('token')) {
+            // Save token to storage
+            // await StorageService.write(
+            //   StorageKeys.AUTH_TOKEN, 
+            //   responseData['token']
+            // );
+          }
+          
+          // Navigate to PAN Card verification
+          Get.to(() => const PanCardVerification());
+        } else {
+          // Show error message
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(responseData['message'] ?? 'Failed to verify OTP'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
+      } else {
+        // Handle null response
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to connect to server'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      // Handle exceptions
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('An unexpected error occurred: $e'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
-  // Handle resend OTP functionality
-  void _resendOTP() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('OTP resent successfully!'),
-        duration: Duration(seconds: 2),
-      ),
-    );
+  // Handle resend OTP functionality with API call
+  Future<void> _resendOTP() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // Prepare payload
+      final Map<String, dynamic> payload = {
+        "phoneNumber": widget.phoneNumber,
+      };
+
+      // Call API to generate OTP again
+      final http.Response? response = await _apiHelper.post(
+        ApiURLs.generateOTP,
+        payload,
+      );
+
+      if (response != null) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          // Reset OTP input fields
+          for (var controller in _controllers) {
+            controller.clear();
+          }
+          _currentIndex = 0;
+          
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('OTP resent successfully!'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 2),
+            ),
+          );
+        } else {
+          // Show error message
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(responseData['message'] ?? 'Failed to resend OTP'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
+      } else {
+        // Handle null response
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to connect to server'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      // Handle exceptions
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('An unexpected error occurred: $e'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -148,12 +289,14 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> {
                   const SizedBox(height: 5),
                   Row(
                     children: [
-                      AppText(
-                        "Enter 6 digit verification code \nsent to your phone number",
-                        variant: AppTextVariant.headline4,
-                        lineHeight: 1.3,
-                        colorType: AppTextColorType.secondary,
-                        weight: AppTextWeight.bold,
+                      Expanded(
+                        child: AppText(
+                          "Enter 6 digit verification code \nsent to ${widget.phoneNumber}",
+                          variant: AppTextVariant.headline4,
+                          lineHeight: 1.3,
+                          colorType: AppTextColorType.secondary,
+                          weight: AppTextWeight.bold,
+                        ),
                       ),
                     ],
                   ),
@@ -196,7 +339,7 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> {
                       ),
                       const SizedBox(width: 4),
                       GestureDetector(
-                        onTap: _resendOTP,
+                        onTap: _isLoading ? null : _resendOTP,
                         child: AppText(
                           "Resend Code",
                           variant: AppTextVariant.bodyMedium,
@@ -215,14 +358,14 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> {
                     onKeyPressed: _handleKeyPressed,
                     onBackspace: _handleBackspace,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   Row(
                     children: [
                       Expanded(
                         child: AppButton(
-                          text: 'Continue',
+                          text: _isLoading ? 'Verifying...' : 'Continue',
                           variant: AppButtonVariant.primary,
                           size: AppButtonSize.large,
                           onPressed: _verifyOTP,
