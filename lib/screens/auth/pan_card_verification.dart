@@ -6,6 +6,7 @@ import 'package:nwt_app/common/input_decorator.dart';
 import 'package:nwt_app/common/text_widget.dart';
 import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/screens/auth/otp_verify.dart';
+import 'package:nwt_app/screens/auth/user_pofile.dart';
 import 'package:nwt_app/utils/validators.dart';
 
 class PanCardVerification extends StatefulWidget {
@@ -79,7 +80,7 @@ class _PanCardVerificationState extends State<PanCardVerification> {
                     ),
                     forceErrorText: "Invalid Number",
                     decoration: primaryInputDecoration(
-                      "Enter your phone number",
+                      "Enter your PAN number",
                     ),
                   ),
                 ],
@@ -92,7 +93,7 @@ class _PanCardVerificationState extends State<PanCardVerification> {
                       variant: AppButtonVariant.primary,
                       size: AppButtonSize.large,
                       onPressed:
-                          () => Get.to(() => const PhoneOTPVerifyScreen()),
+                          () => Get.to(() => const UserProfileScreen()),
                     ),
                   ),
                 ],

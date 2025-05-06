@@ -7,6 +7,7 @@ import 'package:nwt_app/common/key_pad.dart';
 import 'package:nwt_app/common/text_widget.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/sizing.dart';
+import 'package:nwt_app/screens/auth/pan_card_verification.dart';
 import 'package:nwt_app/screens/auth/phone_number.dart';
 import 'package:nwt_app/screens/auth/user_pofile.dart';
 
@@ -85,7 +86,7 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> {
   // Verify OTP and proceed
   void _verifyOTP() {
     if (_otpCode.length == 6) {
-      Get.to(() => const UserProfileScreen());
+      Get.to(() => const PanCardVerification());
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
