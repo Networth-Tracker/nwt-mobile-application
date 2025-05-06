@@ -19,10 +19,13 @@ class MyApp extends StatelessWidget {
           fontFamily: 'Poppins',
         ),
       ),
-      darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.light,
+      darkTheme: AppTheme.darkTheme.copyWith(
+        textTheme: ThemeData.dark().textTheme.apply(
+          fontFamily: 'Poppins',
+        ),
+      ),
+      themeMode: ThemeMode.dark,
       home: const OnboardingScreen(),
     );
   }
 }
-  

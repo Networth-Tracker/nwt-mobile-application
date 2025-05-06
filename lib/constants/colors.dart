@@ -40,9 +40,9 @@ class AppColors {
       'primary': Colors.tealAccent,
     },
     'text': {
-      'primary': Colors.black,
-      'secondary': Colors.grey,
-      'tertiary': Colors.grey,
+      'primary': Colors.white,
+      'secondary': Colors.white,
+      'tertiary': Colors.white,
       'muted': Color.fromRGBO(124, 125, 126, 1)
 
     },
