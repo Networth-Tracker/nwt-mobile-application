@@ -19,7 +19,7 @@ class PhoneNumberInputScreen extends StatefulWidget {
 
 class _PhoneNumberInputScreenState extends State<PhoneNumberInputScreen> {
   final TextEditingController _phoneController = TextEditingController();
-  bool _isLoading = false; // Loading state for the button
+  bool _isLoading = false;
 
   void _onKeyPressed(int digit) {
     if (_phoneController.text.length < 10) {
@@ -123,7 +123,7 @@ class _PhoneNumberInputScreenState extends State<PhoneNumberInputScreen> {
                       Column(
                         children: [
                           AbsorbPointer(
-                            // prevents keyboard from opening
+
                             child: TextFormField(
                               autovalidateMode: AutovalidateMode.onUserInteraction,
                               validator: AppValidators.validatePhone,

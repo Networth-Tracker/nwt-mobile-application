@@ -33,17 +33,17 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
   final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
 
 
-  int _currentIndex = 0;
-
-
   final AuthService _authService = AuthService();
 
 
   bool _isLoading = false;
 
 
+  int _activeFieldIndex = 0;
+
+
   Timer? _resendTimer;
-  int _timeLeft = 60; // 60 seconds = 1 minute
+  int _timeLeft = 60;
   bool _canResendOTP = false;
 
 
@@ -54,10 +54,6 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
   @override
   void initState() {
     super.initState();
-
-    for (var node in _focusNodes) {
-      node.canRequestFocus = false;
-    }
     
     _startResendTimer();
     
@@ -87,7 +83,6 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
           _controllers[i].text = otp[i];
         });
       }
-      
       Future.delayed(const Duration(milliseconds: 500), () {
         _verifyOTP();
       });
@@ -96,29 +91,22 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
 
   @override
   void dispose() {
-
     for (var controller in _controllers) {
       controller.dispose();
     }
     for (var node in _focusNodes) {
       node.dispose();
     }
-
     _resendTimer?.cancel();
-    
-    // Cancel SMS auto-fill listener
     cancel();
-    
     super.dispose();
   }
-
 
   void _startResendTimer() {
     setState(() {
       _canResendOTP = false;
       _timeLeft = 60;
     });
-
     _resendTimer?.cancel();
     _resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
@@ -132,39 +120,11 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
     });
   }
 
-
-  void _handleKeyPressed(int digit) {
-    if (_currentIndex < 6) {
-      setState(() {
-        _controllers[_currentIndex].text = digit.toString();
-        if (_currentIndex < 5) {
-          _currentIndex++;
-        }
-      });
-    }
-  }
-
-
-  void _handleBackspace() {
-    if (_currentIndex >= 0) {
-      setState(() {
-        if (_controllers[_currentIndex].text.isNotEmpty) {
-          _controllers[_currentIndex].clear();
-        } else if (_currentIndex > 0) {
-          _currentIndex--;
-          _controllers[_currentIndex].clear();
-        }
-      });
-    }
-  }
-
-
   void _setLoading(bool isLoading) {
     setState(() {
       _isLoading = isLoading;
     });
   }
-
 
   Future<void> _verifyOTP() async {
     if (_otpCode.length != 6) {
@@ -184,10 +144,8 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
     );
 
     if (response != null && response.success) {
-
       Get.to(() => const PanCardVerification());
     } else {
-
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(response?.message ?? 'Failed to verify OTP'),
@@ -198,6 +156,33 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
     }
   }
 
+  void _onKeyPressed(int digit) {
+    if (_activeFieldIndex >= 0 && _activeFieldIndex < 6) {
+      setState(() {
+        _controllers[_activeFieldIndex].text = digit.toString();
+        if (_activeFieldIndex < 5) {
+          _activeFieldIndex++;
+        }
+        if (_controllers.every((controller) => controller.text.isNotEmpty)) {
+          _verifyOTP();
+        }
+      });
+    }
+  }
+  
+  void _onBackspace() {
+    if (_activeFieldIndex >= 0 && _activeFieldIndex < 6) {
+      setState(() {
+        if (_controllers[_activeFieldIndex].text.isNotEmpty) {
+          _controllers[_activeFieldIndex].text = '';
+        }
+        else if (_activeFieldIndex > 0) {
+          _activeFieldIndex--;
+          _controllers[_activeFieldIndex].text = '';
+        }
+      });
+    }
+  }
 
   Future<void> _resendOTP() async {
     if (!_canResendOTP) return;
@@ -208,12 +193,9 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
     );
 
     if (response != null && response.success) {
-
       for (var controller in _controllers) {
         controller.clear();
       }
-      _currentIndex = 0;
-
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('OTP resent successfully!'),
@@ -221,11 +203,8 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
           duration: Duration(seconds: 2),
         ),
       );
-
-
       _startResendTimer();
     } else {
-
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(response?.message ?? 'Failed to resend OTP'),
@@ -309,23 +288,40 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
                     children: List.generate(6, (index) {
                       return Expanded(
                         child: Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 4),
-                          child: TextFormField(
-                            controller: _controllers[index],
-                            focusNode: _focusNodes[index],
-                            readOnly: true,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: context.textThemeColors.primaryText,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                            decoration: primaryInputDecoration("", isOTP: true),
+                          margin: EdgeInsets.symmetric(horizontal: 4),
+                          child: GestureDetector(
                             onTap: () {
                               setState(() {
-                                _currentIndex = index;
+                                for (var node in _focusNodes) {
+                                  node.unfocus();
+                                }
+                                _activeFieldIndex = index;
                               });
                             },
+                            child: TextFormField(
+                              controller: _controllers[index],
+                              focusNode: _focusNodes[index],
+                              readOnly: true,
+                              maxLength: 1,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: context.textThemeColors.primaryText,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              decoration: primaryInputDecoration("", isOTP: true).copyWith(
+                                counterText: "",
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                    color: _activeFieldIndex == index 
+                                        ? context.textThemeColors.primaryText 
+                                        : Colors.grey.withOpacity(0.3),
+                                    width: 1.5,
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       );
@@ -365,10 +361,10 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
               Column(
                 children: [
                   KeyPad(
-                    onKeyPressed: _handleKeyPressed,
-                    onBackspace: _handleBackspace,
+                    onKeyPressed: _onKeyPressed,
+                    onBackspace: _onBackspace,
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 20),
                   Row(
                     children: [
                       Expanded(
