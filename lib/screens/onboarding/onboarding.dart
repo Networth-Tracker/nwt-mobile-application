@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:nwt_app/common/button_widget.dart';
 import 'package:nwt_app/common/text_widget.dart';
+import 'package:nwt_app/common/theme_toggle.dart';
 import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/screens/auth/phone_number.dart';
 
@@ -12,6 +13,12 @@ class OnboardingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // appBar: AppBar(
+      //   title: Text('Your Screen'),
+      //   actions: [
+      //     ThemeToggle(),
+      //   ],
+      // ),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(
@@ -33,7 +40,7 @@ class OnboardingScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 60),
                   AnimatedAppText(
-                    text: "Empowering Your Financial Growth",
+                    "Empowering Your Financial Growth",
                     variant: AppTextVariant.headline2,
                     lineHeight: 1.2,
                     weight: AppTextWeight.semiBold,
@@ -43,14 +50,13 @@ class OnboardingScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 16),
                   AnimatedAppText(
-                    text:
-                        "Manage your money confidently using our intuitive tools and personalized insights.",
+                    "Manage your money confidently using our intuitive tools and personalized insights.",
                     variant: AppTextVariant.bodyMedium,
                     lineHeight: 1.3,
                     weight: AppTextWeight.semiBold,
                     colorType: AppTextColorType.secondary,
                     duration: Duration(milliseconds: 1000),
-                    delay: Duration(milliseconds: 1500),
+                    delay: Duration(milliseconds: 0),
                   ),
                 ],
               ),
