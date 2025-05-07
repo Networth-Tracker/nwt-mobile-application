@@ -61,7 +61,7 @@ class OnboardingScreen extends StatelessWidget {
                   Expanded(
                     child: AppButton(
                       text: 'Get Started',
-                      isLoading: true,
+                      isLoading: false,
                       variant: AppButtonVariant.primary,
                       size: AppButtonSize.large,
                       onPressed:
