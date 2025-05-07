@@ -32,7 +32,7 @@ class APIHelper {
   }) async {
     String localToken = "";
     if (token == null) {
-      localToken = StorageService.read(StorageKeys.AUTH_TOKEN) ?? "";
+      localToken = StorageService.read(StorageKeys.AUTH_TOKEN_KEY) ?? "";
     } else {
       localToken = token;
     }
@@ -54,7 +54,7 @@ class APIHelper {
   }) async {
     String localToken = "";
     if (token == null) {
-      localToken = StorageService.read(StorageKeys.AUTH_TOKEN) ?? "";
+      localToken = StorageService.read(StorageKeys.AUTH_TOKEN_KEY) ?? "";
     } else {
       localToken = token;
     }
@@ -74,7 +74,7 @@ class APIHelper {
   }) async {
     String localToken = "";
     if (token == null) {
-      localToken = StorageService.read(StorageKeys.AUTH_TOKEN) ?? "";
+      localToken = StorageService.read(StorageKeys.AUTH_TOKEN_KEY) ?? "";
     } else {
       localToken = token;
     }
@@ -94,7 +94,7 @@ class APIHelper {
   }) async {
     String localToken = "";
     if (token == null) {
-      localToken = StorageService.read(StorageKeys.AUTH_TOKEN) ?? "";
+      localToken = StorageService.read(StorageKeys.AUTH_TOKEN_KEY) ?? "";
     } else {
       localToken = token;
     }
@@ -113,7 +113,7 @@ class APIHelper {
   }) async {
     String localToken = "";
     if (token == null) {
-      localToken = StorageService.read(StorageKeys.AUTH_TOKEN) ?? "";
+      localToken = StorageService.read(StorageKeys.AUTH_TOKEN_KEY) ?? "";
     } else {
       localToken = token;
     }

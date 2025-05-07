@@ -1,6 +1,9 @@
 class ApiURLs {
-  static const String nimbuzzOTP = "https://e0f9-2405-201-2b-414b-cc7d-83b6-c7b5-1101.ngrok-free.app";
+  static const String baseUrl = "https://switch-backend-api-85604129042.asia-south1.run.app";
 
-  static const generateOTP = "$nimbuzzOTP/auth/generateotp";
-  static const verifyOTP = "$nimbuzzOTP/auth/verifyotp";
+  static const GENERATE_OTP = "$baseUrl/auth/generateotp";
+  static const VERIFY_OTP = "$baseUrl/auth/verifyotp";
+  static const UPDATE_USER_PROFILE  = "$baseUrl/user/profile";
+  static const USER_PROFILE  = "$baseUrl/user/profile";
+
 }

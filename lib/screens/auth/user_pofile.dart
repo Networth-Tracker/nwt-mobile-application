@@ -1,11 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart'; // Import for date formatting
 import 'package:nwt_app/common/button_widget.dart';
 import 'package:nwt_app/common/input_decorator.dart';
 import 'package:nwt_app/common/text_widget.dart';
 import 'package:nwt_app/constants/theme.dart';
 import 'package:nwt_app/constants/sizing.dart';
+import 'package:nwt_app/services/auth/auth.dart';
 
 class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({super.key});
@@ -17,6 +19,73 @@ class UserProfileScreen extends StatefulWidget {
 class _UserProfileScreenState extends State<UserProfileScreen> {
   DateTime? selectedDate;
   final TextEditingController dobController = TextEditingController();
+  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
+  bool _isLoading = false;
+
+  Future<void> _updateProfile() async {
+    if (firstNameController.text.isEmpty) {
+      Get.snackbar(
+        'Error',
+        'Please enter your first name',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withValues(alpha: 0.1),
+        colorText: Colors.red,
+      );
+      return;
+    }
+    if (lastNameController.text.isEmpty) {
+      Get.snackbar(
+        'Error',
+        'Please enter your last name',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withValues(alpha: 0.1),
+        colorText: Colors.red,
+      );
+      return;
+    }
+    if (selectedDate == null) {
+      Get.snackbar(
+        'Error',
+        'Please select your date of birth',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withValues(alpha: 0.1),
+        colorText: Colors.red,
+      );
+      return;
+    }
+
+    final response = await AuthService().updateProfile(
+      firstName: firstNameController.text,
+      lastName: lastNameController.text,
+      dob: selectedDate!,
+      onLoading: (isLoading) {
+        setState(() {
+          _isLoading = isLoading;
+        });
+      },
+    );
+
+    if (response != null) {
+      Get.snackbar(
+        'Success',
+        'Profile updated successfully',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green.withOpacity(0.1),
+        colorText: Colors.green,
+      );
+      Navigator.pop(context);
+    } else {
+      Get.snackbar(
+        'Error',
+        'Failed to update profile',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withOpacity(0.1),
+        colorText: Colors.red,
+      );
+    }
+  }
+
 
   @override
   void initState() {
@@ -29,6 +98,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   @override
   void dispose() {
     dobController.dispose();
+    firstNameController.dispose();
+    lastNameController.dispose();
     super.dispose();
   }
 
@@ -126,6 +197,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       ),
                       const SizedBox(height: 6),
                       TextFormField(
+                        controller: firstNameController,
                         style: TextStyle(
                           color: context.textThemeColors.primaryText,
                           fontSize: 14,
@@ -151,6 +223,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       ),
                       const SizedBox(height: 6),
                       TextFormField(
+                        controller: lastNameController,
                         style: TextStyle(
                           color: context.textThemeColors.primaryText,
                           fontSize: 14,
@@ -205,10 +278,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       text: 'Continue',
                       variant: AppButtonVariant.primary,
                       size: AppButtonSize.large,
-                      onPressed: () {
-                        // You can access selectedDate here to use it
-                        print('Selected Date of Birth: $selectedDate');
-                      },
+                      isLoading: _isLoading,
+                      onPressed: _updateProfile,
                     ),
                   ),
                 ],

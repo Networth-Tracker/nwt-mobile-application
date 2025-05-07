@@ -52,18 +52,15 @@ class AppButton extends StatelessWidget {
       width: isFullWidth ? double.infinity : null,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: isLoading ? buttonStyle.backgroundColor : buttonStyle.backgroundColor,
+          backgroundColor: buttonStyle.backgroundColor,
           foregroundColor: buttonStyle.textColor,
-          disabledBackgroundColor: isLoading 
-              ? buttonStyle.backgroundColor 
-              : (isDarkMode ? Colors.grey.shade800 : Colors.grey.shade300),
-          disabledForegroundColor:
-              isDarkMode ? Colors.grey.shade500 : Colors.grey.shade500,
+          disabledBackgroundColor: buttonStyle.backgroundColor,
+          disabledForegroundColor: buttonStyle.textColor,
           padding: buttonPadding,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(borderRadius),
             side: BorderSide(
-              color: isLoading ? buttonStyle.borderColor : buttonStyle.borderColor,
+              color: buttonStyle.borderColor,
               width:
                   buttonStyle.variant == AppButtonVariant.outlined ? 2.0 : 1.0,
             ),
@@ -108,10 +105,7 @@ class AppButton extends StatelessWidget {
         Text(
           text,
           style: TextStyle(
-            color:
-                isDisabled
-                    ? (isDarkMode ? Colors.grey.shade500 : Colors.grey.shade600)
-                    : buttonStyle.textColor,
+            color: buttonStyle.textColor,
             fontWeight: FontWeight.w600,
             fontSize: _getTextSize(),
           ),
@@ -185,7 +179,7 @@ class AppButton extends StatelessWidget {
           return _ButtonStyle(
             variant: variant,
             backgroundColor: colors.primary,
-            textColor: Colors.white,
+            textColor: colors.text,
             borderColor: colors.primary,
           );
         case AppButtonVariant.secondary:
