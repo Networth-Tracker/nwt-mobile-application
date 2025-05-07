@@ -3,7 +3,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:nwt_app/common/button_widget.dart';
 import 'package:nwt_app/common/text_widget.dart';
-import 'package:nwt_app/common/theme_toggle.dart';
 import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/screens/auth/phone_number.dart';
 

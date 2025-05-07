@@ -10,6 +10,7 @@ import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/constants/theme.dart';
 import 'package:nwt_app/screens/auth/pan_card_verification.dart';
 import 'package:nwt_app/services/auth/auth.dart';
+import 'package:sms_autofill/sms_autofill.dart';
 
 class PhoneOTPVerifyScreen extends StatefulWidget {
   final String phoneNumber;
@@ -21,31 +22,31 @@ class PhoneOTPVerifyScreen extends StatefulWidget {
   State<PhoneOTPVerifyScreen> createState() => _PhoneOTPVerifyScreenState();
 }
 
-class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> {
-  // Controllers for each digit input
+class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAutoFill {
+
   final List<TextEditingController> _controllers = List.generate(
     6,
     (index) => TextEditingController(),
   );
 
-  // Focus nodes to manage focus transition
+
   final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
 
-  // Current active input index
+
   int _currentIndex = 0;
 
-  // Auth Service
+
   final AuthService _authService = AuthService();
 
-  // Loading state
+
   bool _isLoading = false;
 
-  // Timer-related variables
+
   Timer? _resendTimer;
   int _timeLeft = 60; // 60 seconds = 1 minute
   bool _canResendOTP = false;
 
-  // Complete OTP code
+
   String get _otpCode {
     return _controllers.map((controller) => controller.text).join();
   }
@@ -53,18 +54,49 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> {
   @override
   void initState() {
     super.initState();
-    // Disable keyboard for all text fields
+
     for (var node in _focusNodes) {
       node.canRequestFocus = false;
     }
-
-    // Start the timer when the screen loads
+    
     _startResendTimer();
+    
+    _setupSmsListener();
+  }
+  
+  void _setupSmsListener() async {
+    try {
+      await SmsAutoFill().getAppSignature;
+      listenForCode();
+    } catch (e) {
+      print('Error setting up SMS listener: $e');
+    }
+  }
+  
+  @override
+  void codeUpdated() {
+    if (code != null && code!.length == 6) {
+      _autoFillOtp(code!);
+    }
+  }
+  
+  void _autoFillOtp(String otp) {
+    if (otp.length == 6) {
+      for (int i = 0; i < 6; i++) {
+        setState(() {
+          _controllers[i].text = otp[i];
+        });
+      }
+      
+      Future.delayed(const Duration(milliseconds: 500), () {
+        _verifyOTP();
+      });
+    }
   }
 
   @override
   void dispose() {
-    // Clean up controllers and focus nodes
+
     for (var controller in _controllers) {
       controller.dispose();
     }
@@ -72,13 +104,15 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> {
       node.dispose();
     }
 
-    // Cancel the timer
     _resendTimer?.cancel();
-
+    
+    // Cancel SMS auto-fill listener
+    cancel();
+    
     super.dispose();
   }
 
-  // Start the timer for resend button
+
   void _startResendTimer() {
     setState(() {
       _canResendOTP = false;
@@ -98,7 +132,7 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> {
     });
   }
 
-  // Handle digit input from keypad
+
   void _handleKeyPressed(int digit) {
     if (_currentIndex < 6) {
       setState(() {
@@ -110,7 +144,7 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> {
     }
   }
 
-  // Handle backspace from keypad
+
   void _handleBackspace() {
     if (_currentIndex >= 0) {
       setState(() {
@@ -124,14 +158,14 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> {
     }
   }
 
-  // Set loading state
+
   void _setLoading(bool isLoading) {
     setState(() {
       _isLoading = isLoading;
     });
   }
 
-  // Verify OTP using the auth service
+
   Future<void> _verifyOTP() async {
     if (_otpCode.length != 6) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -150,10 +184,10 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> {
     );
 
     if (response != null && response.success) {
-      // Navigate to PAN Card verification
+
       Get.to(() => const PanCardVerification());
     } else {
-      // Show error message
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(response?.message ?? 'Failed to verify OTP'),
@@ -164,7 +198,7 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> {
     }
   }
 
-  // Resend OTP functionality
+
   Future<void> _resendOTP() async {
     if (!_canResendOTP) return;
 
@@ -174,7 +208,7 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> {
     );
 
     if (response != null && response.success) {
-      // Reset OTP input fields
+
       for (var controller in _controllers) {
         controller.clear();
       }
@@ -188,10 +222,10 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> {
         ),
       );
 
-      // Restart the timer
+
       _startResendTimer();
     } else {
-      // Show error message
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(response?.message ?? 'Failed to resend OTP'),
@@ -279,7 +313,7 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> {
                           child: TextFormField(
                             controller: _controllers[index],
                             focusNode: _focusNodes[index],
-                            readOnly: true, // Prevent keyboard from showing
+                            readOnly: true,
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: context.textThemeColors.primaryText,
