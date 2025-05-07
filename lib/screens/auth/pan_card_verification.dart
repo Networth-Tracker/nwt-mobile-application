@@ -5,6 +5,7 @@ import 'package:nwt_app/common/button_widget.dart';
 import 'package:nwt_app/common/input_decorator.dart';
 import 'package:nwt_app/common/text_widget.dart';
 import 'package:nwt_app/constants/sizing.dart';
+import 'package:nwt_app/constants/theme.dart';
 import 'package:nwt_app/screens/auth/user_pofile.dart';
 import 'package:nwt_app/utils/validators.dart';
 
@@ -29,7 +30,7 @@ class _PanCardVerificationState extends State<PanCardVerification> {
               onTap: () => Navigator.pop(context),
               child: const Icon(Icons.chevron_left),
             ),
-            AppText("PAN Verification", variant: AppTextVariant.headline6),
+            AppText("PAN Verification", variant: AppTextVariant.headline6, weight: AppTextWeight.semiBold),
             const Opacity(opacity: 0, child: Icon(Icons.chevron_left)),
           ],
         ),
@@ -59,7 +60,7 @@ class _PanCardVerificationState extends State<PanCardVerification> {
                     children: [
                       AppText(
                         "Enter your PAN number to verify",
-                        variant: AppTextVariant.headline4,
+                        variant: AppTextVariant.bodyLarge,
                         lineHeight: 1.3,
                         colorType: AppTextColorType.secondary,
                         weight: AppTextWeight.bold,
@@ -72,8 +73,8 @@ class _PanCardVerificationState extends State<PanCardVerification> {
                     validator: AppValidators.validatePanCard,
                     // controller: _phoneController,
                     keyboardType: TextInputType.none,
-                    style: const TextStyle(
-                      color: Colors.black,
+                    style: TextStyle(
+                      color: context.textThemeColors.primaryText,
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                     ),

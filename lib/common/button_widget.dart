@@ -52,40 +52,46 @@ class AppButton extends StatelessWidget {
       width: isFullWidth ? double.infinity : null,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: buttonStyle.backgroundColor,
+          backgroundColor: isLoading ? buttonStyle.backgroundColor : buttonStyle.backgroundColor,
           foregroundColor: buttonStyle.textColor,
-          disabledBackgroundColor:
-              isDarkMode ? Colors.grey.shade800 : Colors.grey.shade300,
+          disabledBackgroundColor: isLoading 
+              ? buttonStyle.backgroundColor 
+              : (isDarkMode ? Colors.grey.shade800 : Colors.grey.shade300),
           disabledForegroundColor:
               isDarkMode ? Colors.grey.shade500 : Colors.grey.shade500,
           padding: buttonPadding,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(borderRadius),
             side: BorderSide(
-              color: buttonStyle.borderColor,
+              color: isLoading ? buttonStyle.borderColor : buttonStyle.borderColor,
               width:
                   buttonStyle.variant == AppButtonVariant.outlined ? 2.0 : 1.0,
             ),
           ),
           elevation: buttonStyle.variant == AppButtonVariant.text ? 0 : 0,
         ),
-        onPressed: (isDisabled || isLoading) ? null : onPressed,
+        onPressed: isDisabled ? null : (isLoading ? null : onPressed),
         child:
             isLoading
-                ? _buildLoadingIndicator()
+                ? _buildLoadingIndicator(context)
                 : _buildButtonContent(buttonStyle, isDarkMode),
       ),
     );
   }
 
   // Build loading indicator
-  Widget _buildLoadingIndicator() {
+  Widget _buildLoadingIndicator(BuildContext context) {
     final double size = _getLoaderSize();
-
+    final buttonStyle = _getButtonStyle(context);
+    
     return SizedBox(
       height: size,
       width: size,
-      child: const CircularProgressIndicator(strokeWidth: 4.0, color: Colors.white, strokeCap: StrokeCap.round,),
+      child: CircularProgressIndicator(
+        strokeWidth: 3.0, 
+        color: loadingIndicatorColor ?? buttonStyle.textColor,
+        strokeCap: StrokeCap.round,
+      ),
     );
   }
 

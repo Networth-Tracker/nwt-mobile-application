@@ -85,6 +85,7 @@ class _PhoneNumberInputScreenState extends State<PhoneNumberInputScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 100),
                       AppText(

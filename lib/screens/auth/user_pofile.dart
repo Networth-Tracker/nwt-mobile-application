@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:nwt_app/common/button_widget.dart';
 import 'package:nwt_app/common/input_decorator.dart';
 import 'package:nwt_app/common/text_widget.dart';
-import 'package:nwt_app/constants/colors.dart';
+import 'package:nwt_app/constants/theme.dart';
 import 'package:nwt_app/constants/sizing.dart';
 
 class UserProfileScreen extends StatefulWidget {
@@ -77,7 +77,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       const SizedBox(height: 6),
                       TextFormField(
                         style: TextStyle(
-                          color: AppColors.lightTheme['text']!['primary']!,
+                          color: context.textThemeColors.primaryText,
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                         ),
@@ -102,7 +102,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       const SizedBox(height: 6),
                       TextFormField(
                         style: TextStyle(
-                          color: AppColors.lightTheme['text']!['primary']!,
+                          color: context.textThemeColors.primaryText,
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                         ),
@@ -127,7 +127,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       const SizedBox(height: 6),
                       TextFormField(
                         style: TextStyle(
-                          color: AppColors.lightTheme['text']!['primary']!,
+                          color: context.textThemeColors.primaryText,
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                         ),
