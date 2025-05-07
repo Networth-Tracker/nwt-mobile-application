@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart'; // Import for date formatting
 import 'package:nwt_app/common/button_widget.dart';
 import 'package:nwt_app/common/input_decorator.dart';
 import 'package:nwt_app/common/text_widget.dart';
@@ -14,6 +15,55 @@ class UserProfileScreen extends StatefulWidget {
 }
 
 class _UserProfileScreenState extends State<UserProfileScreen> {
+  DateTime? selectedDate;
+  final TextEditingController dobController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize with current date if needed
+    // selectedDate = DateTime.now();
+    // updateDobController();
+  }
+
+  @override
+  void dispose() {
+    dobController.dispose();
+    super.dispose();
+  }
+
+  void updateDobController() {
+    if (selectedDate != null) {
+      dobController.text = DateFormat('dd/MM/yyyy').format(selectedDate!);
+    }
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate ?? DateTime.now(),
+      firstDate: DateTime(1900), // Reasonable minimum date
+      lastDate: DateTime.now(), // Not allowing future dates for DOB
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              onPrimary: Colors.white,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+        updateDobController();
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -126,6 +176,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       ),
                       const SizedBox(height: 6),
                       TextFormField(
+                        controller: dobController,
+                        readOnly: true, // Make the field read-only as we'll use the date picker
+                        onTap: () => _selectDate(context), // Show date picker on tap
                         style: TextStyle(
                           color: context.textThemeColors.primaryText,
                           fontSize: 14,
@@ -135,7 +188,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                           "DD/MM/YYYY",
                           fillColor: Color.fromRGBO(245, 245, 245, 1),
                           borderColor: Colors.transparent,
-                        ),
+                        )
                       ),
                       const SizedBox(height: 40),
                     ],
@@ -152,7 +205,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       text: 'Continue',
                       variant: AppButtonVariant.primary,
                       size: AppButtonSize.large,
-                      onPressed: () {},
+                      onPressed: () {
+                        // You can access selectedDate here to use it
+                        print('Selected Date of Birth: $selectedDate');
+                      },
                     ),
                   ),
                 ],
