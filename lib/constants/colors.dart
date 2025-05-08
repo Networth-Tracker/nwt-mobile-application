@@ -28,13 +28,13 @@ class AppColors {
   static const Color darkPrimary = Colors.tealAccent;
 
   static const Color darkTextPrimary = Colors.white;
-  static const Color darkTextSecondary = Colors.white;
+  static const Color darkTextSecondary = Color.fromRGBO(232, 232, 232, 1);
   static const Color darkTextTertiary = Colors.white;
   static const Color darkTextMuted = Color.fromRGBO(124, 125, 126, 1);
 
   static const Color darkButtonPrimaryText = Color.fromRGBO(45, 46, 47, 1); // Dark text
-  static const Color darkButtonPrimaryBackground = Color.fromRGBO(235, 235, 235, 1); // Light gray background
-  static const Color darkButtonPrimaryBorder = Color.fromRGBO(235, 235, 235, 1); // Light gray border
+  static const Color darkButtonPrimaryBackground = Color.fromRGBO(232, 232, 232, 1); // Light gray background
+  static const Color darkButtonPrimaryBorder = Color.fromRGBO(232, 232, 232, 1); // Light gray border
 
   static const Color darkInputBackground = Colors.transparent;
   static const Color darkInputBorder = Color.fromRGBO(255, 255, 255, 0.2); // ~51 alpha
