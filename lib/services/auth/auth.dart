@@ -8,6 +8,7 @@ import 'package:nwt_app/services/global_storage.dart';
 import 'package:nwt_app/types/auth/otp.dart';
 import 'package:nwt_app/types/auth/user.dart';
 import 'package:nwt_app/utils/api_helpers.dart';
+import 'package:sms_autofill/sms_autofill.dart';
 
 class AuthService {
   final APIHelper _apiHelper = APIHelper();
@@ -18,13 +19,16 @@ class AuthService {
   }) async {
     onLoading(true);
     try {
+      final appSignature = await SmsAutoFill().getAppSignature;
+      print(appSignature);
       final response = await _apiHelper.post(ApiURLs.GENERATE_OTP, {
         "phoneNumber": phoneNumber,
-      });
+        'appHash': appSignature,
+      }); 
       if (response != null) {
         final responseData = jsonDecode(response.body);
         developer.log('Generate OTP Response: ${responseData.toString()}');
-        
+
         if (response.statusCode == 200 || response.statusCode == 201) {
           return GenerateOtpResponse.fromJson(responseData);
         }
@@ -49,18 +53,21 @@ class AuthService {
         "phoneNumber": phoneNumber,
         "otp": otp,
       });
-      
+
       if (response != null) {
         final responseData = jsonDecode(response.body);
         developer.log('Verify OTP Response: ${responseData.toString()}');
-        
+
         if (response.statusCode == 200 || response.statusCode == 201) {
           final verifyResponse = VerifyOtpResponse.fromJson(responseData);
-          
+
           if (verifyResponse.data?.token != null) {
-            StorageService.write(StorageKeys.AUTH_TOKEN_KEY, verifyResponse.data?.token);
+            StorageService.write(
+              StorageKeys.AUTH_TOKEN_KEY,
+              verifyResponse.data?.token,
+            );
           }
-          
+
           return verifyResponse;
         }
       }
@@ -72,15 +79,15 @@ class AuthService {
       onLoading(false);
     }
   }
-  
+
   String? getAuthToken() {
     return StorageService.read(StorageKeys.AUTH_TOKEN_KEY);
   }
-  
+
   bool isLoggedIn() {
     return StorageService.hasKey(StorageKeys.AUTH_TOKEN_KEY);
   }
-  
+
   void logout() {
     StorageService.remove(StorageKeys.AUTH_TOKEN_KEY);
     final userController = Get.find<UserController>();
@@ -105,11 +112,11 @@ class AuthService {
         'lastName': lastName,
         'dob': dob.toIso8601String(),
       });
-      
+
       if (response != null) {
         final responseData = jsonDecode(response.body);
         developer.log('Update Profile Response: ${responseData.toString()}');
-        
+
         if (response.statusCode == 200 || response.statusCode == 201) {
           // Get updated user profile without showing loading state again
           final userProfile = await getUserProfile(onLoading: onLoading);
@@ -118,7 +125,7 @@ class AuthService {
           // }
           return UserProfileUpdatedResponse.fromJson(responseData);
         }
-      }else{
+      } else {
         print('Update Profile Response failed');
       }
       return null;
@@ -140,7 +147,7 @@ class AuthService {
       if (response != null) {
         final responseData = jsonDecode(response.body);
         developer.log('Get User Profile Response: ${responseData.toString()}');
-        
+
         if (response.statusCode == 200 && responseData['success'] == true) {
           return UserDataResponse.fromJson(responseData['data']);
         }
