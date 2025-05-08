@@ -34,6 +34,7 @@ class ThemeController extends GetxController {
     _isDarkMode.value = !_isDarkMode.value;
     _saveThemeToStorage();
     Get.changeThemeMode(themeMode);
+    update();
   }
 
   // Set theme explicitly (light or dark)
