@@ -149,7 +149,8 @@ class AuthService {
         developer.log('Get User Profile Response: ${responseData.toString()}');
 
         if (response.statusCode == 200 && responseData['success'] == true) {
-          return UserDataResponse.fromJson(responseData['data']);
+
+          return UserDataResponse.fromJson(responseData);
         }
       }
       return null;
