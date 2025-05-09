@@ -26,7 +26,7 @@ class AppColors {
 
   // Dark Theme
   static const Color darkBackground = Color.fromRGBO(0, 0, 0, 1);
-  static const Color darkPrimary = Color.fromRGBO(85, 136, 1631, 1);
+  static const Color darkPrimary = Color.fromRGBO(85, 136, 163, 1);
 
   static const Color darkTextPrimary = Colors.white;
   static const Color darkTextSecondary = Color.fromRGBO(232, 232, 232, 1);
