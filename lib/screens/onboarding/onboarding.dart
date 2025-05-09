@@ -14,12 +14,12 @@ class OnboardingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Your Screen'),
-        actions: [ 
-          ThemeToggle(),
-        ],
-      ),
+      // appBar: AppBar(
+      //   title: Text('Your Screen'),
+      //   actions: [ 
+      //     ThemeToggle(),
+      //   ],
+      // ),
       body: GetBuilder<ThemeController>(
         builder: (themeController) {
           return SafeArea(

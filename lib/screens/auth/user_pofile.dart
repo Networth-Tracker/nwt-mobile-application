@@ -138,21 +138,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        automaticallyImplyLeading: false,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            GestureDetector(
-              onTap: () => Navigator.pop(context),
-              child: const Icon(Icons.chevron_left),
-            ),
-            AppText("Profile", variant: AppTextVariant.headline6),
-            const Opacity(opacity: 0, child: Icon(Icons.chevron_left)),
-          ],
-        ),
-      ),
       body: SafeArea(
         child: Column(
           children: [

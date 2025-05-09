@@ -53,21 +53,7 @@ class _PanCardVerificationState extends State<PanCardVerification> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        automaticallyImplyLeading: false,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            GestureDetector(
-              onTap: () => Navigator.pop(context),
-              child: const Icon(Icons.chevron_left),
-            ),
-            AppText("PAN Verification", variant: AppTextVariant.headline6, weight: AppTextWeight.semiBold),
-            const Opacity(opacity: 0, child: Icon(Icons.chevron_left)),
-          ],
-        ),
-      ),
+   
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(
