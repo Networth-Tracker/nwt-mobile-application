@@ -2,16 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:nwt_app/constants/colors.dart';
 
 class AppTheme {
+    /// Defines the light theme for the application, specifying colors, typography, 
+    /// and component styles. This theme includes settings for app bar, text selection,
+    /// text styles, input decoration, and button themes, ensuring a cohesive and 
+    /// visually appealing design across the app in light mode.
   static ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,
     scaffoldBackgroundColor: AppColors.lightBackground,
     primaryColor: AppColors.lightPrimary,
-    
+
     // Make sure to use ColorScheme to properly handle theme transitions
     colorScheme: ColorScheme.light(
       primary: AppColors.lightPrimary,
       secondary: AppColors.lightSecondary,
       background: AppColors.lightBackground,
+    ),
+
+    // App Bar Theme
+    appBarTheme: const AppBarTheme(
+      backgroundColor: AppColors.lightBackground,
+      foregroundColor: AppColors.lightTextPrimary,
+      elevation: 0,
+      iconTheme: IconThemeData(color: AppColors.lightTextPrimary),
+      titleTextStyle: TextStyle(
+        color: AppColors.lightTextPrimary,
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
+      ),
     ),
 
     textSelectionTheme: const TextSelectionThemeData(
@@ -26,16 +43,32 @@ class AppTheme {
       bodySmall: TextStyle(color: AppColors.lightTextTertiary),
     ),
 
-    inputDecorationTheme: const InputDecorationTheme(
-      fillColor: AppColors.lightInputPrimaryBackground,
+    inputDecorationTheme: InputDecorationTheme(
+      fillColor: AppColors.lightInputPrimaryBackground, // Exact match to keypad
       filled: true,
+      contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+      border: OutlineInputBorder(
+        borderRadius: const BorderRadius.all(Radius.circular(15)),
+        borderSide: BorderSide(color: AppColors.lightInputPrimaryBorder, width: 1),
+      ),
       enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: AppColors.lightInputPrimaryBorder),
+        borderRadius: const BorderRadius.all(Radius.circular(15)),
+        borderSide: BorderSide(color: AppColors.lightInputPrimaryBorder, width: 1),
       ),
       focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: AppColors.lightPrimary),
+        borderRadius: const BorderRadius.all(Radius.circular(15)),
+        borderSide: BorderSide(color: AppColors.lightPrimary, width: 1.5),
       ),
-      hintStyle: TextStyle(color: AppColors.lightInputPrimaryText),
+      errorBorder: OutlineInputBorder(
+        borderRadius: const BorderRadius.all(Radius.circular(15)),
+        borderSide: BorderSide(color: Colors.red, width: 1),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: const BorderRadius.all(Radius.circular(15)),
+        borderSide: BorderSide(color: Colors.red, width: 1.5),
+      ),
+      hintStyle: const TextStyle(color: AppColors.lightInputPrimaryText, fontSize: 16, fontWeight: FontWeight.w400),
+      errorStyle: const TextStyle(color: Colors.red, fontSize: 12),
     ),
 
     elevatedButtonTheme: ElevatedButtonThemeData(
@@ -43,24 +76,39 @@ class AppTheme {
         backgroundColor: AppColors.lightButtonPrimaryBackground,
         foregroundColor: AppColors.lightButtonPrimaryText,
         side: const BorderSide(color: AppColors.lightButtonPrimaryBorder),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       ),
     ),
 
     // Add extension data to store our custom text colors
-    extensions: <ThemeExtension<dynamic>>[
-      AppTextThemeColors.light,
-    ],
+    extensions: <ThemeExtension<dynamic>>[AppTextThemeColors.light],
   );
 
   static ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
     scaffoldBackgroundColor: AppColors.darkBackground,
     primaryColor: AppColors.darkPrimary,
-    
+
     // Make sure to use ColorScheme to properly handle theme transitions
     colorScheme: ColorScheme.dark(
       primary: AppColors.darkPrimary,
       background: AppColors.darkBackground,
+    ),
+
+    // App Bar Theme
+    appBarTheme: const AppBarTheme(
+      backgroundColor: AppColors.darkBackground,
+      foregroundColor: AppColors.darkTextPrimary,
+      elevation: 0,
+      iconTheme: IconThemeData(color: AppColors.darkTextPrimary),
+      titleTextStyle: TextStyle(
+        color: AppColors.darkTextPrimary,
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
+      ),
     ),
 
     textSelectionTheme: const TextSelectionThemeData(
@@ -75,16 +123,32 @@ class AppTheme {
       bodySmall: TextStyle(color: AppColors.darkTextTertiary),
     ),
 
-    inputDecorationTheme: const InputDecorationTheme(
-      fillColor: AppColors.darkInputBackground,
+    inputDecorationTheme: InputDecorationTheme(
+      fillColor: AppColors.darkInputBackground, // Matches surface.withValues(alpha: 0.8)
       filled: true,
+      contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+      border: OutlineInputBorder(
+        borderRadius: const BorderRadius.all(Radius.circular(15)),
+        borderSide: BorderSide(color: AppColors.darkInputBorder, width: 1),
+      ),
       enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: AppColors.darkInputBorder),
+        borderRadius: const BorderRadius.all(Radius.circular(15)),
+        borderSide: BorderSide(color: AppColors.darkInputBorder, width: 1),
       ),
       focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: AppColors.darkPrimary),
+        borderRadius: const BorderRadius.all(Radius.circular(15)),
+        borderSide: BorderSide(color: AppColors.darkPrimary, width: 1.5),
       ),
-      hintStyle: TextStyle(color: AppColors.darkInputText),
+      errorBorder: OutlineInputBorder(
+        borderRadius: const BorderRadius.all(Radius.circular(15)),
+        borderSide: BorderSide(color: Colors.redAccent, width: 1),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: const BorderRadius.all(Radius.circular(15)),
+        borderSide: BorderSide(color: Colors.redAccent, width: 1.5),
+      ),
+      hintStyle: const TextStyle(color: AppColors.darkInputHintText, fontSize: 16, fontWeight: FontWeight.w400),
+      errorStyle: const TextStyle(color: Colors.redAccent, fontSize: 12),
     ),
 
     elevatedButtonTheme: ElevatedButtonThemeData(
@@ -92,13 +156,15 @@ class AppTheme {
         backgroundColor: AppColors.darkButtonPrimaryBackground,
         foregroundColor: AppColors.darkButtonPrimaryText,
         side: const BorderSide(color: AppColors.darkButtonPrimaryBorder),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       ),
     ),
 
     // Add extension data to store our custom text colors
-    extensions: <ThemeExtension<dynamic>>[
-      AppTextThemeColors.dark,
-    ],
+    extensions: <ThemeExtension<dynamic>>[AppTextThemeColors.dark],
   );
 }
 
@@ -173,6 +239,7 @@ class AppTextThemeColors extends ThemeExtension<AppTextThemeColors> {
 
 // Helper extension to get theme colors
 extension AppTextThemeColorsExtension on BuildContext {
-  AppTextThemeColors get textThemeColors => 
-      Theme.of(this).extension<AppTextThemeColors>() ?? AppTextThemeColors.light;
+  AppTextThemeColors get textThemeColors =>
+      Theme.of(this).extension<AppTextThemeColors>() ??
+      AppTextThemeColors.light;
 }

@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:nwt_app/common/button_widget.dart';
-import 'package:nwt_app/common/input_decorator.dart';
 import 'package:nwt_app/common/key_pad.dart';
 import 'package:nwt_app/common/text_widget.dart';
+import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/constants/theme.dart';
 import 'package:nwt_app/screens/auth/pan_card_verification.dart';
@@ -22,7 +22,7 @@ class PhoneOTPVerifyScreen extends StatefulWidget {
   State<PhoneOTPVerifyScreen> createState() => _PhoneOTPVerifyScreenState();
 }
 
-class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAutoFill {
+class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAutoFill, TickerProviderStateMixin {
 
   final List<TextEditingController> _controllers = List.generate(
     6,
@@ -31,16 +31,16 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
 
 
   final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
-
-
   final AuthService _authService = AuthService();
-
-
   bool _isLoading = false;
-
-
   int _activeFieldIndex = 0;
 
+  // Animation controllers for each OTP field
+  late List<AnimationController> _animationControllers;
+  late List<Animation<double>> _scaleAnimations;
+  
+  // Track filled status of each field
+  final List<bool> _fieldFilled = List.generate(6, (index) => false);
 
   Timer? _resendTimer;
   int _timeLeft = 60;
@@ -55,8 +55,26 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
   void initState() {
     super.initState();
     
-    _startResendTimer();
+    // Initialize animation controllers
+    _animationControllers = List.generate(
+      6,
+      (index) => AnimationController(
+        vsync: this,
+        duration: const Duration(milliseconds: 300),
+      ),
+    );
     
+    // Create scale animations
+    _scaleAnimations = _animationControllers.map((controller) {
+      return Tween<double>(begin: 1.0, end: 1.1).animate(
+        CurvedAnimation(
+          parent: controller,
+          curve: Curves.easeInOut,
+        ),
+      );
+    }).toList();
+    
+    _startResendTimer();
     _setupSmsListener();
   }
   
@@ -78,14 +96,44 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
   
   void _autoFillOtp(String otp) {
     if (otp.length == 6) {
+      // Clear any existing OTP first
       for (int i = 0; i < 6; i++) {
-        setState(() {
-          _controllers[i].text = otp[i];
+        _controllers[i].clear();
+        _fieldFilled[i] = false;
+      }
+      
+      // Fill each digit one by one with animation
+      for (int i = 0; i < 6; i++) {
+        Future.delayed(Duration(milliseconds: 200 * i), () {
+          setState(() {
+            _controllers[i].text = otp[i];
+            _fieldFilled[i] = true;
+            _activeFieldIndex = i;
+            
+            // Play animation for the current field
+            _animationControllers[i].forward().then((_) {
+              _animationControllers[i].reverse();
+            });
+          });
+          
+          // If this is the last digit
+          if (i == 5) {
+            // Play animation for all fields when complete
+            Future.delayed(const Duration(milliseconds: 300), () {
+              for (var controller in _animationControllers) {
+                controller.forward().then((_) {
+                  controller.reverse();
+                });
+              }
+              
+              // Submit the form after 1 second
+              Future.delayed(const Duration(milliseconds: 1000), () {
+                _verifyOTP();
+              });
+            });
+          }
         });
       }
-      Future.delayed(const Duration(milliseconds: 500), () {
-        _verifyOTP();
-      });
     }
   }
 
@@ -96,6 +144,9 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
     }
     for (var node in _focusNodes) {
       node.dispose();
+    }
+    for (var controller in _animationControllers) {
+      controller.dispose();
     }
     _resendTimer?.cancel();
     cancel();
@@ -160,11 +211,28 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
     if (_activeFieldIndex >= 0 && _activeFieldIndex < 6) {
       setState(() {
         _controllers[_activeFieldIndex].text = digit.toString();
+        _fieldFilled[_activeFieldIndex] = true;
+        
+        // Play animation for the current field
+        _animationControllers[_activeFieldIndex].forward().then((_) {
+          _animationControllers[_activeFieldIndex].reverse();
+        });
+        
         if (_activeFieldIndex < 5) {
           _activeFieldIndex++;
         }
+        
+        // Check if all fields are filled
         if (_controllers.every((controller) => controller.text.isNotEmpty)) {
-          _verifyOTP();
+          // Play animation for all fields when complete
+          for (var controller in _animationControllers) {
+            controller.forward().then((_) {
+              controller.reverse();
+            });
+          }
+          Future.delayed(const Duration(milliseconds: 300), () {
+            _verifyOTP();
+          });
         }
       });
     }
@@ -175,10 +243,12 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
       setState(() {
         if (_controllers[_activeFieldIndex].text.isNotEmpty) {
           _controllers[_activeFieldIndex].text = '';
+          _fieldFilled[_activeFieldIndex] = false;
         }
         else if (_activeFieldIndex > 0) {
           _activeFieldIndex--;
           _controllers[_activeFieldIndex].text = '';
+          _fieldFilled[_activeFieldIndex] = false;
         }
       });
     }
@@ -273,7 +343,7 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
                     children: List.generate(6, (index) {
                       return Expanded(
                         child: Container(
-                          margin: EdgeInsets.symmetric(horizontal: 4),
+                          margin: const EdgeInsets.symmetric(horizontal: 4),
                           child: GestureDetector(
                             onTap: () {
                               setState(() {
@@ -283,26 +353,70 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
                                 _activeFieldIndex = index;
                               });
                             },
-                            child: TextFormField(
-                              controller: _controllers[index],
-                              focusNode: _focusNodes[index],
-                              readOnly: true,
-                              maxLength: 1,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: context.textThemeColors.primaryText,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                              ),
-                              decoration: primaryInputDecoration("", isOTP: true).copyWith(
-                                counterText: "",
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(
-                                    color: _activeFieldIndex == index 
-                                        ? context.textThemeColors.primaryText 
-                                        : Colors.grey.withOpacity(0.3),
-                                    width: 1.5,
+                            // Wrap with AnimatedBuilder for scale animation
+                            child: AnimatedBuilder(
+                              animation: _scaleAnimations[index],
+                              builder: (context, child) {
+                                return Transform.scale(
+                                  scale: _scaleAnimations[index].value,
+                                  child: child,
+                                );
+                              },
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                child: TextFormField(
+                                  controller: _controllers[index],
+                                  focusNode: _focusNodes[index],
+                                  readOnly: true,
+                                  maxLength: 1,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: _fieldFilled[index]
+                                        ? Theme.of(context).colorScheme.primary
+                                        : context.textThemeColors.primaryText,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  decoration: InputDecoration(
+                                    counterText: "",
+                                    contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                                    filled: true,
+                                    fillColor: _fieldFilled[index]
+                                        ? (Theme.of(context).brightness == Brightness.dark
+                                            ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
+                                            : Theme.of(context).colorScheme.primary.withValues(alpha: 0.05))
+                                        : (Theme.of(context).brightness == Brightness.dark
+                                            ? AppColors.darkInputBackground
+                                            : AppColors.lightInputPrimaryBackground),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      borderSide: BorderSide(
+                                        color: Theme.of(context).brightness == Brightness.dark
+                                            ? AppColors.darkInputBorder
+                                            : AppColors.lightInputPrimaryBorder,
+                                        width: 1,
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      borderSide: BorderSide(
+                                        color: _fieldFilled[index]
+                                            ? Theme.of(context).colorScheme.primary
+                                            : (_activeFieldIndex == index
+                                                ? Theme.of(context).colorScheme.primary
+                                                : Theme.of(context).brightness == Brightness.dark
+                                                    ? AppColors.darkInputBorder
+                                                    : AppColors.lightInputPrimaryBorder),
+                                        width: (_activeFieldIndex == index || _fieldFilled[index]) ? 1.5 : 1,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      borderSide: BorderSide(
+                                        color: Theme.of(context).colorScheme.primary,
+                                        width: 1.5,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -357,7 +471,8 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
                           text: 'Continue',
                           variant: AppButtonVariant.primary,
                           size: AppButtonSize.large,
-                          onPressed: _verifyOTP,
+                          // onPressed: _verifyOTP,
+                          onPressed: () => Get.to(() => const PanCardVerification()),
                           isLoading: _isLoading,
                         ),
                       ),

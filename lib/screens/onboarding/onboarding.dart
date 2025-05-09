@@ -6,20 +6,37 @@ import 'package:nwt_app/common/text_widget.dart';
 import 'package:nwt_app/common/theme_toggle.dart';
 import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/controllers/theme_controller.dart';
+import 'package:nwt_app/notification/firebase_messaging.dart';
 import 'package:nwt_app/screens/auth/phone_number.dart';
 
-class OnboardingScreen extends StatelessWidget {
+class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
+
+  @override
+  State<OnboardingScreen> createState() => _OnboardingScreenState();
+}
+
+class _OnboardingScreenState extends State<OnboardingScreen> {
+  @override
+  void initState() {
+    super.initState();
+    initNotifications();
+  }
+
+  Future<void> initNotifications() async {
+    String? fcmtoken = await FirebaseMessagingAPI().initNotifications();
+    print("fcmtoken: $fcmtoken");
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text('Your Screen'),
-      //   actions: [ 
-      //     ThemeToggle(),
-      //   ],
-      // ),
+      appBar: AppBar(
+        title: Text('Your Screen'),
+        actions: [ 
+          ThemeToggle(),
+        ],
+      ),
       body: GetBuilder<ThemeController>(
         builder: (themeController) {
           return SafeArea(

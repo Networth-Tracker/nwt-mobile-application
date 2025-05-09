@@ -46,7 +46,7 @@ class AppButton extends StatelessWidget {
     final buttonPadding = customPadding ?? _getButtonPadding();
 
     // Get border radius
-    final borderRadius = customBorderRadius ?? 8.0;
+    final borderRadius = customBorderRadius ?? 15.0;
 
     return SizedBox(
       width: isFullWidth ? double.infinity : null,
@@ -138,7 +138,7 @@ class AppButton extends StatelessWidget {
       case AppButtonSize.medium:
         return const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0);
       case AppButtonSize.large:
-        return const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0);
+        return const EdgeInsets.symmetric(horizontal: 24.0, vertical: 22.0);
     }
   }
 

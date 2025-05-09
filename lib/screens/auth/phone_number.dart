@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:nwt_app/common/app_input_field.dart';
 import 'package:nwt_app/common/button_widget.dart';
-import 'package:nwt_app/common/input_decorator.dart';
 import 'package:nwt_app/common/key_pad.dart';
 import 'package:nwt_app/common/text_widget.dart';
 import 'package:nwt_app/constants/sizing.dart';
@@ -126,20 +126,14 @@ class _PhoneNumberInputScreenState extends State<PhoneNumberInputScreen> {
                           Column(
                             children: [
                               AbsorbPointer(
-          
-                                child: TextFormField(
-                                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                                  validator: AppValidators.validatePhone,
+                                child: AppInputField(
                                   controller: _phoneController,
+                                  hintText: "Enter your phone number",
+                                  // labelText: "Phone Number",
+                                  validator: AppValidators.validatePhone,
                                   keyboardType: TextInputType.none,
-                                  style: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  decoration: primaryInputDecoration(
-                                    "Enter your phone number",
-                                  ),
+                                  type: AppInputFieldType.phone,
+                                  autovalidateMode: AutovalidateMode.onUserInteraction,
                                 ),
                               ),
                               const SizedBox(height: 20),

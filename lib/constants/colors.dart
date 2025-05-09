@@ -15,8 +15,9 @@ class AppColors {
   static const Color lightButtonPrimaryBackground = Colors.black;
   static const Color lightButtonPrimaryBorder = Colors.black;
 
-  static const Color lightInputPrimaryBackground = Colors.transparent;
-  static const Color lightInputPrimaryBorder = Color.fromRGBO(197, 201, 208, 1);
+  // Exact match to keypad button background
+  static const Color lightInputPrimaryBackground = Color.fromRGBO(249, 250, 251, 1);
+  static const Color lightInputPrimaryBorder = Color.fromRGBO(0, 0, 0, 0.05);
   static const Color lightInputPrimaryText = Color.fromRGBO(70, 71, 72, 1);
 
   static const Color lightInputSecondaryBackground = Color.fromRGBO(245, 245, 245, 1);
@@ -24,8 +25,8 @@ class AppColors {
   static const Color lightInputSecondaryText = Color.fromRGBO(70, 71, 72, 1);
 
   // Dark Theme
-  static const Color darkBackground = Color.fromRGBO(45, 46, 47, 1);
-  static const Color darkPrimary = Colors.tealAccent;
+  static const Color darkBackground = Color.fromRGBO(0, 0, 0, 1);
+  static const Color darkPrimary = Color.fromRGBO(85, 136, 1631, 1);
 
   static const Color darkTextPrimary = Colors.white;
   static const Color darkTextSecondary = Color.fromRGBO(232, 232, 232, 1);
@@ -36,7 +37,10 @@ class AppColors {
   static const Color darkButtonPrimaryBackground = Color.fromRGBO(232, 232, 232, 1); // Light gray background
   static const Color darkButtonPrimaryBorder = Color.fromRGBO(232, 232, 232, 1); // Light gray border
 
-  static const Color darkInputBackground = Colors.transparent;
-  static const Color darkInputBorder = Color.fromRGBO(255, 255, 255, 0.2); // ~51 alpha
+  // These colors match the KeyPad button styling exactly
+  // For dark mode, we need to match theme.colorScheme.surface.withValues(alpha: 0.8)
+  static const Color darkInputBackground = Color.fromRGBO(30, 30, 30, 0.8);
+  static const Color darkInputBorder = Color.fromRGBO(255, 255, 255, 0.1); // Matches white.withValues(alpha: 0.1)
   static const Color darkInputText = Colors.white;
+  static const Color darkInputHintText = Color.fromRGBO(255, 255, 255, 0.6);
 }

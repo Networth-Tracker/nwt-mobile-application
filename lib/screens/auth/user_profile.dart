@@ -2,12 +2,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart'; // Import for date formatting
+import 'package:nwt_app/common/app_input_field.dart';
 import 'package:nwt_app/common/button_widget.dart';
-import 'package:nwt_app/common/input_decorator.dart';
 import 'package:nwt_app/common/text_widget.dart';
-import 'package:nwt_app/constants/theme.dart';
 import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/services/auth/auth.dart';
+import 'package:nwt_app/utils/validators.dart';
 
 class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({super.key});
@@ -138,6 +138,25 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+         appBar: AppBar(
+        backgroundColor: Colors.white,
+        automaticallyImplyLeading: false,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: const Icon(Icons.chevron_left),
+            ),
+            AppText(
+              "Profile",
+              variant: AppTextVariant.headline6,
+              weight: AppTextWeight.semiBold,
+            ),
+            const Opacity(opacity: 0, child: Icon(Icons.chevron_left)),
+          ],
+        ),
+      ),
       body: SafeArea(
         child: Column(
           children: [
@@ -169,84 +188,32 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         ),
                       ),
                       const SizedBox(height: 24),
-                      Row(
-                        children: [
-                          AppText(
-                            "First Name",
-                            variant: AppTextVariant.bodyMedium,
-                            colorType: AppTextColorType.secondary,
-                            weight: AppTextWeight.medium,
-                            textAlign: TextAlign.start,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      TextFormField(
+                      AppInputField(
                         controller: firstNameController,
-                        style: TextStyle(
-                          color: context.textThemeColors.primaryText,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        decoration: primaryInputDecoration(
-                          "First Name",
-                          fillColor: Color.fromRGBO(245, 245, 245, 1),
-                          borderColor: Colors.transparent,
-                        ),
+                        hintText: "First Name",
+                        labelText: "First Name",
+                        validator: AppValidators.validateFirstName,
+                        inputFormatters: AppInputFormatters.firstNameFormatters(),
+                        textCapitalization: TextCapitalization.words,
                       ),
                       const SizedBox(height: 22),
-                      Row(
-                        children: [
-                          AppText(
-                            "Last Name",
-                            variant: AppTextVariant.bodyMedium,
-                            colorType: AppTextColorType.secondary,
-                            weight: AppTextWeight.medium,
-                            textAlign: TextAlign.start,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      TextFormField(
+                      AppInputField(
                         controller: lastNameController,
-                        style: TextStyle(
-                          color: context.textThemeColors.primaryText,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        decoration: primaryInputDecoration(
-                          "Last Name",
-                          fillColor: Color.fromRGBO(245, 245, 245, 1),
-                          borderColor: Colors.transparent,
-                        ),
+                        hintText: "Last Name",
+                        labelText: "Last Name",
+                        validator: AppValidators.validateLastName,
+                        inputFormatters: AppInputFormatters.lastNameFormatters(),
+                        textCapitalization: TextCapitalization.words,
                       ),
                       const SizedBox(height: 22),
-                      Row(
-                        children: [
-                          AppText(
-                            "Date of Birth",
-                            variant: AppTextVariant.bodyMedium,
-                            colorType: AppTextColorType.secondary,
-                            weight: AppTextWeight.medium,
-                            textAlign: TextAlign.start,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      TextFormField(
+                      AppInputField(
                         controller: dobController,
-                        readOnly: true, // Make the field read-only as we'll use the date picker
-                        onTap: () => _selectDate(context), // Show date picker on tap
-                        style: TextStyle(
-                          color: context.textThemeColors.primaryText,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        decoration: primaryInputDecoration(
-                          "DD/MM/YYYY",
-                          fillColor: Color.fromRGBO(245, 245, 245, 1),
-                          borderColor: Colors.transparent,
-                        )
+                        hintText: "DD/MM/YYYY",
+                        labelText: "Date of Birth",
+                        readOnly: true,
+                        onTap: () => _selectDate(context),
+                        validator: AppValidators.validateDOB,
+                        inputFormatters: AppInputFormatters.dobFormatters(),
                       ),
                       const SizedBox(height: 40),
                     ],
@@ -255,7 +222,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.all(AppSizing.scaffoldHorizontalPadding),
+              padding: EdgeInsets.symmetric(
+                horizontal: AppSizing.scaffoldHorizontalPadding,
+              ),
               child: Row(
                 children: [
                   Expanded(
