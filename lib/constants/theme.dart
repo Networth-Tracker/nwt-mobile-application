@@ -89,7 +89,7 @@ class AppTheme {
       style: ButtonStyle(
         backgroundColor: WidgetStateProperty.all(Colors.white),
         iconColor: WidgetStateProperty.all(AppColors.lightTextSecondary),
-        padding: WidgetStateProperty.all(const EdgeInsets.all(8)),
+        padding: WidgetStateProperty.all(const EdgeInsets.all(10)),
         side: WidgetStateProperty.resolveWith((states) {
           return const BorderSide(color: AppColors.lightButtonBorder, width: 1);
         }),
@@ -185,7 +185,7 @@ class AppTheme {
       style: ButtonStyle(
         backgroundColor: WidgetStateProperty.all(AppColors.darkRoundedButtonBackground),
         iconColor: WidgetStateProperty.all(AppColors.darkTextGray),
-        padding: WidgetStateProperty.all(const EdgeInsets.all(8)),
+        padding: WidgetStateProperty.all(const EdgeInsets.all(10)),
         side: WidgetStateProperty.resolveWith((states) {
           return const BorderSide(color: AppColors.darkButtonBorder, width: 1);
         }),

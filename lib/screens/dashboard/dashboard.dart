@@ -63,7 +63,6 @@ class _DashboardState extends State<Dashboard> {
               IconButton(
                 onPressed: () {},
                 icon: const Icon(Icons.notifications_outlined),
-                // Use theme styling instead of hardcoded colors
               ),
             ],
           ),
@@ -180,9 +179,22 @@ class _DashboardState extends State<Dashboard> {
                           children: [
                             Row(
                               children: [
-                                
+                                IconButton(
+                                  onPressed: () {},
+                                  icon: const Icon(
+                                    Icons.account_balance_outlined,
+                                    size: 26,
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                AppText(
+                                  "Banks",
+                                  variant: AppTextVariant.bodyMedium,
+                                  weight: AppTextWeight.semiBold,
+                                  colorType: AppTextColorType.primary,
+                                ),
                               ],
-                            )
+                            ),
                           ],
                         ),
                       ),
