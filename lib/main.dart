@@ -1,3 +1,4 @@
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -18,10 +19,8 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // If you need to do any initialization here, do it before any other Firebase operations
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   print("Handling background message: ${message.notification?.title}");
-  // Handle background message logic here
 }
 
 void main() async {
@@ -48,7 +47,21 @@ void main() async {
   Get.put(ThemeController());
   runApp(const MyApp());
 }
+Future<void> setupRemoteConfig() async {
+  final remoteConfig = FirebaseRemoteConfig.instance;
 
+  await remoteConfig.setConfigSettings(
+    RemoteConfigSettings(
+      fetchTimeout: const Duration(seconds: 10),
+      minimumFetchInterval: const Duration(seconds: 10),
+    ),
+  );
+
+  await remoteConfig.setDefaults(<String, dynamic>{
+    'welcome_message': 'Hello from default!',
+  });
+  await remoteConfig.fetchAndActivate();
+}
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
