@@ -17,7 +17,7 @@ class AppColors {
   static const Color lightButtonPrimaryBorder = Colors.black;
   static const Color lightButtonBorder = Color.fromRGBO(230, 230, 230, 1);
 
-  // Exact match to keypad button background
+
   static const Color lightInputPrimaryBackground = Color.fromRGBO(249, 250, 251, 1);
   static const Color lightInputPrimaryBorder = Color.fromRGBO(0, 0, 0, 0.05);
   static const Color lightInputPrimaryText = Color.fromRGBO(70, 71, 72, 1);
@@ -26,7 +26,6 @@ class AppColors {
   static const Color lightInputSecondaryBorder = Color.fromRGBO(255, 255, 255, 0.2); 
   static const Color lightInputSecondaryText = Color.fromRGBO(70, 71, 72, 1);
 
-  // Dark Theme
   static const Color darkBackground = Color.fromRGBO(0, 0, 0, 1);
   static const Color darkPrimary = Color.fromRGBO(85, 136, 163, 1);
 

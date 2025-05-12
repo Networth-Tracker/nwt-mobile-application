@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 import 'package:nwt_app/widgets/avatar.dart';
 import 'package:nwt_app/constants/colors.dart';
+import 'package:nwt_app/screens/dashboard/widgets/asset_card.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -79,8 +81,8 @@ class _DashboardState extends State<Dashboard> {
                 ),
                 child: Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 15,
-                    vertical: 15,
+                    horizontal: 20,
+                    vertical: 20,
                   ),
                   decoration: BoxDecoration(
                     color: AppColors.darkCardBG,
@@ -129,77 +131,115 @@ class _DashboardState extends State<Dashboard> {
               ),
               SizedBox(height: 16),
               Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: AppSizing.scaffoldHorizontalPadding,
+                padding: EdgeInsets.only(
+                  left: AppSizing.scaffoldHorizontalPadding,
                 ),
-                child: Container(
+                child: SizedBox(
                   width: MediaQuery.of(context).size.width,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 15,
-                    vertical: 15,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.darkBackground,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.darkButtonBorder),
-                  ),
                   child: Column(
                     children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          AppText(
-                            "Assets",
-                            variant: AppTextVariant.headline5,
-                            weight: AppTextWeight.bold,
-                            colorType: AppTextColorType.tertiary,
-                          ),
-                          AppText(
-                            "See All",
-                            variant: AppTextVariant.bodyMedium,
-                            weight: AppTextWeight.medium,
-                            colorType: AppTextColorType.tertiary,
-                          ),
-                        ],
+                      Padding(
+                        padding: EdgeInsets.only(
+                          right: AppSizing.scaffoldHorizontalPadding,
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            AppText(
+                              "Assets",
+                              variant: AppTextVariant.headline5,
+                              weight: AppTextWeight.bold,
+                              colorType: AppTextColorType.tertiary,
+                            ),
+                            AppText(
+                              "See All",
+                              variant: AppTextVariant.bodyMedium,
+                              weight: AppTextWeight.medium,
+                              colorType: AppTextColorType.tertiary,
+                            ),
+                          ],
+                        ),
                       ),
                       SizedBox(height: 12),
-                      Container(
-                        width: MediaQuery.of(context).size.width,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 15,
-                          vertical: 15,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.darkCardBG,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: AppColors.darkButtonBorder),
-                        ),
-                        child: Column(
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
                           children: [
-                            Row(
-                              children: [
-                                IconButton(
-                                  onPressed: () {},
-                                  icon: const Icon(
-                                    Icons.account_balance_outlined,
-                                    size: 26,
+                            Padding(
+                              padding: const EdgeInsets.only(right: 15),
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  minHeight:
+                                      120, // Set a minimum height to match AssetCard
+                                ),
+                                child: Container(
+                                  width: 50,
+                                  decoration: BoxDecoration(
+                                    color: Color.fromRGBO(38, 40, 44, 0.6),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: AppColors.darkButtonBorder,
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Icon(Icons.add_rounded, size: 26),
                                   ),
                                 ),
-                                const SizedBox(width: 10),
-                                AppText(
-                                  "Banks",
-                                  variant: AppTextVariant.bodyMedium,
-                                  weight: AppTextWeight.semiBold,
-                                  colorType: AppTextColorType.primary,
-                                ),
-                              ],
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 15),
+                              child: AssetCard(
+                                title: "Banks",
+                                amount: "₹1,00,000",
+                                delta: "-10%",
+                                deltaType: DeltaType.negative,
+                                icon: Icons.account_balance_outlined,
+                              ),
+                            ),
+                            AssetCard(
+                              title: "Banks",
+                              amount: "₹1,00,000",
+                              delta: "10%",
+                              deltaType: DeltaType.positive,
+                              icon: Icons.account_balance_outlined,
                             ),
                           ],
                         ),
                       ),
                     ],
                   ),
+                ),
+              ),
+              SizedBox(height: 16),
+              Container(
+                decoration: BoxDecoration(
+                  gradient: RadialGradient(
+                    center: Alignment.topCenter,
+                    radius: 2,
+                    colors: [
+                      Color.fromRGBO(165, 108, 236, 0.8),
+                      Color.fromRGBO(41, 9, 81, 1),
+                    ],
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        AppText(
+                          "₹1,00,000",
+                          variant: AppTextVariant.display,
+                          weight: AppTextWeight.bold,
+                          colorType: AppTextColorType.primary,
+                        ),
+                        SvgPicture.asset(
+                          "assets/svgs/dashboard/zerodha_banner.svg",
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ],
