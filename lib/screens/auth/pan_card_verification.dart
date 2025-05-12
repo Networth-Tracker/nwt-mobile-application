@@ -6,7 +6,6 @@ import 'package:nwt_app/common/app_input_field.dart';
 import 'package:nwt_app/common/button_widget.dart';
 import 'package:nwt_app/common/text_widget.dart';
 import 'package:nwt_app/constants/sizing.dart';
-import 'package:nwt_app/constants/theme.dart';
 import 'package:nwt_app/screens/auth/user_profile.dart';
 import 'package:nwt_app/utils/validators.dart';
 

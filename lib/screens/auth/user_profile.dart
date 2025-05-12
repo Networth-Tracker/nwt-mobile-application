@@ -86,7 +86,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     }
   }
 
-
   @override
   void initState() {
     super.initState();
@@ -117,16 +116,14 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       lastDate: DateTime.now(), // Not allowing future dates for DOB
       builder: (context, child) {
         return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              onPrimary: Colors.white,
-            ),
-          ),
+          data: Theme.of(
+            context,
+          ).copyWith(colorScheme: ColorScheme.light(onPrimary: Colors.white)),
           child: child!,
         );
       },
     );
-    
+
     if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
@@ -138,8 +135,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-         appBar: AppBar(
-        backgroundColor: Colors.white,
+      appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -178,11 +174,13 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                             height: 112,
                             imageUrl:
                                 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                            placeholder: (context, url) => const Center(
-                              child: CircularProgressIndicator(),
-                            ),
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.error),
+                            placeholder:
+                                (context, url) => const Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                            errorWidget:
+                                (context, url, error) =>
+                                    const Icon(Icons.error),
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -193,7 +191,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         hintText: "First Name",
                         labelText: "First Name",
                         validator: AppValidators.validateFirstName,
-                        inputFormatters: AppInputFormatters.firstNameFormatters(),
+                        inputFormatters:
+                            AppInputFormatters.firstNameFormatters(),
                         textCapitalization: TextCapitalization.words,
                       ),
                       const SizedBox(height: 22),
@@ -202,7 +201,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         hintText: "Last Name",
                         labelText: "Last Name",
                         validator: AppValidators.validateLastName,
-                        inputFormatters: AppInputFormatters.lastNameFormatters(),
+                        inputFormatters:
+                            AppInputFormatters.lastNameFormatters(),
                         textCapitalization: TextCapitalization.words,
                       ),
                       const SizedBox(height: 22),
