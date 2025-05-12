@@ -1,62 +1,46 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  static final Map<String, Map<String, dynamic>> lightTheme = {
-    'base': {
-      'background': Colors.white,
-      'primary': Colors.blue,
-      'secondary': Colors.grey,
-    },
-    'text': {
-      'primary': Colors.black,
-      'secondary': const Color.fromRGBO(70, 71, 72, 1),
-      'tertiary': Color.fromRGBO(0, 51, 78, 1),
-      'muted': Color.fromRGBO(124, 125, 126, 1)
-    },
-    'button': {
-      'primary': {
-        "text": Colors.white,
-        "background": Colors.black,
-        "border": Colors.black,
-      },
-    },
-    'input': {
-      'primary': {
-        'background': Colors.transparent,
-        'border': const Color.fromRGBO(197, 201, 208, 1),
-        'text': const Color.fromRGBO(70, 71, 72, 1),
-      },
-      'secondary': {
-        'background': const Color.fromRGBO(245, 245, 245, 1),
-        'border': Colors.white.withAlpha(51), // alpha 0.2 of 255 = ~51
-        'text': const Color.fromRGBO(70, 71, 72, 1),
-      },
-    },
-  };
+  // Light Theme
+  static const Color lightBackground = Colors.white;
+  static const Color lightPrimary = Colors.blue;
+  static const Color lightSecondary = Colors.grey;
 
-  static final Map<String, Map<String, dynamic>> darkTheme = {
-    'base': {
-      'background': const Color.fromRGBO(45, 46, 47, 1),
-      'primary': Colors.tealAccent,
-    },
-    'text': {
-      'primary': Colors.black,
-      'secondary': Colors.grey,
-      'tertiary': Colors.grey,
-      'muted': Color.fromRGBO(124, 125, 126, 1)
+  static const Color lightTextPrimary = Colors.black;
+  static const Color lightTextSecondary = Color.fromRGBO(70, 71, 72, 1);
+  static const Color lightTextTertiary = Color.fromRGBO(0, 51, 78, 1);
+  static const Color lightTextMuted = Color.fromRGBO(124, 125, 126, 1);
 
-    },
-    'button': {
-      'primary': {
-        "text": Colors.white,
-        "background": const Color.fromRGBO(45, 55, 119, 1),
-        "border": const Color.fromRGBO(45, 55, 119, 1),
-      },
-    },
-    'input': {
-      'background': Colors.transparent,
-      'border': Colors.white.withAlpha(51),
-      'text': Colors.white,
-    },
-  };
+  static const Color lightButtonPrimaryText = Colors.white;
+  static const Color lightButtonPrimaryBackground = Colors.black;
+  static const Color lightButtonPrimaryBorder = Colors.black;
+
+  // Exact match to keypad button background
+  static const Color lightInputPrimaryBackground = Color.fromRGBO(249, 250, 251, 1);
+  static const Color lightInputPrimaryBorder = Color.fromRGBO(0, 0, 0, 0.05);
+  static const Color lightInputPrimaryText = Color.fromRGBO(70, 71, 72, 1);
+
+  static const Color lightInputSecondaryBackground = Color.fromRGBO(245, 245, 245, 1);
+  static const Color lightInputSecondaryBorder = Color.fromRGBO(255, 255, 255, 0.2); // 0.2 alpha
+  static const Color lightInputSecondaryText = Color.fromRGBO(70, 71, 72, 1);
+
+  // Dark Theme
+  static const Color darkBackground = Color.fromRGBO(0, 0, 0, 1);
+  static const Color darkPrimary = Color.fromRGBO(85, 136, 163, 1);
+
+  static const Color darkTextPrimary = Colors.white;
+  static const Color darkTextSecondary = Color.fromRGBO(232, 232, 232, 1);
+  static const Color darkTextTertiary = Colors.white;
+  static const Color darkTextMuted = Color.fromRGBO(124, 125, 126, 1);
+
+  static const Color darkButtonPrimaryText = Color.fromRGBO(45, 46, 47, 1); // Dark text
+  static const Color darkButtonPrimaryBackground = Color.fromRGBO(232, 232, 232, 1); // Light gray background
+  static const Color darkButtonPrimaryBorder = Color.fromRGBO(232, 232, 232, 1); // Light gray border
+
+  // These colors match the KeyPad button styling exactly
+  // For dark mode, we need to match theme.colorScheme.surface.withValues(alpha: 0.8)
+  static const Color darkInputBackground = Color.fromRGBO(30, 30, 30, 0.8);
+  static const Color darkInputBorder = Color.fromRGBO(255, 255, 255, 0.1); // Matches white.withValues(alpha: 0.1)
+  static const Color darkInputText = Colors.white;
+  static const Color darkInputHintText = Color.fromRGBO(255, 255, 255, 0.6);
 }

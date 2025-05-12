@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:nwt_app/constants/colors.dart';
+import 'package:nwt_app/constants/theme.dart';
 
+/// Text variants available in the application
 enum AppTextVariant {
   headline1,
   headline2,
@@ -13,65 +14,174 @@ enum AppTextVariant {
   bodySmall,
   caption,
   button,
-  labelLarge,
-  labelMedium,
-  labelSmall,
+  label
 }
 
+/// Text weight options
 enum AppTextWeight {
   light,
   regular,
   medium,
   semiBold,
-  bold,
+  bold
 }
 
+/// Text color options
 enum AppTextColorType {
   primary,
   secondary,
   tertiary,
-  muted,  // Added muted color type
-  button,
-  custom,
+  muted,
+  error,
+  success,
+  warning,
+  custom
 }
 
+/// Resolves [AppTextColorType] to an actual [Color] from the current theme extension
+Color _resolveTextColor(BuildContext context, AppTextColorType colorType, Color? customColor) {
+  if (colorType == AppTextColorType.custom && customColor != null) {
+    return customColor;
+  }
+  
+  final textThemeColors = context.textThemeColors;
+  final theme = Theme.of(context);
+  
+  switch (colorType) {
+    case AppTextColorType.primary:
+      return textThemeColors.primaryText;
+    case AppTextColorType.secondary:
+      return textThemeColors.secondaryText;
+    case AppTextColorType.tertiary:
+      return textThemeColors.tertiaryText;
+    case AppTextColorType.muted:
+      return textThemeColors.mutedText;
+    case AppTextColorType.error:
+      return theme.colorScheme.error;
+    case AppTextColorType.success:
+      return Colors.green;
+    case AppTextColorType.warning:
+      return Colors.orange;
+    case AppTextColorType.custom:
+      // Fallback if customColor is null
+      return textThemeColors.primaryText;
+  }
+}
+
+/// Resolves [AppTextWeight] to an actual [FontWeight]
+FontWeight _resolveFontWeight(AppTextWeight weight) {
+  switch (weight) {
+    case AppTextWeight.light:
+      return FontWeight.w300;
+    case AppTextWeight.regular:
+      return FontWeight.normal;
+    case AppTextWeight.medium:
+      return FontWeight.w500;
+    case AppTextWeight.semiBold:
+      return FontWeight.w600;
+    case AppTextWeight.bold:
+      return FontWeight.bold;
+  }
+}
+
+/// Gets the appropriate text style based on variant and theme
+TextStyle _getTextStyle(BuildContext context, AppTextVariant variant, AppTextWeight weight, 
+    AppTextColorType colorType, Color? customColor, double? lineHeight, TextDecoration? decoration) {
+  
+  // Resolve color and weight
+  final color = _resolveTextColor(context, colorType, customColor);
+  final fontWeight = _resolveFontWeight(weight);
+  
+  // Base style with variant-specific properties
+  TextStyle style;
+  switch (variant) {
+    case AppTextVariant.headline1:
+      style = TextStyle(fontSize: 28, fontWeight: fontWeight);
+      break;
+    case AppTextVariant.headline2:
+      style = TextStyle(fontSize: 24, fontWeight: fontWeight);
+      break;
+    case AppTextVariant.headline3:
+      style = TextStyle(fontSize: 20, fontWeight: fontWeight);
+      break;
+    case AppTextVariant.headline4:
+      style = TextStyle(fontSize: 18, fontWeight: fontWeight);
+      break;
+    case AppTextVariant.headline5:
+      style = TextStyle(fontSize: 16, fontWeight: fontWeight);
+      break;
+    case AppTextVariant.headline6:
+      style = TextStyle(fontSize: 14, fontWeight: fontWeight);
+      break;
+    case AppTextVariant.bodyLarge:
+      style = TextStyle(fontSize: 16, fontWeight: fontWeight);
+      break;
+    case AppTextVariant.bodyMedium:
+      style = TextStyle(fontSize: 14, fontWeight: fontWeight);
+      break;
+    case AppTextVariant.bodySmall:
+      style = TextStyle(fontSize: 12, fontWeight: fontWeight);
+      break;
+    case AppTextVariant.caption:
+      style = TextStyle(fontSize: 12, fontWeight: fontWeight);
+      break;
+    case AppTextVariant.button:
+      style = TextStyle(fontSize: 14, fontWeight: fontWeight);
+      break;
+    case AppTextVariant.label:
+      style = TextStyle(fontSize: 12, fontWeight: fontWeight);
+      break;
+  }
+
+  // Apply color, height, and decoration
+  return style.copyWith(
+    color: color,
+    height: lineHeight,
+    decoration: decoration,
+  );
+}
+
+/// A custom text widget that adapts to theme changes
 class AppText extends StatelessWidget {
   final String text;
   final AppTextVariant variant;
-  final AppTextWeight? weight;
-  final Color? color;
+  final AppTextWeight weight;
   final AppTextColorType colorType;
+  final Color? customColor;
   final TextAlign? textAlign;
   final double? lineHeight;
   final int? maxLines;
   final TextOverflow? overflow;
-  final bool selectable;
-  final double? letterSpacing;
   final TextDecoration? decoration;
-  final List<TextSpan>? children;
+  final bool selectable;
 
   const AppText(
     this.text, {
-    super.key,
+    Key? key,
     this.variant = AppTextVariant.bodyMedium,
-    this.weight,
-    this.color,
+    this.weight = AppTextWeight.regular,
     this.colorType = AppTextColorType.primary,
+    this.customColor,
     this.textAlign,
     this.lineHeight,
     this.maxLines,
     this.overflow,
-    this.selectable = false,
-    this.letterSpacing,
     this.decoration,
-    this.children,
-  });
+    this.selectable = false,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final TextStyle style = _getTextStyle(context);
+    final TextStyle style = _getTextStyle(
+      context, 
+      variant, 
+      weight, 
+      colorType, 
+      customColor, 
+      lineHeight, 
+      decoration
+    );
     
-    // Return selectable text if requested
     if (selectable) {
       return SelectableText(
         text,
@@ -80,21 +190,7 @@ class AppText extends StatelessWidget {
         maxLines: maxLines,
       );
     }
-    
-    // Return regular text or rich text if children exist
-    if (children != null && children!.isNotEmpty) {
-      return Text.rich(
-        TextSpan(
-          text: text,
-          style: style,
-          children: children,
-        ),
-        textAlign: textAlign,
-        maxLines: maxLines,
-        overflow: overflow,
-      );
-    }
-    
+
     return Text(
       text,
       style: style,
@@ -103,352 +199,163 @@ class AppText extends StatelessWidget {
       overflow: overflow,
     );
   }
+}
 
-  TextStyle _getTextStyle(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
+/// An animated version of AppText that smoothly transitions between changes
+class AnimatedAppText extends StatelessWidget {
+  final String text;
+  final AppTextVariant variant;
+  final AppTextWeight weight;
+  final AppTextColorType colorType;
+  final Color? customColor;
+  final TextAlign? textAlign;
+  final double? lineHeight;
+  final int? maxLines;
+  final TextOverflow? overflow;
+  final TextDecoration? decoration;
+  final Duration duration;
+  final Curve curve;
+  final Offset? beginOffset;
+  final Duration? delay;
+
+  const AnimatedAppText(
+    this.text, {
+    Key? key,
+    this.variant = AppTextVariant.bodyMedium,
+    this.weight = AppTextWeight.regular,
+    this.colorType = AppTextColorType.primary,
+    this.customColor,
+    this.textAlign,
+    this.lineHeight,
+    this.maxLines,
+    this.overflow,
+    this.decoration,
+    this.duration = const Duration(milliseconds: 200),
+    this.curve = Curves.easeInOut,
+    this.beginOffset,
+    this.delay,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final style = _getTextStyle(
+      context, 
+      variant, 
+      weight, 
+      colorType, 
+      customColor, 
+      lineHeight, 
+      decoration
+    );
     
-    // Get base style for the variant
-    TextStyle baseStyle = _getBaseStyle(theme);
+    Widget textWidget = AnimatedDefaultTextStyle(
+      duration: duration,
+      curve: curve,
+      style: style,
+      child: Text(
+        text,
+        textAlign: textAlign,
+        maxLines: maxLines,
+        overflow: overflow,
+      ),
+    );
     
-    // Apply weight
-    FontWeight fontWeight = _resolveFontWeight();
+    // Apply animation if beginOffset is provided
+    if (beginOffset != null) {
+      textWidget = TweenAnimationBuilder<Offset>(
+        tween: Tween<Offset>(begin: beginOffset, end: Offset.zero),
+        duration: duration,
+        curve: curve,
+        builder: (context, value, child) {
+          return Transform.translate(
+            offset: value,
+            child: child,
+          );
+        },
+        child: textWidget,
+      );
+    }
     
-    // Apply color based on theme and variant
-    Color textColor = _resolveTextColor(theme, isDarkMode);
+    // Apply delay if provided
+    if (delay != null) {
+      return FutureBuilder(
+        future: Future.delayed(delay!),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return textWidget;
+          } else {
+            return Opacity(opacity: 0, child: textWidget);
+          }
+        },
+      );
+    }
     
-    // Create final style by combining all properties
-    return baseStyle.copyWith(
-      color: textColor,
-      fontWeight: fontWeight,
-      height: lineHeight,
-      letterSpacing: letterSpacing,
-      decoration: decoration,
+    return textWidget;
+  }
+}
+
+/// Semantic color options for BasicText (legacy support)
+enum BasicTextColor {
+  primary,
+  secondary,
+  error,
+  success,
+  warning,
+}
+
+/// Resolves [BasicTextColor] to an actual [Color] from the current theme extension
+Color _resolveBasicTextColor(BuildContext context, BasicTextColor color) {
+  final textThemeColors = context.textThemeColors;
+  final theme = Theme.of(context);
+  switch (color) {
+    case BasicTextColor.primary:
+      return textThemeColors.primaryText;
+    case BasicTextColor.secondary:
+      return textThemeColors.secondaryText;
+    case BasicTextColor.error:
+      return theme.colorScheme.error;
+    case BasicTextColor.success:
+      // You may want to add a 'successText' to your theme extension for true theme support
+      return Colors.green;
+    case BasicTextColor.warning:
+      // You may want to add a 'warningText' to your theme extension for true theme support
+      return Colors.orange;
+  }
+}
+
+/// A minimal text widget for basic use cases
+class BasicText extends StatelessWidget {
+  final String text;
+  final double fontSize;
+  final FontWeight fontWeight;
+  final TextAlign? textAlign;
+  final TextOverflow? overflow;
+  final double? lineHeight;
+  final BasicTextColor color;
+
+  const BasicText(
+    this.text, {
+    Key? key,
+    this.fontSize = 14,
+    this.fontWeight = FontWeight.normal,
+    this.textAlign,
+    this.overflow,
+    this.lineHeight,
+    this.color = BasicTextColor.primary,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      textAlign: textAlign,
+      overflow: overflow,
+      style: TextStyle(
+        fontSize: fontSize,
+        fontWeight: fontWeight,
+        color: _resolveBasicTextColor(context, color),
+        height: lineHeight,
+      ),
     );
   }
-
-  TextStyle _getBaseStyle(ThemeData theme) {
-    switch (variant) {
-      case AppTextVariant.headline1:
-        return const TextStyle(fontSize: 32);
-      case AppTextVariant.headline2:
-        return const TextStyle(fontSize: 28);
-      case AppTextVariant.headline3:
-        return const TextStyle(fontSize: 24);
-      case AppTextVariant.headline4:
-        return const TextStyle(fontSize: 20);
-      case AppTextVariant.headline5:
-        return const TextStyle(fontSize: 18);
-      case AppTextVariant.headline6:
-        return const TextStyle(fontSize: 16);
-      case AppTextVariant.bodyLarge:
-        return theme.textTheme.bodyLarge ?? const TextStyle(fontSize: 16);
-      case AppTextVariant.bodyMedium:
-        return theme.textTheme.bodyMedium ?? const TextStyle(fontSize: 14);
-      case AppTextVariant.bodySmall:
-        return theme.textTheme.bodySmall ?? const TextStyle(fontSize: 12);
-      case AppTextVariant.caption:
-        return const TextStyle(fontSize: 12);
-      case AppTextVariant.button:
-        return const TextStyle(fontSize: 14);
-      case AppTextVariant.labelLarge:
-        return const TextStyle(fontSize: 14);
-      case AppTextVariant.labelMedium:
-        return const TextStyle(fontSize: 12);
-      case AppTextVariant.labelSmall:
-        return const TextStyle(fontSize: 10);
-    }
-  }
-
-  FontWeight _resolveFontWeight() {
-    // If weight is explicitly provided, use it
-    if (weight != null) {
-      switch (weight!) {
-        case AppTextWeight.light:
-          return FontWeight.w300;
-        case AppTextWeight.regular:
-          return FontWeight.w400;
-        case AppTextWeight.medium:
-          return FontWeight.w500;
-        case AppTextWeight.semiBold:
-          return FontWeight.w600;
-        case AppTextWeight.bold:
-          return FontWeight.w700;
-      }
-    }
-
-    // Otherwise, use default weight based on variant
-    switch (variant) {
-      case AppTextVariant.headline1:
-      case AppTextVariant.headline2:
-      case AppTextVariant.headline3:
-        return FontWeight.w700; // Bold
-      case AppTextVariant.headline4:
-      case AppTextVariant.headline5:
-      case AppTextVariant.headline6:
-        return FontWeight.w600; // SemiBold
-      case AppTextVariant.button:
-        return FontWeight.w600; // SemiBold
-      case AppTextVariant.bodyLarge:
-      case AppTextVariant.bodyMedium:
-      case AppTextVariant.bodySmall:
-      case AppTextVariant.caption:
-      case AppTextVariant.labelLarge:
-      case AppTextVariant.labelMedium:
-      case AppTextVariant.labelSmall:
-        return FontWeight.w400; // Regular
-    }
-  }
-
-  Color _resolveTextColor(ThemeData theme, bool isDarkMode) {
-    // If color is explicitly provided, use it
-    if (color != null) {
-      return color!;
-    }
-
-    final colorTheme = isDarkMode ? AppColors.darkTheme : AppColors.lightTheme;
-    
-    // Get color from AppColors based on colorType
-    switch (colorType) {
-      case AppTextColorType.primary:
-        if (colorTheme['text'] != null && colorTheme['text']!['primary'] != null) {
-          return colorTheme['text']!['primary'];
-        }
-        return isDarkMode ? Colors.white : Colors.black;
-      
-      case AppTextColorType.secondary:
-        if (colorTheme['text'] != null && colorTheme['text']!['secondary'] != null) {
-          return colorTheme['text']!['secondary'];
-        }
-        return isDarkMode ? Colors.white.withValues(alpha: 0.87) : const Color.fromRGBO(70, 71, 72, 1);
-      
-      case AppTextColorType.tertiary:
-        if (colorTheme['text'] != null && colorTheme['text']!['tertiary'] != null) {
-          return colorTheme['text']!['tertiary'];
-        }
-        return isDarkMode ? Colors.white.withValues(alpha: 0.6) : Colors.grey;
-      
-      case AppTextColorType.muted:  // Added muted color type handler
-        if (colorTheme['text'] != null && colorTheme['text']!['muted'] != null) {
-          return colorTheme['text']!['muted'];
-        }
-        return const Color.fromRGBO(124, 125, 126, 1);  // Default muted color
-      
-      case AppTextColorType.button:
-        if (colorTheme['button'] != null && 
-            colorTheme['button']!['primary'] != null && 
-            colorTheme['button']!['primary']['text'] != null) {
-          return colorTheme['button']!['primary']['text'];
-        }
-        return isDarkMode ? Colors.white : Colors.black;
-      
-      case AppTextColorType.custom:
-        // Fall back to variant-based colors if custom is selected but no color provided
-        return _getVariantBasedColor(theme, isDarkMode);
-    }
-  }
-
-  Color _getVariantBasedColor(ThemeData theme, bool isDarkMode) {
-    // Get color from theme based on variant and dark/light mode
-    if (isDarkMode) {
-      switch (variant) {
-        case AppTextVariant.bodyLarge:
-          return theme.textTheme.bodyLarge?.color ?? Colors.white;
-        case AppTextVariant.bodyMedium:
-          return theme.textTheme.bodyMedium?.color ?? Colors.white.withValues(alpha: 0.87);
-        case AppTextVariant.bodySmall:
-          return theme.textTheme.bodySmall?.color ?? Colors.white.withValues(alpha: 0.6);
-        case AppTextVariant.headline1:
-        case AppTextVariant.headline2:
-        case AppTextVariant.headline3:
-        case AppTextVariant.headline4:
-        case AppTextVariant.headline5:
-        case AppTextVariant.headline6:
-          return Colors.white;
-        case AppTextVariant.caption:
-        case AppTextVariant.labelSmall:
-        case AppTextVariant.labelMedium:
-          return Colors.white.withValues(alpha: 0.6);
-        case AppTextVariant.button:
-        case AppTextVariant.labelLarge:
-          return Colors.white;
-      }
-    } else {
-      switch (variant) {
-        case AppTextVariant.bodyLarge:
-          return theme.textTheme.bodyLarge?.color ?? Colors.black;
-        case AppTextVariant.bodyMedium:
-          return theme.textTheme.bodyMedium?.color ?? const Color.fromRGBO(70, 71, 72, 1);
-        case AppTextVariant.bodySmall:
-          return theme.textTheme.bodySmall?.color ?? Colors.grey;
-        case AppTextVariant.headline1:
-        case AppTextVariant.headline2:
-        case AppTextVariant.headline3:
-        case AppTextVariant.headline4:
-        case AppTextVariant.headline5:
-        case AppTextVariant.headline6:
-          return Colors.black;
-        case AppTextVariant.caption:
-        case AppTextVariant.labelSmall:
-        case AppTextVariant.labelMedium:
-          return Colors.grey;
-        case AppTextVariant.button:
-        case AppTextVariant.labelLarge:
-          return Colors.black;
-      }
-    }
-  }
-
-  // Factory constructors for common text styles with appropriate default color types
-  factory AppText.headline1(String text, {
-    Key? key,
-    Color? color,
-    AppTextColorType colorType = AppTextColorType.primary, // Default to primary for headlines
-    TextAlign? textAlign,
-    AppTextWeight? weight,
-    double? lineHeight,
-    int? maxLines,
-    TextOverflow? overflow,
-  }) => AppText(
-    text,
-    key: key,
-    variant: AppTextVariant.headline1,
-    color: color,
-    colorType: colorType,
-    textAlign: textAlign,
-    weight: weight,
-    lineHeight: lineHeight,
-    maxLines: maxLines,
-    overflow: overflow,
-  );
-  
-  factory AppText.headline2(String text, {
-    Key? key,
-    Color? color,
-    AppTextColorType colorType = AppTextColorType.primary,
-    TextAlign? textAlign,
-    AppTextWeight? weight,
-    double? lineHeight,
-    int? maxLines,
-    TextOverflow? overflow,
-  }) => AppText(
-    text,
-    key: key,
-    variant: AppTextVariant.headline2,
-    color: color,
-    colorType: colorType,
-    textAlign: textAlign,
-    weight: weight,
-    lineHeight: lineHeight,
-    maxLines: maxLines,
-    overflow: overflow,
-  );
-  
-  factory AppText.headline3(String text, {
-    Key? key,
-    Color? color,
-    AppTextColorType colorType = AppTextColorType.primary,
-    TextAlign? textAlign,
-    AppTextWeight? weight,
-    double? lineHeight,
-    int? maxLines,
-    TextOverflow? overflow,
-  }) => AppText(
-    text,
-    key: key,
-    variant: AppTextVariant.headline3,
-    color: color,
-    colorType: colorType,
-    textAlign: textAlign,
-    weight: weight,
-    lineHeight: lineHeight,
-    maxLines: maxLines,
-    overflow: overflow,
-  );
-  
-  factory AppText.headline4(String text, {
-    Key? key,
-    Color? color,
-    AppTextColorType colorType = AppTextColorType.primary,
-    TextAlign? textAlign,
-    AppTextWeight? weight,
-    double? lineHeight,
-    int? maxLines,
-    TextOverflow? overflow,
-  }) => AppText(
-    text,
-    key: key,
-    variant: AppTextVariant.headline4,
-    color: color,
-    colorType: colorType,
-    textAlign: textAlign,
-    weight: weight,
-    lineHeight: lineHeight,
-    maxLines: maxLines,
-    overflow: overflow,
-  );
-  
-  factory AppText.caption(String text, {
-    Key? key,
-    Color? color,
-    AppTextColorType colorType = AppTextColorType.tertiary, // Default to tertiary for captions
-    TextAlign? textAlign,
-    AppTextWeight? weight,
-    double? lineHeight,
-    int? maxLines,
-    TextOverflow? overflow,
-  }) => AppText(
-    text,
-    key: key,
-    variant: AppTextVariant.caption,
-    color: color,
-    colorType: colorType,
-    textAlign: textAlign,
-    weight: weight,
-    lineHeight: lineHeight,
-    maxLines: maxLines,
-    overflow: overflow,
-  );
-  
-  factory AppText.button(String text, {
-    Key? key,
-    Color? color,
-    AppTextColorType colorType = AppTextColorType.button,
-    TextAlign? textAlign,
-    AppTextWeight? weight,
-    double? lineHeight,
-  }) => AppText(
-    text,
-    key: key,
-    variant: AppTextVariant.button,
-    color: color,
-    colorType: colorType,
-    textAlign: textAlign,
-    weight: weight ?? AppTextWeight.semiBold,
-    lineHeight: lineHeight,
-  );
-  
-  // Added factory constructor for muted text
-  factory AppText.muted(String text, {
-    Key? key,
-    Color? color,
-    AppTextColorType colorType = AppTextColorType.muted,
-    TextAlign? textAlign,
-    AppTextWeight? weight,
-    AppTextVariant variant = AppTextVariant.bodySmall,
-    double? lineHeight,
-    int? maxLines,
-    TextOverflow? overflow,
-  }) => AppText(
-    text,
-    key: key,
-    variant: variant,
-    color: color,
-    colorType: colorType,
-    textAlign: textAlign,
-    weight: weight,
-    lineHeight: lineHeight,
-    maxLines: maxLines,
-    overflow: overflow,
-  );
 }

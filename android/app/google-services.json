@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "823813601514",
+    "project_id": "nwt-app-28415",
+    "storage_bucket": "nwt-app-28415.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:823813601514:android:67883b8dbb9b3036453f93",
+        "android_client_info": {
+          "package_name": "com.nwt.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDSVcrXmNbomQmBdFGduO2rOC-MWuJq6g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,4 +1,4 @@
-package com.nwt.nwt_app
+package com.nwt.app
 
 import io.flutter.embedding.android.FlutterActivity
 

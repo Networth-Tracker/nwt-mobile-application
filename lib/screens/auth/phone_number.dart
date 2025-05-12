@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:nwt_app/common/app_input_field.dart';
 import 'package:nwt_app/common/button_widget.dart';
-import 'package:nwt_app/common/input_decorator.dart';
 import 'package:nwt_app/common/key_pad.dart';
 import 'package:nwt_app/common/text_widget.dart';
 import 'package:nwt_app/constants/sizing.dart';
+import 'package:nwt_app/controllers/theme_controller.dart';
 import 'package:nwt_app/screens/auth/otp_verify.dart';
+import 'package:nwt_app/services/auth/auth.dart';
+import 'package:nwt_app/utils/validators.dart';
 
 class PhoneNumberInputScreen extends StatefulWidget {
   const PhoneNumberInputScreen({super.key});
@@ -17,6 +20,7 @@ class PhoneNumberInputScreen extends StatefulWidget {
 
 class _PhoneNumberInputScreenState extends State<PhoneNumberInputScreen> {
   final TextEditingController _phoneController = TextEditingController();
+  bool _isLoading = false;
 
   void _onKeyPressed(int digit) {
     if (_phoneController.text.length < 10) {
@@ -37,96 +41,121 @@ class _PhoneNumberInputScreenState extends State<PhoneNumberInputScreen> {
     }
   }
 
+  Future<void> _generateOTP() async {
+      final response = await AuthService().generateOTP(
+        phoneNumber: _phoneController.text,
+        onLoading: (isLoading) {
+          setState(() {
+            _isLoading = isLoading;
+          });
+        },
+      );
+      if(response != null){
+        Get.to(() => PhoneOTPVerifyScreen(
+              phoneNumber: _phoneController.text,
+            ));
+      }else{
+        Get.snackbar(
+          'Error',
+          'Failed to connect to server',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red.withValues(alpha: 0.1),
+          colorText: Colors.red,
+        );
+      }
+    }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSizing.scaffoldHorizontalPadding,
-          ),
-          child: Stack(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  SvgPicture.asset('assets/svgs/onboarding/stars.svg'),
-                ],
+      body: GetBuilder<ThemeController>(
+        builder: (themeController) {
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSizing.scaffoldHorizontalPadding,
               ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Stack(
                 children: [
-                  Column(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      const SizedBox(height: 100),
-                      AppText(
-                        "Welcome to \nNetworth Tracker",
-                        variant: AppTextVariant.headline1,
-                        lineHeight: 1.3,
-                        weight: AppTextWeight.bold,
-                        colorType: AppTextColorType.tertiary,
-                      ),
-                      const SizedBox(height: 4),
-                      AppText(
-                        "Manage all your finances in one place.",
-                        variant: AppTextVariant.bodyMedium,
-                        lineHeight: 1.3,
-                        weight: AppTextWeight.medium,
-                        colorType: AppTextColorType.tertiary,
-                      ),
+                      SvgPicture.asset('assets/svgs/onboarding/stars.svg', colorFilter: ColorFilter.mode(themeController.isDarkMode ? Colors.white : Colors.black, BlendMode.srcIn)),
                     ],
                   ),
                   Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          const SizedBox(height: 120),
                           AppText(
-                            "Enter your phone number",
-                            variant: AppTextVariant.headline4,
+                            "Welcome to \nNetworth Tracker",
+                            variant: AppTextVariant.headline1,
                             lineHeight: 1.3,
                             weight: AppTextWeight.bold,
-                            colorType: AppTextColorType.secondary,
+                            colorType: AppTextColorType.tertiary,
                           ),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 6),
+                          AppText(
+                            "Manage all your finances in one place.",
+                            variant: AppTextVariant.bodyMedium,
+                            lineHeight: 1.3,
+                            weight: AppTextWeight.medium,
+                            colorType: AppTextColorType.tertiary,
+                          ),
                         ],
                       ),
                       Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          AbsorbPointer(
-                            // prevents keyboard from opening
-                            child: TextFormField(
-                              controller: _phoneController,
-                              keyboardType: TextInputType.none,
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                              ),
-                              forceErrorText: "Invalid Number",
-                              decoration: primaryInputDecoration(
-                                "Enter your phone number",
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          Row(
+                          Column(
                             children: [
-                              Expanded(
-                                child: AppButton(
-                                  text: 'Send OTP',
-                                  variant: AppButtonVariant.primary,
-                                  size: AppButtonSize.large,
-                                  onPressed: () => Get.to(() => const PhoneOTPVerifyScreen()),
-                                ),
+                              AppText(
+                                "Enter your phone number",
+                                variant: AppTextVariant.headline4,
+                                lineHeight: 1.3,
+                                weight: AppTextWeight.bold,
+                                colorType: AppTextColorType.secondary,
                               ),
+                              const SizedBox(height: 20),
                             ],
                           ),
-                          const SizedBox(height: 24),
-                          KeyPad(
-                            onKeyPressed: _onKeyPressed,
-                            onBackspace: _onBackspace,
+                          Column(
+                            children: [
+                              AbsorbPointer(
+                                child: AppInputField(
+                                  controller: _phoneController,
+                                  hintText: "Enter your phone number",
+                                  // labelText: "Phone Number",
+                                  validator: AppValidators.validatePhone,
+                                  keyboardType: TextInputType.none,
+                                  type: AppInputFieldType.phone,
+                                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: AppButton(
+                                      text: 'Send OTP',
+                                      variant: AppButtonVariant.primary,
+                                      size: AppButtonSize.large,
+                                      onPressed: _generateOTP,
+                                      isLoading: _isLoading,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 24),
+                              KeyPad(
+                                onKeyPressed: _onKeyPressed,
+                                onBackspace: _onBackspace,
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -134,9 +163,9 @@ class _PhoneNumberInputScreenState extends State<PhoneNumberInputScreen> {
                   ),
                 ],
               ),
-            ],
-          ),
-        ),
+            ),
+          );
+        }
       ),
     );
   }
