@@ -10,12 +10,13 @@ class AppTheme {
     brightness: Brightness.light,
     scaffoldBackgroundColor: AppColors.lightBackground,
     primaryColor: AppColors.lightPrimary,
+    fontFamily: 'Poppins',
 
     // Make sure to use ColorScheme to properly handle theme transitions
     colorScheme: ColorScheme.light(
       primary: AppColors.lightPrimary,
       secondary: AppColors.lightSecondary,
-      background: AppColors.lightBackground,
+      surface: AppColors.lightBackground,
     ),
 
     // App Bar Theme
@@ -91,11 +92,12 @@ class AppTheme {
     brightness: Brightness.dark,
     scaffoldBackgroundColor: AppColors.darkBackground,
     primaryColor: AppColors.darkPrimary,
+    fontFamily: 'Poppins',
 
     // Make sure to use ColorScheme to properly handle theme transitions
     colorScheme: ColorScheme.dark(
       primary: AppColors.darkPrimary,
-      background: AppColors.darkBackground,
+      surface: AppColors.darkBackground,
     ),
 
     // App Bar Theme
@@ -174,6 +176,7 @@ class AppTextThemeColors extends ThemeExtension<AppTextThemeColors> {
   final Color secondaryText;
   final Color tertiaryText;
   final Color mutedText;
+  final Color grayText;
   final Color buttonText;
 
   const AppTextThemeColors({
@@ -181,6 +184,7 @@ class AppTextThemeColors extends ThemeExtension<AppTextThemeColors> {
     required this.secondaryText,
     required this.tertiaryText,
     required this.mutedText,
+    required this.grayText,
     required this.buttonText,
   });
 
@@ -190,6 +194,7 @@ class AppTextThemeColors extends ThemeExtension<AppTextThemeColors> {
     secondaryText: AppColors.lightTextSecondary,
     tertiaryText: AppColors.lightTextTertiary,
     mutedText: AppColors.lightTextMuted,
+    grayText: AppColors.lightTextGray,
     buttonText: AppColors.lightButtonPrimaryText,
   );
 
@@ -199,6 +204,7 @@ class AppTextThemeColors extends ThemeExtension<AppTextThemeColors> {
     secondaryText: AppColors.darkTextSecondary,
     tertiaryText: AppColors.darkTextTertiary,
     mutedText: AppColors.darkTextMuted,
+    grayText: AppColors.darkTextGray,
     buttonText: AppColors.darkButtonPrimaryText,
   );
 
@@ -208,6 +214,7 @@ class AppTextThemeColors extends ThemeExtension<AppTextThemeColors> {
     Color? secondaryText,
     Color? tertiaryText,
     Color? mutedText,
+    Color? grayText,
     Color? buttonText,
   }) {
     return AppTextThemeColors(
@@ -215,6 +222,7 @@ class AppTextThemeColors extends ThemeExtension<AppTextThemeColors> {
       secondaryText: secondaryText ?? this.secondaryText,
       tertiaryText: tertiaryText ?? this.tertiaryText,
       mutedText: mutedText ?? this.mutedText,
+      grayText: grayText ?? this.grayText,
       buttonText: buttonText ?? this.buttonText,
     );
   }
@@ -232,6 +240,7 @@ class AppTextThemeColors extends ThemeExtension<AppTextThemeColors> {
       secondaryText: Color.lerp(secondaryText, other.secondaryText, t)!,
       tertiaryText: Color.lerp(tertiaryText, other.tertiaryText, t)!,
       mutedText: Color.lerp(mutedText, other.mutedText, t)!,
+      grayText: Color.lerp(grayText, other.grayText, t)!,
       buttonText: Color.lerp(buttonText, other.buttonText, t)!,
     );
   }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nwt_app/common/text_widget.dart';
+import 'package:nwt_app/widgets/common/text_widget.dart';
 
 class KeyPad extends StatefulWidget {
   final Function(int) onKeyPressed;

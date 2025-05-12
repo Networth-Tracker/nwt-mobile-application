@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:nwt_app/common/app_input_field.dart';
-import 'package:nwt_app/common/button_widget.dart';
-import 'package:nwt_app/common/key_pad.dart';
-import 'package:nwt_app/common/text_widget.dart';
+import 'package:nwt_app/widgets/common/app_input_field.dart';
+import 'package:nwt_app/widgets/common/button_widget.dart';
+import 'package:nwt_app/widgets/common/key_pad.dart';
+import 'package:nwt_app/widgets/common/text_widget.dart';
 import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/controllers/theme_controller.dart';
 import 'package:nwt_app/screens/auth/otp_verify.dart';

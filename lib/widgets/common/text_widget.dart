@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:nwt_app/constants/theme.dart';
+import 'package:nwt_app/constants/colors.dart';
 
 /// Text variants available in the application
 enum AppTextVariant {
+  display,    // New variant with font size 30
   headline1,
   headline2,
   headline3,
@@ -12,6 +14,7 @@ enum AppTextVariant {
   bodyLarge,
   bodyMedium,
   bodySmall,
+  tiny,      // New variant with font size 8
   caption,
   button,
   label
@@ -32,6 +35,7 @@ enum AppTextColorType {
   secondary,
   tertiary,
   muted,
+  gray,
   error,
   success,
   warning,
@@ -56,6 +60,8 @@ Color _resolveTextColor(BuildContext context, AppTextColorType colorType, Color?
       return textThemeColors.tertiaryText;
     case AppTextColorType.muted:
       return textThemeColors.mutedText;
+    case AppTextColorType.gray:
+      return textThemeColors.grayText;
     case AppTextColorType.error:
       return theme.colorScheme.error;
     case AppTextColorType.success:
@@ -95,6 +101,9 @@ TextStyle _getTextStyle(BuildContext context, AppTextVariant variant, AppTextWei
   // Base style with variant-specific properties
   TextStyle style;
   switch (variant) {
+    case AppTextVariant.display:
+      style = TextStyle(fontSize: 30, fontWeight: fontWeight);
+      break;
     case AppTextVariant.headline1:
       style = TextStyle(fontSize: 28, fontWeight: fontWeight);
       break;
@@ -121,6 +130,9 @@ TextStyle _getTextStyle(BuildContext context, AppTextVariant variant, AppTextWei
       break;
     case AppTextVariant.bodySmall:
       style = TextStyle(fontSize: 12, fontWeight: fontWeight);
+      break;
+    case AppTextVariant.tiny:
+      style = TextStyle(fontSize: 8, fontWeight: fontWeight);
       break;
     case AppTextVariant.caption:
       style = TextStyle(fontSize: 12, fontWeight: fontWeight);

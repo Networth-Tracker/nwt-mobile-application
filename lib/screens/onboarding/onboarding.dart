@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:nwt_app/common/button_widget.dart';
-import 'package:nwt_app/common/text_widget.dart';
-import 'package:nwt_app/common/theme_toggle.dart';
+import 'package:nwt_app/widgets/common/button_widget.dart';
+import 'package:nwt_app/widgets/common/text_widget.dart';
+import 'package:nwt_app/widgets/common/theme_toggle.dart';
 import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/controllers/theme_controller.dart';
 import 'package:nwt_app/notification/firebase_messaging.dart';

@@ -7,6 +7,7 @@ import 'package:nwt_app/constants/theme.dart';
 import 'package:nwt_app/controllers/theme_controller.dart';
 import 'package:nwt_app/firebase_options.dart';
 import 'package:nwt_app/notification/firebase_messaging.dart';
+import 'package:nwt_app/screens/dashboard/dashboard.dart';
 import 'package:nwt_app/screens/onboarding/onboarding.dart';
 import 'package:nwt_app/services/global_storage.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -58,14 +59,10 @@ class MyApp extends StatelessWidget {
     return Obx(
       () => GetMaterialApp(
         title: 'Networth Tracker',
-        theme: AppTheme.lightTheme.copyWith(
-          textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Poppins'),
-        ),
-        darkTheme: AppTheme.darkTheme.copyWith(
-          textTheme: ThemeData.dark().textTheme.apply(fontFamily: 'Poppins'),
-        ),
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
         themeMode: themeController.themeMode,
-        home: const OnboardingScreen(),
+        home: const Dashboard(),
       ),
     );
   }

@@ -2,10 +2,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart'; // Import for date formatting
-import 'package:nwt_app/common/app_input_field.dart';
-import 'package:nwt_app/common/button_widget.dart';
-import 'package:nwt_app/common/text_widget.dart';
+import 'package:nwt_app/widgets/common/app_input_field.dart';
+import 'package:nwt_app/widgets/common/button_widget.dart';
+import 'package:nwt_app/widgets/common/text_widget.dart';
 import 'package:nwt_app/constants/sizing.dart';
+import 'package:nwt_app/screens/dashboard/dashboard.dart';
 import 'package:nwt_app/services/auth/auth.dart';
 import 'package:nwt_app/utils/validators.dart';
 
@@ -71,16 +72,17 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         'Success',
         'Profile updated successfully',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.withOpacity(0.1),
+        backgroundColor: Colors.green.withValues(alpha: 0.1),
         colorText: Colors.green,
       );
-      Navigator.pop(context);
+      // Navigator.pop(context);
+      Get.to(() => const Dashboard());
     } else {
       Get.snackbar(
         'Error',
         'Failed to update profile',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.1),
+        backgroundColor: Colors.red.withValues(alpha: 0.1),
         colorText: Colors.red,
       );
     }
