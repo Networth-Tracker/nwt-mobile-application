@@ -159,7 +159,7 @@ class _DashboardState extends State<Dashboard> {
                             "See All",
                             variant: AppTextVariant.bodyMedium,
                             weight: AppTextWeight.medium,
-                            colorType: AppTextColorType.tertiary,
+                            colorType: AppTextColorType.link,
                           ),
                         ],
                       ),

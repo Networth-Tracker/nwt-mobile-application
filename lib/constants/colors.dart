@@ -1,51 +1,66 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Light Theme
-  static const Color lightBackground = Colors.white;
-  static const Color lightPrimary = Colors.blue;
-  static const Color lightSecondary = Colors.grey;
-
-  static const Color lightTextPrimary = Colors.black;
-  static const Color lightTextSecondary = Color.fromRGBO(70, 71, 72, 1);
-  static const Color lightTextTertiary = Color.fromRGBO(0, 51, 78, 1);
-  static const Color lightTextMuted = Color.fromRGBO(124, 125, 126, 1);
-  static const Color lightTextGray = Color.fromRGBO(139, 139, 139, 1);
-
-  static const Color lightButtonPrimaryText = Colors.white;
-  static const Color lightButtonPrimaryBackground = Colors.black;
-  static const Color lightButtonPrimaryBorder = Colors.black;
-  static const Color lightButtonBorder = Color.fromRGBO(230, 230, 230, 1);
-
-  // Exact match to keypad button background
-  static const Color lightInputPrimaryBackground = Color.fromRGBO(249, 250, 251, 1);
-  static const Color lightInputPrimaryBorder = Color.fromRGBO(0, 0, 0, 0.05);
-  static const Color lightInputPrimaryText = Color.fromRGBO(70, 71, 72, 1);
-
-  static const Color lightInputSecondaryBackground = Color.fromRGBO(245, 245, 245, 1);
-  static const Color lightInputSecondaryBorder = Color.fromRGBO(255, 255, 255, 0.2); 
-  static const Color lightInputSecondaryText = Color.fromRGBO(70, 71, 72, 1);
-
-  // Dark Theme
-  static const Color darkBackground = Color.fromRGBO(0, 0, 0, 1);
-  static const Color darkPrimary = Color.fromRGBO(85, 136, 163, 1);
-
-  static const Color darkTextPrimary = Colors.white;
-  static const Color darkTextSecondary = Color.fromRGBO(232, 232, 232, 1);
-  static const Color darkTextTertiary = Color.fromRGBO(252, 252, 252, 1);
-  static const Color darkTextMuted = Color.fromRGBO(124, 125, 126, 1);
-  static const Color darkTextGray = Color.fromRGBO(139, 139, 139, 1);
-
-  static const Color darkButtonPrimaryText = Color.fromRGBO(45, 46, 47, 1); 
-  static const Color darkButtonPrimaryBackground = Color.fromRGBO(232, 232, 232, 1); 
-  static const Color darkButtonPrimaryBorder = Color.fromRGBO(232, 232, 232, 1); 
-
-  static const Color darkInputBackground = Color.fromRGBO(30, 30, 30, 0.8);
-  static const Color darkInputBorder = Color.fromRGBO(255, 255, 255, 0.1); 
-  static const Color darkInputText = Colors.white;
-  static const Color darkInputHintText = Color.fromRGBO(255, 255, 255, 0.6);
-  static const Color darkButtonBorder = Color.fromRGBO(36, 36, 36, 1);
-  static const Color darkRoundedButtonBackground = Color.fromRGBO(12, 12, 12, 1); 
-  static const Color darkCardBG = Color.fromRGBO(12, 12, 12, 1); 
-
+  // Light Theme Colors
+  static const Color lightBackground = Color(0xFFFFFFFF);  // White background
+  static const Color lightPrimary = Color(0xFF000000);     // Black primary
+  static const Color lightSecondary = Color(0xFF8B8B8B);    // Gray secondary
+  
+  // Text Colors - Light Theme
+  static const Color lightTextPrimary = Color(0xFF000000);  // Black primary text
+  static const Color lightTextSecondary = Color(0xFF8B8B8B); // Gray secondary text
+  static const Color lightTextTertiary = Color(0xFF000000); // Black tertiary text
+  static const Color lightTextMuted = Color(0xFF8B8B8B);    // Gray muted text
+  static const Color lightTextGray = Color(0xFF8B8B8B);     // Gray text
+  
+  // Button Colors - Light Theme
+  static const Color lightButtonPrimaryText = Color(0xFFFFFFFF);      // White button text
+  static const Color lightButtonPrimaryBackground = Color(0xFF000000); // Black button background
+  static const Color lightButtonPrimaryBorder = Color(0xFF000000);    // Black button border
+  static const Color lightButtonBorder = Color(0xFFE6E6E6);           // Light gray button border
+  
+  // Input Fields - Light Theme
+  static const Color lightInputPrimaryBackground = Color(0xFFF5F5F5); // Light gray input background
+  static const Color lightInputPrimaryBorder = Color(0xFFD4D4D4);     // Medium gray input border
+  static const Color lightInputPrimaryText = Color(0xFF000000);       // Black input text
+  
+  static const Color lightInputSecondaryBackground = Color(0xFFF5F5F5); // Light gray input background
+  static const Color lightInputSecondaryBorder = Color(0xFFD4D4D4);     // Medium gray input border
+  static const Color lightInputSecondaryText = Color(0xFF000000);       // Black input text
+  
+  // Dark Theme Colors
+  static const Color darkBackground = Color(0xFF000000);    // Black background
+  static const Color darkPrimary = Color(0xFFFFFFFF);       // White primary
+  
+  // Text Colors - Dark Theme
+  static const Color darkTextPrimary = Color(0xFFFFFFFF);   // White primary text
+  static const Color darkTextSecondary = Color(0xFF8B8B8B); // Gray secondary text
+  static const Color darkTextTertiary = Color(0xFFFFFFFF);  // White tertiary text
+  static const Color darkTextMuted = Color(0xFF8B8B8B);     // Gray muted text
+  static const Color darkTextGray = Color(0xFF8B8B8B);      // Gray text
+  
+  // Button Colors - Dark Theme
+  static const Color darkButtonPrimaryText = Color(0xFF000000);       // Black button text
+  static const Color darkButtonPrimaryBackground = Color(0xFFFFFFFF);  // White button background
+  static const Color darkButtonPrimaryBorder = Color(0xFFFFFFFF);      // White button border
+  static const Color darkButtonBorder = Color(0xFF242424);             // Dark gray button border
+  
+  // Input Fields - Dark Theme
+  static const Color darkInputBackground = Color(0xFF0C0C0C);         // Very dark gray input background
+  static const Color darkInputBorder = Color(0xFF242424);             // Dark gray input border
+  static const Color darkInputText = Color(0xFFFFFFFF);               // White input text
+  static const Color darkInputHintText = Color(0xFF8B8B8B);           // Gray hint text
+  
+  // Additional Dark Theme Elements
+  static const Color darkRoundedButtonBackground = Color(0xFF0C0C0C); // Very dark gray button background
+  static const Color darkCardBG = Color(0xFF0C0C0C);                 // Very dark gray card background
+  
+  // Link Color
+  static const Color linkColor = Color(0xFF006AFF);        // Blue link color
+  
+  // Semantic Colors
+  static const Color success = Color(0xFF4CAF50);          // Green for success states
+  static const Color error = Color(0xFFF44336);            // Red for error states
+  static const Color warning = Color(0xFFFF9800);          // Orange for warning states
+  static const Color info = Color(0xFF2196F3);             // Blue for information states
 }

@@ -107,6 +107,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   }
 
   Future<void> _selectDate(BuildContext context) async {
+    final ThemeData theme = Theme.of(context);
+    final bool isDarkMode = theme.brightness == Brightness.dark;
+    
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: selectedDate ?? DateTime.now(),
@@ -114,9 +117,27 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       lastDate: DateTime.now(), // Not allowing future dates for DOB
       builder: (context, child) {
         return Theme(
-          data: Theme.of(
-            context,
-          ).copyWith(colorScheme: ColorScheme.light(onPrimary: Colors.white)),
+          data: Theme.of(context).copyWith(
+            colorScheme: isDarkMode
+                ? const ColorScheme.dark(
+                    primary: Color(0xFFFFFFFF), // White in dark mode
+                    onPrimary: Color(0xFF000000), // Black text on primary
+                    surface: Color(0xFF0C0C0C), // Very dark gray surface
+                    onSurface: Color(0xFFFFFFFF), // White text on surface
+                  )
+                : const ColorScheme.light(
+                    primary: Color(0xFF000000), // Black in light mode
+                    onPrimary: Color(0xFFFFFFFF), // White text on primary
+                    surface: Color(0xFFFFFFFF), // White surface
+                    onSurface: Color(0xFF000000), // Black text on surface
+                  ),
+            dialogBackgroundColor: isDarkMode ? const Color(0xFF0C0C0C) : Colors.white,
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: isDarkMode ? Colors.white : Colors.black,
+              ),
+            ),
+          ),
           child: child!,
         );
       },

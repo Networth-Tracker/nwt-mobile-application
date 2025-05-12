@@ -17,6 +17,8 @@ class AppTheme {
       primary: AppColors.lightPrimary,
       secondary: AppColors.lightSecondary,
       surface: AppColors.lightBackground,
+      onSurface: AppColors.lightTextPrimary,
+      onPrimary: AppColors.lightButtonPrimaryText,
     ),
 
     // App Bar Theme
@@ -33,9 +35,9 @@ class AppTheme {
     ),
 
     textSelectionTheme: const TextSelectionThemeData(
-      cursorColor: Colors.black,
-      selectionColor: Colors.black12,
-      selectionHandleColor: Colors.black54,
+      cursorColor: AppColors.lightPrimary,
+      selectionColor: Color(0x1F000000), // Black with 12% opacity
+      selectionHandleColor: Color(0x8A000000), // Black with 54% opacity
     ),
 
     textTheme: const TextTheme(
@@ -87,7 +89,7 @@ class AppTheme {
     // Icon button theme
     iconButtonTheme: IconButtonThemeData(
       style: ButtonStyle(
-        backgroundColor: WidgetStateProperty.all(Colors.white),
+        backgroundColor: WidgetStateProperty.all(AppColors.lightBackground),
         iconColor: WidgetStateProperty.all(AppColors.lightTextSecondary),
         padding: WidgetStateProperty.all(const EdgeInsets.all(10)),
         side: WidgetStateProperty.resolveWith((states) {
@@ -113,6 +115,8 @@ class AppTheme {
     colorScheme: ColorScheme.dark(
       primary: AppColors.darkPrimary,
       surface: AppColors.darkBackground,
+      onSurface: AppColors.darkTextPrimary,
+      onPrimary: AppColors.darkButtonPrimaryText,
     ),
 
     // App Bar Theme
@@ -164,7 +168,7 @@ class AppTheme {
         borderRadius: const BorderRadius.all(Radius.circular(15)),
         borderSide: BorderSide(color: Colors.redAccent, width: 1.5),
       ),
-      hintStyle: const TextStyle(color: AppColors.darkInputHintText, fontSize: 16, fontWeight: FontWeight.w400),
+      hintStyle: const TextStyle(color: AppColors.darkInputHintText, fontSize: 12, fontWeight: FontWeight.w400),
       errorStyle: const TextStyle(color: Colors.redAccent, fontSize: 12),
     ),
 
