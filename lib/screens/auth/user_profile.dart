@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart'; // Import for date formatting
+import 'package:intl/intl.dart';
 import 'package:nwt_app/widgets/common/app_input_field.dart';
 import 'package:nwt_app/widgets/common/button_widget.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
@@ -28,7 +28,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     if (firstNameController.text.isEmpty) {
       Get.snackbar(
         'Error',
-        'Please enter your first name',
+        'Please fill all fields',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.withValues(alpha: 0.1),
         colorText: Colors.red,
@@ -46,13 +46,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       return;
     }
     if (selectedDate == null) {
-      Get.snackbar(
-        'Error',
-        'Please select your date of birth',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.1),
-        colorText: Colors.red,
-      );
+      // AppRouter.showErrorSnackbar(
+      //   title: 'Error',
+      //   message: 'Please enter a valid date of birth',
+      //   position: SnackPosition.BOTTOM,
+      // );
       return;
     }
 
@@ -68,23 +66,21 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     );
 
     if (response != null) {
-      Get.snackbar(
-        'Success',
-        'Profile updated successfully',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.withValues(alpha: 0.1),
-        colorText: Colors.green,
-      );
+      // AppRouter.showSuccessSnackbar(
+      //   title: 'Success',
+      //   message: 'Profile updated successfully',
+      //   position: SnackPosition.BOTTOM,
+      // );
       // Navigator.pop(context);
-      Get.to(() => const Dashboard());
+      Get.to(() => const Dashboard(), transition: Transition.rightToLeft);
     } else {
-      Get.snackbar(
-        'Error',
-        'Failed to update profile',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.1),
-        colorText: Colors.red,
-      );
+      // Get.snackbar(
+      //   'Error',
+      //   'Failed to update profile',
+      //   snackPosition: SnackPosition.BOTTOM,
+      //   backgroundColor: Colors.red.withValues(alpha: 0.1),
+      //   colorText: Colors.red,
+      // );
     }
   }
 

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:nwt_app/constants/theme.dart';
-import 'package:nwt_app/constants/colors.dart';
 
 /// Text variants available in the application
 enum AppTextVariant {

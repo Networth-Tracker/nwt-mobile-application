@@ -99,7 +99,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           variant: AppButtonVariant.primary,
                           size: AppButtonSize.large,
                           onPressed:
-                              () => Get.to(() => const PhoneNumberInputScreen()),
+                              () => Get.to(const PhoneNumberInputScreen(), transition: Transition.rightToLeft),
                         ),
                       ),
                     ],

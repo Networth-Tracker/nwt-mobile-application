@@ -8,7 +8,6 @@ import 'package:nwt_app/constants/theme.dart';
 import 'package:nwt_app/controllers/theme_controller.dart';
 import 'package:nwt_app/firebase_options.dart';
 import 'package:nwt_app/notification/firebase_messaging.dart';
-import 'package:nwt_app/screens/dashboard/dashboard.dart';
 import 'package:nwt_app/screens/onboarding/onboarding.dart';
 import 'package:nwt_app/services/global_storage.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -75,7 +74,7 @@ class MyApp extends StatelessWidget {
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: themeController.themeMode,
-        home: const Dashboard(),
+        home: const OnboardingScreen(),
       ),
     );
   }

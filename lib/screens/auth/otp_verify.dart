@@ -195,7 +195,7 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
     );
 
     if (response != null && response.success) {
-      Get.to(() => const PanCardVerification());
+      Get.to(const PanCardVerification(), transition: Transition.rightToLeft);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -472,7 +472,7 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
                           variant: AppButtonVariant.primary,
                           size: AppButtonSize.large,
                           // onPressed: _verifyOTP,
-                          onPressed: () => Get.to(() => const PanCardVerification()),
+                          onPressed: () => Get.to(const PanCardVerification(), transition: Transition.rightToLeft),
                           isLoading: _isLoading,
                         ),
                       ),

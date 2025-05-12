@@ -170,7 +170,7 @@ class _PanCardVerificationState extends State<PanCardVerification> {
                       variant: AppButtonVariant.primary,
                       size: AppButtonSize.large,
                       onPressed:
-                          () => Get.to(() => const UserProfileScreen()),
+                          () => Get.to(const UserProfileScreen(), transition: Transition.rightToLeft),
                     ),
                   ),
                 ],
