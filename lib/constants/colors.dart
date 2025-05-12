@@ -23,7 +23,7 @@ class AppColors {
   static const Color lightInputPrimaryText = Color.fromRGBO(70, 71, 72, 1);
 
   static const Color lightInputSecondaryBackground = Color.fromRGBO(245, 245, 245, 1);
-  static const Color lightInputSecondaryBorder = Color.fromRGBO(255, 255, 255, 0.2); // 0.2 alpha
+  static const Color lightInputSecondaryBorder = Color.fromRGBO(255, 255, 255, 0.2); 
   static const Color lightInputSecondaryText = Color.fromRGBO(70, 71, 72, 1);
 
   // Dark Theme
@@ -36,16 +36,16 @@ class AppColors {
   static const Color darkTextMuted = Color.fromRGBO(124, 125, 126, 1);
   static const Color darkTextGray = Color.fromRGBO(139, 139, 139, 1);
 
-  static const Color darkButtonPrimaryText = Color.fromRGBO(45, 46, 47, 1); // Dark text
-  static const Color darkButtonPrimaryBackground = Color.fromRGBO(232, 232, 232, 1); // Light gray background
-  static const Color darkButtonPrimaryBorder = Color.fromRGBO(232, 232, 232, 1); // Light gray border
+  static const Color darkButtonPrimaryText = Color.fromRGBO(45, 46, 47, 1); 
+  static const Color darkButtonPrimaryBackground = Color.fromRGBO(232, 232, 232, 1); 
+  static const Color darkButtonPrimaryBorder = Color.fromRGBO(232, 232, 232, 1); 
 
-  // These colors match the KeyPad button styling exactly
-  // For dark mode, we need to match theme.colorScheme.surface.withValues(alpha: 0.8)
   static const Color darkInputBackground = Color.fromRGBO(30, 30, 30, 0.8);
-  static const Color darkInputBorder = Color.fromRGBO(255, 255, 255, 0.1); // Matches white.withValues(alpha: 0.1)
+  static const Color darkInputBorder = Color.fromRGBO(255, 255, 255, 0.1); 
   static const Color darkInputText = Colors.white;
   static const Color darkInputHintText = Color.fromRGBO(255, 255, 255, 0.6);
   static const Color darkButtonBorder = Color.fromRGBO(36, 36, 36, 1);
   static const Color darkRoundedButtonBackground = Color.fromRGBO(12, 12, 12, 1); 
+  static const Color darkCardBG = Color.fromRGBO(12, 12, 12, 1); 
+
 }

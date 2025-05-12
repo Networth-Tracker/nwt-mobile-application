@@ -83,6 +83,21 @@ class AppTheme {
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       ),
     ),
+    
+    // Icon button theme
+    iconButtonTheme: IconButtonThemeData(
+      style: ButtonStyle(
+        backgroundColor: WidgetStateProperty.all(Colors.white),
+        iconColor: WidgetStateProperty.all(AppColors.lightTextSecondary),
+        padding: WidgetStateProperty.all(const EdgeInsets.all(8)),
+        side: WidgetStateProperty.resolveWith((states) {
+          return const BorderSide(color: AppColors.lightButtonBorder, width: 1);
+        }),
+        shape: WidgetStateProperty.all(RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        )),
+      ),
+    ),
 
     // Add extension data to store our custom text colors
     extensions: <ThemeExtension<dynamic>>[AppTextThemeColors.light],
@@ -162,6 +177,21 @@ class AppTheme {
           borderRadius: BorderRadius.circular(15),
         ),
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+      ),
+    ),
+    
+    // Icon button theme
+    iconButtonTheme: IconButtonThemeData(
+      style: ButtonStyle(
+        backgroundColor: WidgetStateProperty.all(AppColors.darkRoundedButtonBackground),
+        iconColor: WidgetStateProperty.all(AppColors.darkTextGray),
+        padding: WidgetStateProperty.all(const EdgeInsets.all(8)),
+        side: WidgetStateProperty.resolveWith((states) {
+          return const BorderSide(color: AppColors.darkButtonBorder, width: 1);
+        }),
+        shape: WidgetStateProperty.all(RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        )),
       ),
     ),
 
