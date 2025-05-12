@@ -101,7 +101,7 @@ TextStyle _getTextStyle(BuildContext context, AppTextVariant variant, AppTextWei
   TextStyle style;
   switch (variant) {
     case AppTextVariant.display:
-      style = TextStyle(fontSize: 30, fontWeight: fontWeight);
+      style = TextStyle(fontSize: 36, fontWeight: fontWeight);
       break;
     case AppTextVariant.headline1:
       style = TextStyle(fontSize: 28, fontWeight: fontWeight);
@@ -131,7 +131,7 @@ TextStyle _getTextStyle(BuildContext context, AppTextVariant variant, AppTextWei
       style = TextStyle(fontSize: 12, fontWeight: fontWeight);
       break;
     case AppTextVariant.tiny:
-      style = TextStyle(fontSize: 8, fontWeight: fontWeight);
+      style = TextStyle(fontSize: 10, fontWeight: fontWeight);
       break;
     case AppTextVariant.caption:
       style = TextStyle(fontSize: 12, fontWeight: fontWeight);
