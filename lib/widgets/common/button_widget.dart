@@ -50,28 +50,31 @@ class AppButton extends StatelessWidget {
 
     return SizedBox(
       width: isFullWidth ? double.infinity : null,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: buttonStyle.backgroundColor,
-          foregroundColor: buttonStyle.textColor,
-          disabledBackgroundColor: buttonStyle.backgroundColor,
-          disabledForegroundColor: buttonStyle.textColor,
-          padding: buttonPadding,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(borderRadius),
-            side: BorderSide(
-              color: buttonStyle.borderColor,
-              width:
-                  buttonStyle.variant == AppButtonVariant.outlined ? 2.0 : 1.0,
+      child: SizedBox(
+        height: 60,
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: buttonStyle.backgroundColor,
+            foregroundColor: buttonStyle.textColor,
+            disabledBackgroundColor: buttonStyle.backgroundColor,
+            disabledForegroundColor: buttonStyle.textColor,
+            padding: buttonPadding,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(borderRadius),
+              side: BorderSide(
+                color: buttonStyle.borderColor,
+                width:
+                    buttonStyle.variant == AppButtonVariant.outlined ? 2.0 : 1.0,
+              ),
             ),
+            elevation: buttonStyle.variant == AppButtonVariant.text ? 0 : 0,
           ),
-          elevation: buttonStyle.variant == AppButtonVariant.text ? 0 : 0,
+          onPressed: isDisabled ? null : (isLoading ? null : onPressed),
+          child:
+              isLoading
+                  ? _buildLoadingIndicator(context)
+                  : _buildButtonContent(buttonStyle, isDarkMode),
         ),
-        onPressed: isDisabled ? null : (isLoading ? null : onPressed),
-        child:
-            isLoading
-                ? _buildLoadingIndicator(context)
-                : _buildButtonContent(buttonStyle, isDarkMode),
       ),
     );
   }
@@ -138,7 +141,7 @@ class AppButton extends StatelessWidget {
       case AppButtonSize.medium:
         return const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0);
       case AppButtonSize.large:
-        return const EdgeInsets.symmetric(horizontal: 24.0, vertical: 22.0);
+        return const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0);
     }
   }
 

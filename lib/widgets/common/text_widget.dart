@@ -38,15 +38,11 @@ enum AppTextColorType {
   error,
   success,
   warning,
-  custom
+  link,
 }
 
 /// Resolves [AppTextColorType] to an actual [Color] from the current theme extension
 Color _resolveTextColor(BuildContext context, AppTextColorType colorType, Color? customColor) {
-  if (colorType == AppTextColorType.custom && customColor != null) {
-    return customColor;
-  }
-  
   final textThemeColors = context.textThemeColors;
   final theme = Theme.of(context);
   
@@ -67,9 +63,8 @@ Color _resolveTextColor(BuildContext context, AppTextColorType colorType, Color?
       return Colors.green;
     case AppTextColorType.warning:
       return Colors.orange;
-    case AppTextColorType.custom:
-      // Fallback if customColor is null
-      return textThemeColors.primaryText;
+    case AppTextColorType.link:
+      return theme.colorScheme.primary;
   }
 }
 
@@ -312,6 +307,7 @@ enum BasicTextColor {
   error,
   success,
   warning,
+  link,
 }
 
 /// Resolves [BasicTextColor] to an actual [Color] from the current theme extension
@@ -331,6 +327,8 @@ Color _resolveBasicTextColor(BuildContext context, BasicTextColor color) {
     case BasicTextColor.warning:
       // You may want to add a 'warningText' to your theme extension for true theme support
       return Colors.orange;
+    case BasicTextColor.link:
+      return theme.colorScheme.primary;
   }
 }
 

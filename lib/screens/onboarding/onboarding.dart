@@ -81,7 +81,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         "Manage your money confidently using our intuitive tools and personalized insights.",
                         variant: AppTextVariant.bodyMedium,
                         lineHeight: 1.3,
-                        weight: AppTextWeight.semiBold,
+                        weight: AppTextWeight.medium,
                         colorType: AppTextColorType.secondary,
                         // duration: Duration(milliseconds: 1000),
                         // delay: Duration(milliseconds: 0),

@@ -129,7 +129,7 @@ class _AppInputFieldState extends State<AppInputField> {
         );
       case AppInputFieldSize.large:
         return const EdgeInsets.symmetric(
-          vertical: 20,
+          vertical: 18,
           horizontal: 16,
         );
       case AppInputFieldSize.medium:
