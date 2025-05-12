@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:nwt_app/constants/sizing.dart';
+import 'package:nwt_app/widgets/common/button_widget.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 import 'package:nwt_app/widgets/avatar.dart';
 import 'package:nwt_app/constants/colors.dart';
@@ -36,8 +37,8 @@ class _DashboardState extends State<Dashboard> {
                       const Avatar(
                         path:
                             'https://images.unsplash.com/photo-1633332755192-727a05c4013d?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by-1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                        width: 40,
-                        height: 40,
+                        width: 46,
+                        height: 46,
                       ),
                       const SizedBox(width: 8),
                       Column(
@@ -51,7 +52,7 @@ class _DashboardState extends State<Dashboard> {
                           ),
                           const SizedBox(height: 6),
                           const AppText(
-                            "Good Morning!",
+                            "Good morning!",
                             variant: AppTextVariant.bodySmall,
                             weight: AppTextWeight.semiBold,
                             colorType: AppTextColorType.gray,
@@ -213,33 +214,67 @@ class _DashboardState extends State<Dashboard> {
                 ),
               ),
               SizedBox(height: 16),
-              Container(
-                decoration: BoxDecoration(
-                  gradient: RadialGradient(
-                    center: Alignment.topCenter,
-                    radius: 2,
-                    colors: [
-                      Color.fromRGBO(165, 108, 236, 0.8),
-                      Color.fromRGBO(41, 9, 81, 1),
-                    ],
-                  ),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppSizing.scaffoldHorizontalPadding,
                 ),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        AppText(
-                          "₹1,00,000",
-                          variant: AppTextVariant.display,
-                          weight: AppTextWeight.bold,
-                          colorType: AppTextColorType.primary,
-                        ),
-                        SvgPicture.asset(
-                          "assets/svgs/dashboard/zerodha_banner.svg",
-                        ),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 15,
+                    vertical: 15,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    gradient: RadialGradient(
+                      center: Alignment.topCenter,
+                      radius: 2,
+                      colors: [
+                        Color.fromRGBO(165, 108, 236, 0.8),
+                        Color.fromRGBO(41, 9, 81, 1),
                       ],
                     ),
-                  ],
+                  ),
+                  child: Column(
+
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              AppText(
+                                "Connect with Zerodha",
+                                variant: AppTextVariant.headline4,
+                                weight: AppTextWeight.bold,
+                                colorType: AppTextColorType.primary,
+                              ),
+                              SizedBox(height: 12),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.darkButtonPrimaryBackground,
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: AppText(
+                                  "Connect",
+                                  variant: AppTextVariant.bodySmall,
+                                  weight: AppTextWeight.bold,
+                                  colorType: AppTextColorType.secondary,
+                                )
+                              ),
+                            ],
+                          ),
+                          SvgPicture.asset(
+                            "assets/svgs/dashboard/zerodha_banner.svg",
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
