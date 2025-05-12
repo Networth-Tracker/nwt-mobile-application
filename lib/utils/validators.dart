@@ -85,10 +85,6 @@ class AppValidators {
           (now.month > date.month || 
           (now.month == date.month && now.day >= date.day) ? 0 : 1);
       
-      if (age < 18) {
-        return 'You must be at least 18 years old';
-      }
-      
       if (age > 120) {
         return 'Please enter a valid date of birth';
       }
