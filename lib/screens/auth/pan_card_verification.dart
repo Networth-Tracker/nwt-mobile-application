@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:nwt_app/screens/dashboard/dashboard.dart';
 import 'package:nwt_app/widgets/common/app_input_field.dart';
 import 'package:nwt_app/widgets/common/button_widget.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 import 'package:nwt_app/constants/sizing.dart';
-import 'package:nwt_app/screens/auth/user_profile.dart';
 import 'package:nwt_app/utils/validators.dart';
 
 class PanCardVerification extends StatefulWidget {
@@ -173,7 +173,7 @@ class _PanCardVerificationState extends State<PanCardVerification> {
                       variant: AppButtonVariant.primary,
                       size: AppButtonSize.large,
                       onPressed:
-                          () => Get.to(const UserProfileScreen(), transition: Transition.rightToLeft),
+                          () => Get.to(const Dashboard(), transition: Transition.rightToLeft),
                     ),
                   ),
                 ],

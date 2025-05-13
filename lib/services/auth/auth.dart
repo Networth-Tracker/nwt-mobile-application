@@ -118,10 +118,10 @@ class AuthService {
 
         if (response.statusCode == 200 || response.statusCode == 201) {
           // Get updated user profile without showing loading state again
-          await getUserProfile(onLoading: onLoading);
-          // if (userProfile != null) {
-          //   AuthFlowService.handleAuthFlow(userProfile);
-          // }
+        final userProfile  =  await getUserProfile(onLoading: onLoading);
+          if (userProfile != null) {
+            // AuthFlowService.handleAuthFlow(userProfile);
+          }
           return UserProfileUpdatedResponse.fromJson(responseData);
         }
       } else {
