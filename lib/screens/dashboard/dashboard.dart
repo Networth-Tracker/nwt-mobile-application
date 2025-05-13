@@ -240,16 +240,23 @@ class _DashboardState extends State<Dashboard> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
+                          Flexible(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
                               AppText(
                                 "Connect with Zerodha",
                                 variant: AppTextVariant.headline4,
                                 weight: AppTextWeight.bold,
                                 colorType: AppTextColorType.primary,
                               ),
-                              SizedBox(height: 12),
+                              AppText(
+                                "Log in to Kite to link out all your investments and keep a track on them!",
+                                variant: AppTextVariant.bodySmall,
+                                weight: AppTextWeight.regular,
+                                colorType: AppTextColorType.primary,
+                              ),
+                              SizedBox(height: 18),
                               Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 12,
@@ -259,6 +266,7 @@ class _DashboardState extends State<Dashboard> {
                                   color: AppColors.darkButtonPrimaryBackground,
                                   borderRadius: BorderRadius.circular(6),
                                 ),
+                                
                                 child: AppText(
                                   "Connect",
                                   variant: AppTextVariant.bodySmall,
@@ -268,6 +276,8 @@ class _DashboardState extends State<Dashboard> {
                               ),
                             ],
                           ),
+                          ),
+                          const SizedBox(width: 10),
                           SvgPicture.asset(
                             "assets/svgs/dashboard/zerodha_banner.svg",
                           ),
