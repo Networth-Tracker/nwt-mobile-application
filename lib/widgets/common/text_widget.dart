@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/theme.dart';
 
 /// Text variants available in the application
@@ -64,7 +65,7 @@ Color _resolveTextColor(BuildContext context, AppTextColorType colorType, Color?
     case AppTextColorType.warning:
       return Colors.orange;
     case AppTextColorType.link:
-      return theme.colorScheme.primary;
+      return AppColors.linkColor;
   }
 }
 
@@ -328,7 +329,7 @@ Color _resolveBasicTextColor(BuildContext context, BasicTextColor color) {
       // You may want to add a 'warningText' to your theme extension for true theme support
       return Colors.orange;
     case BasicTextColor.link:
-      return theme.colorScheme.primary;
+      return AppColors.linkColor;
   }
 }
 
