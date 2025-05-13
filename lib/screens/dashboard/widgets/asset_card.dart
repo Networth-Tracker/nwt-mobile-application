@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
+import 'package:get/get.dart';
 
 class AssetCard extends StatelessWidget {
   final String title;
@@ -12,6 +13,7 @@ class AssetCard extends StatelessWidget {
   final EdgeInsets? padding;
   final Color? backgroundColor;
   final Color? borderColor;
+  final Widget? destination;
 
   const AssetCard({
     Key? key,
@@ -24,62 +26,67 @@ class AssetCard extends StatelessWidget {
     this.padding = const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
     this.backgroundColor,
     this.borderColor,
+    this.destination,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: width,
-      padding: padding,
-      decoration: BoxDecoration(
-        color: backgroundColor ?? AppColors.darkCardBG,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: borderColor ?? AppColors.darkButtonBorder,
+    return InkWell(
+      onTap: destination != null ? () => Get.to(destination, transition: Transition.rightToLeft) : null,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        width: width,
+        padding: padding,
+        decoration: BoxDecoration(
+          color: backgroundColor ?? AppColors.darkCardBG,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: borderColor ?? AppColors.darkButtonBorder,
+          ),
         ),
-      ),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  if (icon != null)
-                    IconButton(
-                      onPressed: () {},
-                      icon: Icon(
-                        icon,
-                        size: 26,
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    if (icon != null)
+                      IconButton(
+                        onPressed: () {},
+                        icon: Icon(
+                          icon,
+                          size: 26,
+                        ),
                       ),
+                    if (icon != null) const SizedBox(width: 10),
+                    AppText(
+                      title,
+                      variant: AppTextVariant.headline5,
+                      weight: AppTextWeight.medium,
+                      colorType: AppTextColorType.primary,
                     ),
-                  if (icon != null) const SizedBox(width: 10),
+                  ],
+                ),
+                _buildDeltaIndicator(),
+              ],
+            ),
+            SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.only(left: 6),
+              child: Row(
+                children: [
                   AppText(
-                    title,
-                    variant: AppTextVariant.headline5,
-                    weight: AppTextWeight.medium,
+                    amount,
+                    variant: AppTextVariant.headline2,
+                    weight: AppTextWeight.bold,
                     colorType: AppTextColorType.primary,
                   ),
                 ],
               ),
-              _buildDeltaIndicator(),
-            ],
-          ),
-          SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.only(left: 6),
-            child: Row(
-              children: [
-                AppText(
-                  amount,
-                  variant: AppTextVariant.headline2,
-                  weight: AppTextWeight.bold,
-                  colorType: AppTextColorType.primary,
-                ),
-              ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

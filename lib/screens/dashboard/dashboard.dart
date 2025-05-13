@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
+import 'package:get/get.dart';
 import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/controllers/theme_controller.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 import 'package:nwt_app/widgets/avatar.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/screens/dashboard/widgets/asset_card.dart';
+import 'package:nwt_app/screens/assets/banks/banks.dart';
+import 'package:nwt_app/screens/assets/investments/investments.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -197,9 +200,10 @@ class _DashboardState extends State<Dashboard> {
                                   delta: "-10%",
                                   deltaType: DeltaType.negative,
                                   icon: Icons.account_balance_outlined,
+                                  destination: const AssetBankScreen(),
                                 ),
                                 AssetCard(
-                                  title: "Banks",
+                                  title: "Investment",
                                   amount: "₹1,00,000",
                                   delta: "10%",
                                   deltaType: DeltaType.positive,

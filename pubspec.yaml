@@ -38,6 +38,7 @@ flutter:
     - assets/app/
     - assets/lottie/
     - assets/svgs/dashboard/
+    - assets/svgs/assets/banks/
   uses-material-design: true
   fonts:
     - family: Poppins
