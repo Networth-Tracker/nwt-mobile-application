@@ -11,6 +11,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      build_number: ${{ github.run_number }}
 
     steps:
       - name: Checkout 
@@ -32,22 +34,69 @@ jobs:
 
       - name: Build APK
         run: flutter build apk --split-per-abi
-
-      - name: Upload to Firebase App Distribution
-        uses: wzieba/Firebase-Distribution-Github-Action@v1
+      
+      - name: Rename APK with Build Number
+        run: |
+          mkdir -p build/renamed_apks
+          cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk build/renamed_apks/nwt-app-v0.0.${{ github.run_number }}.apk
+      
+      - name: Create Tag
+        uses: actions/github-script@v6
         with:
-          appId: ${{secrets.FIREBASE_APP_ID}}
-          serviceCredentialsFileContent: ${{secrets.FIREBASE_SERVICE_ACCOUNT}}
-          groups: testers
-          file: build/app/outputs/apk/release/app-armeabi-v7a-release.apk
-          releaseNotes: |
-            Version: v0.0.${{github.run_number}}
-            Commit: ${{github.sha}}
-
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/v0.0.${{ github.run_number }}',
+              sha: context.sha
+            })
+      
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: apk-artifacts
+          path: build/renamed_apks/nwt-app-v0.0.${{ github.run_number }}.apk
+          retention-days: 7
+  
+  github_release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: apk-artifacts
+          path: ./apks
+      
       - name: Push to GitHub Releases
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "build/app/outputs/apk/release/*"
-          tag: v0.0.${{github.run_number}}
-          token: ${{secrets.TOKEN}}
+          artifacts: "./apks/nwt-app-v0.0.${{ needs.build.outputs.build_number }}.apk"
+          tag: v0.0.${{ needs.build.outputs.build_number }}
+          token: ${{ secrets.TOKEN }}
+          name: "NetWorth Tracker v0.0.${{ needs.build.outputs.build_number }}"
+          body: |
+            Release v0.0.${{ needs.build.outputs.build_number }}
+            Commit: ${{ github.sha }}
+  
+  firebase_distribution:
+    needs: [build, github_release]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: apk-artifacts
+          path: ./apks
       
+      - name: Upload to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_APP_ID }}
+          serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          groups: testers
+          file: ./apks/nwt-app-v0.0.${{ needs.build.outputs.build_number }}.apk
+          releaseNotes: |
+            Version: v0.0.${{ needs.build.outputs.build_number }}
+            Commit: ${{ github.sha }}
