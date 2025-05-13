@@ -32,7 +32,7 @@ class AssetCard extends StatelessWidget {
       width: width,
       padding: padding,
       decoration: BoxDecoration(
-        color: backgroundColor ?? Color.fromRGBO(38, 40, 44, 0.6),
+        color: backgroundColor ?? AppColors.darkCardBG,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: borderColor ?? AppColors.darkButtonBorder,

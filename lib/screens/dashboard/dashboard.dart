@@ -148,7 +148,7 @@ class _DashboardState extends State<Dashboard> {
                               right: AppSizing.scaffoldHorizontalPadding,
                             ),
                             child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 AppText(
@@ -180,7 +180,7 @@ class _DashboardState extends State<Dashboard> {
                                   child: Container(
                                     width: 50,
                                     decoration: BoxDecoration(
-                                      color: Color.fromRGBO(38, 40, 44, 0.6),
+                                      color: AppColors.darkCardBG,
                                       borderRadius: BorderRadius.circular(12),
                                       border: Border.all(
                                         color: AppColors.darkButtonBorder,
@@ -219,8 +219,8 @@ class _DashboardState extends State<Dashboard> {
                     ),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 15,
-                        vertical: 15,
+                        horizontal: 20,
+                        vertical: 20,
                       ),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(15),
@@ -291,7 +291,7 @@ class _DashboardState extends State<Dashboard> {
                   SizedBox(
                     width: MediaQuery.of(context).size.width,
                     child: AspectRatio(
-                      aspectRatio: 3,
+                      aspectRatio: 2.8,
                       child: PageView(
                         scrollDirection: Axis.horizontal,
                         physics: BouncingScrollPhysics(),
@@ -311,7 +311,7 @@ class _DashboardState extends State<Dashboard> {
                               width: MediaQuery.of(context).size.width,
                               padding: EdgeInsets.symmetric(
                                 horizontal: AppSizing.scaffoldHorizontalPadding,
-                                vertical: 15,
+                                vertical: 20,
                               ),
                               child: Row(
                                 children: [
@@ -354,26 +354,30 @@ class _DashboardState extends State<Dashboard> {
                     ),
                   ),
                   SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(5, (index) {
-                      return Container(
-                        margin: EdgeInsets.symmetric(horizontal: 2),
-                        width: currentPage == index ? 12 : 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color:
-                              currentPage == index
+                  SizedBox(
+                    height: 8,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(5, (index) {
+                        return AnimatedContainer(
+                            duration: Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                            margin: EdgeInsets.symmetric(horizontal: 2),
+                            width: currentPage == index ? 24 : 8,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              color: currentPage == index
                                   ? themeController.isDarkMode
                                       ? AppColors.darkPrimary
                                       : AppColors.lightPrimary
                                   : themeController.isDarkMode
-                                  ? AppColors.darkButtonBorder
-                                  : AppColors.lightButtonBorder,
-                        ),
-                      );
-                    }),
+                                      ? AppColors.darkButtonBorder
+                                      : AppColors.lightButtonBorder,
+                            ),
+                          );
+                      }),
+                    ),
                   ),
                 ],
               ),
