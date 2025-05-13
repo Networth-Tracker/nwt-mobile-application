@@ -16,6 +16,8 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
+  PageController pageViewController = PageController();
+  int currentPage = 0;
   @override
   Widget build(BuildContext context) {
     return GetBuilder<ThemeController>(
@@ -185,10 +187,7 @@ class _DashboardState extends State<Dashboard> {
                                       ),
                                     ),
                                     child: Center(
-                                      child: Icon(
-                                        Icons.add_rounded,
-                                        size: 26,
-                                      ),
+                                      child: Icon(Icons.add_rounded, size: 26),
                                     ),
                                   ),
                                 ),
@@ -289,47 +288,92 @@ class _DashboardState extends State<Dashboard> {
                     ),
                   ),
                   SizedBox(height: 16),
-                  Container(
-                    color:
-                        themeController.isDarkMode
-                            ? AppColors.darkCardBG
-                            : AppColors.lightBackground,
+                  SizedBox(
                     width: MediaQuery.of(context).size.width,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: AppSizing.scaffoldHorizontalPadding,
-                      vertical: 15,
+                    child: AspectRatio(
+                      aspectRatio: 3,
+                      child: PageView(
+                        scrollDirection: Axis.horizontal,
+                        physics: BouncingScrollPhysics(),
+                        controller: pageViewController,
+                        onPageChanged: (pageNo) {
+                          setState(() {
+                            currentPage = pageNo;
+                          });
+                        },
+                        children: [
+                          ...List.generate(5, (index) {
+                            return Container(
+                              color:
+                                  themeController.isDarkMode
+                                      ? AppColors.darkCardBG
+                                      : AppColors.lightBackground,
+                              width: MediaQuery.of(context).size.width,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: AppSizing.scaffoldHorizontalPadding,
+                                vertical: 15,
+                              ),
+                              child: Row(
+                                children: [
+                                  Flexible(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        AppText(
+                                          "Save up to 3.2% annually",
+                                          variant: AppTextVariant.bodyMedium,
+                                          weight: AppTextWeight.semiBold,
+                                        ),
+                                        SizedBox(height: 6),
+                                        AppText(
+                                          "Switching from regular to direct mutual fund can boost portfolio by saving ₹2.7L on commissions",
+                                          variant: AppTextVariant.tiny,
+                                          weight: AppTextWeight.semiBold,
+                                          colorType: AppTextColorType.secondary,
+                                        ),
+                                        SizedBox(height: 18),
+                                        AppText(
+                                          "Switch Funds",
+                                          variant: AppTextVariant.bodyMedium,
+                                          weight: AppTextWeight.semiBold,
+                                          colorType: AppTextColorType.link,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  SvgPicture.asset(
+                                    "assets/svgs/dashboard/mf_banner.svg",
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                        ],
+                      ),
                     ),
-                    child: Row(
-                      children: [
-                        Flexible(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              AppText(
-                                "Save up to 3.2% annually",
-                                variant: AppTextVariant.bodyMedium,
-                                weight: AppTextWeight.semiBold,
-                              ),
-                              SizedBox(height: 6),
-                              AppText(
-                                "Switching from regular to direct mutual fund can boost portfolio by saving ₹2.7L on commissions",
-                                variant: AppTextVariant.tiny,
-                                weight: AppTextWeight.semiBold,
-                                colorType: AppTextColorType.secondary,
-                              ),
-                              SizedBox(height: 15),
-                              AppText(
-                                "Switch Funds",
-                                variant: AppTextVariant.bodyMedium,
-                                weight: AppTextWeight.semiBold,
-                                colorType: AppTextColorType.link,
-                              ),
-                            ],
-                          ),
+                  ),
+                  SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(5, (index) {
+                      return Container(
+                        margin: EdgeInsets.symmetric(horizontal: 2),
+                        width: currentPage == index ? 12 : 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color:
+                              currentPage == index
+                                  ? themeController.isDarkMode
+                                      ? AppColors.darkPrimary
+                                      : AppColors.lightPrimary
+                                  : themeController.isDarkMode
+                                  ? AppColors.darkButtonBorder
+                                  : AppColors.lightButtonBorder,
                         ),
-                        SvgPicture.asset("assets/svgs/dashboard/mf_banner.svg"),
-                      ],
-                    ),
+                      );
+                    }),
                   ),
                 ],
               ),
