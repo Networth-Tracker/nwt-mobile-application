@@ -75,7 +75,7 @@ class MyApp extends StatelessWidget {
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: themeController.themeMode,
-        home: const BankTransactionListScreen(),
+        home: const OnboardingScreen(),
       ),
     );
   }

@@ -15,13 +15,33 @@ jobs:
       - name: Checkout 
         uses: actions/checkout@v3
 
+      - name: Check Java Installation
+        id: check-java
+        run: |
+          if command -v java &> /dev/null && [[ $(java -version 2>&1) == *"version \"17"* ]]; then
+            echo "::set-output name=installed::true"
+          else
+            echo "::set-output name=installed::false"
+          fi
+
       - name: Setup Java 17
+        if: steps.check-java.outputs.installed != 'true'
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Check Flutter Installation
+        id: check-flutter
+        run: |
+          if command -v flutter &> /dev/null && [[ $(flutter --version 2>&1) == *"3.29.3"* ]]; then
+            echo "::set-output name=installed::true"
+          else
+            echo "::set-output name=installed::false"
+          fi
+
       - name: Install Flutter Version 3.29.3
+        if: steps.check-flutter.outputs.installed != 'true'
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.29.3'
@@ -42,7 +62,6 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: "build/renamed_apks/nwt-app-v0.0.${{ github.run_number }}.apk"
-          tag: v0.0.${{ github.run_number }}
           token: ${{ secrets.TOKEN }}
           name: "NetWorth Tracker v0.0.${{ github.run_number }}"
           body: |

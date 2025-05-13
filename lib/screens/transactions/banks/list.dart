@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/sizing.dart';
+import 'package:nwt_app/screens/transactions/banks/widgets/transaction_card.dart';
 import 'package:nwt_app/widgets/common/app_input_field.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 
@@ -54,11 +55,32 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
                 hintText: "Search...",
               ),
             ),
+            const SizedBox(height: 16),
             Expanded(
               child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSizing.scaffoldHorizontalPadding,
+                ),
                 child: Column(
                   children: [
-                    
+                    Column(
+                      spacing: 8,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            AppText(
+                              "May 2025",
+                              variant: AppTextVariant.bodyMedium,
+                              weight: AppTextWeight.semiBold,
+                              colorType: AppTextColorType.primary,
+                            ),
+                          ],
+                        ),
+                        BankTransactionCardWidget(),
+                      ],
+                    ),
                   ],
                 ),
               ),
