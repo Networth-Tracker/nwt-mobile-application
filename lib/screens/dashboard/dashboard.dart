@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:nwt_app/constants/sizing.dart';
-import 'package:nwt_app/widgets/common/button_widget.dart';
 import 'package:nwt_app/controllers/theme_controller.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 import 'package:nwt_app/widgets/avatar.dart';
@@ -169,38 +168,36 @@ class _DashboardState extends State<Dashboard> {
                           SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: Row(
+                              spacing: 15,
                               children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 15),
-                                  child: ConstrainedBox(
-                                    constraints: BoxConstraints(
-                                      minHeight:
-                                          120, // Set a minimum height to match AssetCard
-                                    ),
-                                    child: Container(
-                                      width: 50,
-                                      decoration: BoxDecoration(
-                                        color: Color.fromRGBO(38, 40, 44, 0.6),
-                                        borderRadius: BorderRadius.circular(12),
-                                        border: Border.all(
-                                          color: AppColors.darkButtonBorder,
-                                        ),
+                                ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    minHeight:
+                                        120, // Set a minimum height to match AssetCard
+                                  ),
+                                  child: Container(
+                                    width: 50,
+                                    decoration: BoxDecoration(
+                                      color: Color.fromRGBO(38, 40, 44, 0.6),
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: AppColors.darkButtonBorder,
                                       ),
-                                      child: Center(
-                                        child: Icon(Icons.add_rounded, size: 26),
+                                    ),
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.add_rounded,
+                                        size: 26,
                                       ),
                                     ),
                                   ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 0),
-                                  child: AssetCard(
-                                    title: "Banks",
-                                    amount: "₹1,00,000",
-                                    delta: "-10%",
-                                    deltaType: DeltaType.negative,
-                                    icon: Icons.account_balance_outlined,
-                                  ),
+                                AssetCard(
+                                  title: "Banks",
+                                  amount: "₹1,00,000",
+                                  delta: "-10%",
+                                  deltaType: DeltaType.negative,
+                                  icon: Icons.account_balance_outlined,
                                 ),
                                 AssetCard(
                                   title: "Banks",
@@ -217,39 +214,86 @@ class _DashboardState extends State<Dashboard> {
                     ),
                   ),
                   SizedBox(height: 16),
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: RadialGradient(
-                        center: Alignment.topCenter,
-                        radius: 2,
-                        colors: [
-                          Color.fromRGBO(165, 108, 236, 0.8),
-                          Color.fromRGBO(41, 9, 81, 1),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: AppSizing.scaffoldHorizontalPadding,
+                    ),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 15,
+                        vertical: 15,
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        gradient: RadialGradient(
+                          center: Alignment.topCenter,
+                          radius: 2,
+                          colors: [
+                            Color.fromRGBO(165, 108, 236, 0.8),
+                            Color.fromRGBO(41, 9, 81, 1),
+                          ],
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Flexible(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    AppText(
+                                      "Connect with Zerodha",
+                                      variant: AppTextVariant.headline4,
+                                      weight: AppTextWeight.bold,
+                                      colorType: AppTextColorType.primary,
+                                    ),
+                                    AppText(
+                                      "Log in to Kite to link out all your investments and keep a track on them!",
+                                      variant: AppTextVariant.bodySmall,
+                                      weight: AppTextWeight.regular,
+                                      colorType: AppTextColorType.primary,
+                                    ),
+                                    SizedBox(height: 18),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 8,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color:
+                                            AppColors
+                                                .darkButtonPrimaryBackground,
+                                        borderRadius: BorderRadius.circular(6),
+                                      ),
+
+                                      child: AppText(
+                                        "Connect",
+                                        variant: AppTextVariant.bodySmall,
+                                        weight: AppTextWeight.bold,
+                                        colorType: AppTextColorType.secondary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              SvgPicture.asset(
+                                "assets/svgs/dashboard/zerodha_banner.svg",
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            AppText(
-                              "₹1,00,000",
-                              variant: AppTextVariant.display,
-                              weight: AppTextWeight.bold,
-                              colorType: AppTextColorType.primary,
-                            ),
-                            SvgPicture.asset(
-                              "assets/svgs/dashboard/zerodha_banner.svg",
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
                   ),
+                  SizedBox(height: 16),
                   Container(
-                    color: themeController.isDarkMode
-                        ? AppColors.darkCardBG
-                        : AppColors.lightBackground,
+                    color:
+                        themeController.isDarkMode
+                            ? AppColors.darkCardBG
+                            : AppColors.lightBackground,
                     width: MediaQuery.of(context).size.width,
                     padding: EdgeInsets.symmetric(
                       horizontal: AppSizing.scaffoldHorizontalPadding,
@@ -315,7 +359,7 @@ class _DashboardState extends State<Dashboard> {
             ],
           ),
         );
-      }
+      },
     );
   }
 }
