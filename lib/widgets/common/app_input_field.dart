@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:nwt_app/common/text_widget.dart';
+import 'package:nwt_app/widgets/common/text_widget.dart';
 
 enum AppInputFieldSize { small, medium, large }
 
@@ -129,7 +129,7 @@ class _AppInputFieldState extends State<AppInputField> {
         );
       case AppInputFieldSize.large:
         return const EdgeInsets.symmetric(
-          vertical: 20,
+          vertical: 18,
           horizontal: 16,
         );
       case AppInputFieldSize.medium:

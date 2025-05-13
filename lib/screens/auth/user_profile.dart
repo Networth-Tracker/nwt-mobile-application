@@ -1,11 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart'; // Import for date formatting
-import 'package:nwt_app/common/app_input_field.dart';
-import 'package:nwt_app/common/button_widget.dart';
-import 'package:nwt_app/common/text_widget.dart';
+import 'package:intl/intl.dart';
+import 'package:nwt_app/widgets/common/app_input_field.dart';
+import 'package:nwt_app/widgets/common/button_widget.dart';
+import 'package:nwt_app/widgets/common/text_widget.dart';
 import 'package:nwt_app/constants/sizing.dart';
+import 'package:nwt_app/screens/dashboard/dashboard.dart';
 import 'package:nwt_app/services/auth/auth.dart';
 import 'package:nwt_app/utils/validators.dart';
 
@@ -27,7 +28,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     if (firstNameController.text.isEmpty) {
       Get.snackbar(
         'Error',
-        'Please enter your first name',
+        'Please fill all fields',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.withValues(alpha: 0.1),
         colorText: Colors.red,
@@ -45,13 +46,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       return;
     }
     if (selectedDate == null) {
-      Get.snackbar(
-        'Error',
-        'Please select your date of birth',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.1),
-        colorText: Colors.red,
-      );
+      // AppRouter.showErrorSnackbar(
+      //   title: 'Error',
+      //   message: 'Please enter a valid date of birth',
+      //   position: SnackPosition.BOTTOM,
+      // );
       return;
     }
 
@@ -67,22 +66,21 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     );
 
     if (response != null) {
-      Get.snackbar(
-        'Success',
-        'Profile updated successfully',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.withOpacity(0.1),
-        colorText: Colors.green,
-      );
-      Navigator.pop(context);
+      // AppRouter.showSuccessSnackbar(
+      //   title: 'Success',
+      //   message: 'Profile updated successfully',
+      //   position: SnackPosition.BOTTOM,
+      // );
+      // Navigator.pop(context);
+      Get.to(() => const Dashboard(), transition: Transition.rightToLeft);
     } else {
-      Get.snackbar(
-        'Error',
-        'Failed to update profile',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.1),
-        colorText: Colors.red,
-      );
+      // Get.snackbar(
+      //   'Error',
+      //   'Failed to update profile',
+      //   snackPosition: SnackPosition.BOTTOM,
+      //   backgroundColor: Colors.red.withValues(alpha: 0.1),
+      //   colorText: Colors.red,
+      // );
     }
   }
 
@@ -109,6 +107,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   }
 
   Future<void> _selectDate(BuildContext context) async {
+    final ThemeData theme = Theme.of(context);
+    final bool isDarkMode = theme.brightness == Brightness.dark;
+    
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: selectedDate ?? DateTime.now(),
@@ -116,9 +117,27 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       lastDate: DateTime.now(), // Not allowing future dates for DOB
       builder: (context, child) {
         return Theme(
-          data: Theme.of(
-            context,
-          ).copyWith(colorScheme: ColorScheme.light(onPrimary: Colors.white)),
+          data: Theme.of(context).copyWith(
+            colorScheme: isDarkMode
+                ? const ColorScheme.dark(
+                    primary: Color(0xFFFFFFFF), // White in dark mode
+                    onPrimary: Color(0xFF000000), // Black text on primary
+                    surface: Color(0xFF0C0C0C), // Very dark gray surface
+                    onSurface: Color(0xFFFFFFFF), // White text on surface
+                  )
+                : const ColorScheme.light(
+                    primary: Color(0xFF000000), // Black in light mode
+                    onPrimary: Color(0xFFFFFFFF), // White text on primary
+                    surface: Color(0xFFFFFFFF), // White surface
+                    onSurface: Color(0xFF000000), // Black text on surface
+                  ),
+            dialogBackgroundColor: isDarkMode ? const Color(0xFF0C0C0C) : Colors.white,
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: isDarkMode ? Colors.white : Colors.black,
+              ),
+            ),
+          ),
           child: child!,
         );
       },
@@ -136,6 +155,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+                surfaceTintColor: Colors.transparent,
+        backgroundColor: Colors.transparent,
         automaticallyImplyLeading: false,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -158,6 +179,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           children: [
             Expanded(
               child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
                 child: Padding(
                   padding: EdgeInsets.symmetric(
                     horizontal: AppSizing.scaffoldHorizontalPadding,

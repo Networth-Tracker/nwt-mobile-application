@@ -20,7 +20,6 @@ class AuthService {
     onLoading(true);
     try {
       final appSignature = await SmsAutoFill().getAppSignature;
-      print(appSignature);
       final response = await _apiHelper.post(ApiURLs.GENERATE_OTP, {
         "phoneNumber": phoneNumber,
         'appHash': appSignature,
@@ -119,10 +118,10 @@ class AuthService {
 
         if (response.statusCode == 200 || response.statusCode == 201) {
           // Get updated user profile without showing loading state again
-          final userProfile = await getUserProfile(onLoading: onLoading);
-          // if (userProfile != null) {
-          //   AuthFlowService.handleAuthFlow(userProfile);
-          // }
+        final userProfile  =  await getUserProfile(onLoading: onLoading);
+          if (userProfile != null) {
+            // AuthFlowService.handleAuthFlow(userProfile);
+          }
           return UserProfileUpdatedResponse.fromJson(responseData);
         }
       } else {

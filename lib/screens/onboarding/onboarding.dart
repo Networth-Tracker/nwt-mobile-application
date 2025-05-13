@@ -1,9 +1,10 @@
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:nwt_app/common/button_widget.dart';
-import 'package:nwt_app/common/text_widget.dart';
-import 'package:nwt_app/common/theme_toggle.dart';
+import 'package:nwt_app/widgets/common/button_widget.dart';
+import 'package:nwt_app/widgets/common/text_widget.dart';
+import 'package:nwt_app/widgets/common/theme_toggle.dart';
 import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/controllers/theme_controller.dart';
 import 'package:nwt_app/notification/firebase_messaging.dart';
@@ -17,10 +18,13 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
+  final remoteConfig = FirebaseRemoteConfig.instance;
   @override
   void initState() {
     super.initState();
     initNotifications();
+    String message = remoteConfig.getString('welcome_message');
+    print("message: $message");
   }
 
   Future<void> initNotifications() async {
@@ -31,12 +35,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Your Screen'),
-        actions: [ 
-          ThemeToggle(),
-        ],
-      ),
+      appBar: AppBar(title: Text('Your Screen'), actions: [ThemeToggle()]),
       body: GetBuilder<ThemeController>(
         builder: (themeController) {
           return SafeArea(
@@ -53,13 +52,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                        themeController.isDarkMode ?
-                          SvgPicture.asset(
-                            'assets/svgs/onboarding/onboarding_01_dark.svg',
-                          ) : 
-                          SvgPicture.asset(
-                            'assets/svgs/onboarding/onboarding_01.svg',
-                          ),
+                          themeController.isDarkMode
+                              ? SvgPicture.asset(
+                                'assets/svgs/onboarding/onboarding_01_dark.svg',
+                              )
+                              : SvgPicture.asset(
+                                'assets/svgs/onboarding/onboarding_01.svg',
+                              ),
                         ],
                       ),
                       SizedBox(height: 60),
@@ -77,14 +76,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         "Manage your money confidently using our intuitive tools and personalized insights.",
                         variant: AppTextVariant.bodyMedium,
                         lineHeight: 1.3,
-                        weight: AppTextWeight.semiBold,
+                        weight: AppTextWeight.medium,
                         colorType: AppTextColorType.secondary,
                         // duration: Duration(milliseconds: 1000),
                         // delay: Duration(milliseconds: 0),
                       ),
                     ],
                   ),
-          
+
                   SizedBox(height: 16),
                   Row(
                     children: [
@@ -95,7 +94,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           variant: AppButtonVariant.primary,
                           size: AppButtonSize.large,
                           onPressed:
-                              () => Get.to(() => const PhoneNumberInputScreen()),
+                              () => Get.to(
+                                const PhoneNumberInputScreen(),
+                                transition: Transition.rightToLeft,
+                              ),
                         ),
                       ),
                     ],
@@ -104,7 +106,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
             ),
           );
-        }
+        },
       ),
     );
   }

@@ -2,9 +2,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
-import 'package:nwt_app/common/button_widget.dart';
-import 'package:nwt_app/common/key_pad.dart';
-import 'package:nwt_app/common/text_widget.dart';
+import 'package:nwt_app/widgets/common/button_widget.dart';
+import 'package:nwt_app/widgets/common/key_pad.dart';
+import 'package:nwt_app/widgets/common/text_widget.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/constants/theme.dart';
@@ -195,7 +195,7 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
     );
 
     if (response != null && response.success) {
-      Get.to(() => const PanCardVerification());
+      Get.to(const PanCardVerification(), transition: Transition.rightToLeft);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -472,7 +472,7 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
                           variant: AppButtonVariant.primary,
                           size: AppButtonSize.large,
                           // onPressed: _verifyOTP,
-                          onPressed: () => Get.to(() => const PanCardVerification()),
+                          onPressed: () => Get.to(const PanCardVerification(), transition: Transition.rightToLeft),
                           isLoading: _isLoading,
                         ),
                       ),

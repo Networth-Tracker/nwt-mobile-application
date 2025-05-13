@@ -8,11 +8,17 @@ class AppValidators {
       return 'Phone number is required';
     }
     
+    // Extract only digits from the input
     final digitsOnly = value.replaceAll(RegExp(r'[^\d]'), '');
     
-    // Generic validation - just check if it's a reasonable length
-    if (digitsOnly.length < 6 || digitsOnly.length > 15) {
-      return 'Enter a valid phone number';
+    // Check if the input contains any non-digit characters
+    if (value.length != digitsOnly.length) {
+      return 'Only numbers are allowed';
+    }
+    
+    // Validate that the phone number is exactly 10 digits
+    if (digitsOnly.length != 10) {
+      return 'Phone number must be exactly 10 digits';
     }
     
     return null;

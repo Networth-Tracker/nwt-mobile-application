@@ -10,16 +10,20 @@ class AppTheme {
     brightness: Brightness.light,
     scaffoldBackgroundColor: AppColors.lightBackground,
     primaryColor: AppColors.lightPrimary,
+    fontFamily: 'Poppins',
 
     // Make sure to use ColorScheme to properly handle theme transitions
     colorScheme: ColorScheme.light(
       primary: AppColors.lightPrimary,
       secondary: AppColors.lightSecondary,
-      background: AppColors.lightBackground,
+      surface: AppColors.lightBackground,
+      onSurface: AppColors.lightTextPrimary,
+      onPrimary: AppColors.lightButtonPrimaryText,
     ),
 
     // App Bar Theme
     appBarTheme: const AppBarTheme(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: AppColors.lightBackground,
       foregroundColor: AppColors.lightTextPrimary,
       elevation: 0,
@@ -28,13 +32,14 @@ class AppTheme {
         color: AppColors.lightTextPrimary,
         fontSize: 18,
         fontWeight: FontWeight.w600,
+        fontFamily: "Poppins"
       ),
     ),
 
     textSelectionTheme: const TextSelectionThemeData(
-      cursorColor: Colors.black,
-      selectionColor: Colors.black12,
-      selectionHandleColor: Colors.black54,
+      cursorColor: AppColors.lightPrimary,
+      selectionColor: Color(0x1F000000), // Black with 12% opacity
+      selectionHandleColor: Color(0x8A000000), // Black with 54% opacity
     ),
 
     textTheme: const TextTheme(
@@ -67,7 +72,7 @@ class AppTheme {
         borderRadius: const BorderRadius.all(Radius.circular(15)),
         borderSide: BorderSide(color: Colors.red, width: 1.5),
       ),
-      hintStyle: const TextStyle(color: AppColors.lightInputPrimaryText, fontSize: 16, fontWeight: FontWeight.w400),
+      hintStyle: const TextStyle(color: AppColors.lightInputPrimaryText, fontSize: 14, fontWeight: FontWeight.w400),
       errorStyle: const TextStyle(color: Colors.red, fontSize: 12),
     ),
 
@@ -82,6 +87,21 @@ class AppTheme {
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       ),
     ),
+    
+    // Icon button theme
+    iconButtonTheme: IconButtonThemeData(
+      style: ButtonStyle(
+        backgroundColor: WidgetStateProperty.all(AppColors.lightBackground),
+        iconColor: WidgetStateProperty.all(AppColors.lightTextSecondary),
+        padding: WidgetStateProperty.all(const EdgeInsets.all(10)),
+        side: WidgetStateProperty.resolveWith((states) {
+          return const BorderSide(color: AppColors.lightButtonBorder, width: 1);
+        }),
+        shape: WidgetStateProperty.all(RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        )),
+      ),
+    ),
 
     // Add extension data to store our custom text colors
     extensions: <ThemeExtension<dynamic>>[AppTextThemeColors.light],
@@ -91,15 +111,19 @@ class AppTheme {
     brightness: Brightness.dark,
     scaffoldBackgroundColor: AppColors.darkBackground,
     primaryColor: AppColors.darkPrimary,
+    fontFamily: 'Poppins',
 
     // Make sure to use ColorScheme to properly handle theme transitions
     colorScheme: ColorScheme.dark(
       primary: AppColors.darkPrimary,
-      background: AppColors.darkBackground,
+      surface: AppColors.darkBackground,
+      onSurface: AppColors.darkTextPrimary,
+      onPrimary: AppColors.darkButtonPrimaryText,
     ),
 
     // App Bar Theme
     appBarTheme: const AppBarTheme(
+          surfaceTintColor: Colors.transparent,
       backgroundColor: AppColors.darkBackground,
       foregroundColor: AppColors.darkTextPrimary,
       elevation: 0,
@@ -108,6 +132,7 @@ class AppTheme {
         color: AppColors.darkTextPrimary,
         fontSize: 18,
         fontWeight: FontWeight.w600,
+        fontFamily: "Poppins"
       ),
     ),
 
@@ -147,7 +172,7 @@ class AppTheme {
         borderRadius: const BorderRadius.all(Radius.circular(15)),
         borderSide: BorderSide(color: Colors.redAccent, width: 1.5),
       ),
-      hintStyle: const TextStyle(color: AppColors.darkInputHintText, fontSize: 16, fontWeight: FontWeight.w400),
+      hintStyle: const TextStyle(color: AppColors.darkInputHintText, fontSize: 14, fontWeight: FontWeight.w400),
       errorStyle: const TextStyle(color: Colors.redAccent, fontSize: 12),
     ),
 
@@ -162,6 +187,21 @@ class AppTheme {
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       ),
     ),
+    
+    // Icon button theme
+    iconButtonTheme: IconButtonThemeData(
+      style: ButtonStyle(
+        backgroundColor: WidgetStateProperty.all(AppColors.darkRoundedButtonBackground),
+        iconColor: WidgetStateProperty.all(AppColors.darkTextGray),
+        padding: WidgetStateProperty.all(const EdgeInsets.all(10)),
+        side: WidgetStateProperty.resolveWith((states) {
+          return const BorderSide(color: AppColors.darkButtonBorder, width: 1);
+        }),
+        shape: WidgetStateProperty.all(RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        )),
+      ),
+    ),
 
     // Add extension data to store our custom text colors
     extensions: <ThemeExtension<dynamic>>[AppTextThemeColors.dark],
@@ -174,6 +214,7 @@ class AppTextThemeColors extends ThemeExtension<AppTextThemeColors> {
   final Color secondaryText;
   final Color tertiaryText;
   final Color mutedText;
+  final Color grayText;
   final Color buttonText;
 
   const AppTextThemeColors({
@@ -181,6 +222,7 @@ class AppTextThemeColors extends ThemeExtension<AppTextThemeColors> {
     required this.secondaryText,
     required this.tertiaryText,
     required this.mutedText,
+    required this.grayText,
     required this.buttonText,
   });
 
@@ -190,6 +232,7 @@ class AppTextThemeColors extends ThemeExtension<AppTextThemeColors> {
     secondaryText: AppColors.lightTextSecondary,
     tertiaryText: AppColors.lightTextTertiary,
     mutedText: AppColors.lightTextMuted,
+    grayText: AppColors.lightTextGray,
     buttonText: AppColors.lightButtonPrimaryText,
   );
 
@@ -199,6 +242,7 @@ class AppTextThemeColors extends ThemeExtension<AppTextThemeColors> {
     secondaryText: AppColors.darkTextSecondary,
     tertiaryText: AppColors.darkTextTertiary,
     mutedText: AppColors.darkTextMuted,
+    grayText: AppColors.darkTextGray,
     buttonText: AppColors.darkButtonPrimaryText,
   );
 
@@ -208,6 +252,7 @@ class AppTextThemeColors extends ThemeExtension<AppTextThemeColors> {
     Color? secondaryText,
     Color? tertiaryText,
     Color? mutedText,
+    Color? grayText,
     Color? buttonText,
   }) {
     return AppTextThemeColors(
@@ -215,6 +260,7 @@ class AppTextThemeColors extends ThemeExtension<AppTextThemeColors> {
       secondaryText: secondaryText ?? this.secondaryText,
       tertiaryText: tertiaryText ?? this.tertiaryText,
       mutedText: mutedText ?? this.mutedText,
+      grayText: grayText ?? this.grayText,
       buttonText: buttonText ?? this.buttonText,
     );
   }
@@ -232,6 +278,7 @@ class AppTextThemeColors extends ThemeExtension<AppTextThemeColors> {
       secondaryText: Color.lerp(secondaryText, other.secondaryText, t)!,
       tertiaryText: Color.lerp(tertiaryText, other.tertiaryText, t)!,
       mutedText: Color.lerp(mutedText, other.mutedText, t)!,
+      grayText: Color.lerp(grayText, other.grayText, t)!,
       buttonText: Color.lerp(buttonText, other.buttonText, t)!,
     );
   }
@@ -241,5 +288,5 @@ class AppTextThemeColors extends ThemeExtension<AppTextThemeColors> {
 extension AppTextThemeColorsExtension on BuildContext {
   AppTextThemeColors get textThemeColors =>
       Theme.of(this).extension<AppTextThemeColors>() ??
-      AppTextThemeColors.light;
+      AppTextThemeColors.dark;
 }

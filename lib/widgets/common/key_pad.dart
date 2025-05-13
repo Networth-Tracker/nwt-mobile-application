@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:nwt_app/common/text_widget.dart';
+import 'package:nwt_app/constants/colors.dart';
+import 'package:nwt_app/widgets/common/text_widget.dart';
 
 class KeyPad extends StatefulWidget {
   final Function(int) onKeyPressed;
@@ -94,8 +95,8 @@ class KeyPadButton extends StatelessWidget {
             color: isBlank 
                 ? Colors.transparent
                 : isDarkMode 
-                    ? theme.colorScheme.surface.withValues(alpha: 0.8)
-                    : const Color.fromRGBO(249, 250, 251, 1),
+                    ? AppColors.darkInputBackground
+                    : AppColors.lightInputPrimaryBackground,
             borderRadius: BorderRadius.circular(15),
             border: Border.all(
               color: isBlank ? Colors.transparent : isDarkMode 

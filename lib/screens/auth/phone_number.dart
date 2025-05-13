@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:nwt_app/common/app_input_field.dart';
-import 'package:nwt_app/common/button_widget.dart';
-import 'package:nwt_app/common/key_pad.dart';
-import 'package:nwt_app/common/text_widget.dart';
+import 'package:nwt_app/widgets/common/app_input_field.dart';
+import 'package:nwt_app/widgets/common/button_widget.dart';
+import 'package:nwt_app/widgets/common/key_pad.dart';
+import 'package:nwt_app/widgets/common/text_widget.dart';
 import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/controllers/theme_controller.dart';
 import 'package:nwt_app/screens/auth/otp_verify.dart';
@@ -51,9 +51,12 @@ class _PhoneNumberInputScreenState extends State<PhoneNumberInputScreen> {
         },
       );
       if(response != null){
-        Get.to(() => PhoneOTPVerifyScreen(
-              phoneNumber: _phoneController.text,
-            ));
+        Get.to(
+          PhoneOTPVerifyScreen(
+            phoneNumber: _phoneController.text,
+          ),
+          transition: Transition.rightToLeft,
+        );
       }else{
         Get.snackbar(
           'Error',
@@ -104,7 +107,7 @@ class _PhoneNumberInputScreenState extends State<PhoneNumberInputScreen> {
                             variant: AppTextVariant.bodyMedium,
                             lineHeight: 1.3,
                             weight: AppTextWeight.medium,
-                            colorType: AppTextColorType.tertiary,
+                            colorType: AppTextColorType.secondary,
                           ),
                         ],
                       ),
@@ -117,10 +120,10 @@ class _PhoneNumberInputScreenState extends State<PhoneNumberInputScreen> {
                                 "Enter your phone number",
                                 variant: AppTextVariant.headline4,
                                 lineHeight: 1.3,
-                                weight: AppTextWeight.bold,
-                                colorType: AppTextColorType.secondary,
+                                weight: AppTextWeight.semiBold,
+                                colorType: AppTextColorType.primary,
                               ),
-                              const SizedBox(height: 20),
+                              const SizedBox(height: 14),
                             ],
                           ),
                           Column(
