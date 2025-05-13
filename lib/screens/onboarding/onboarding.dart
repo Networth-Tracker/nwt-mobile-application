@@ -18,7 +18,7 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
-    final remoteConfig = FirebaseRemoteConfig.instance;
+  final remoteConfig = FirebaseRemoteConfig.instance;
   @override
   void initState() {
     super.initState();
@@ -35,12 +35,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Your Screen'),
-        actions: [ 
-          ThemeToggle(),
-        ],
-      ),
+      appBar: AppBar(title: Text('Your Screen'), actions: [ThemeToggle()]),
       body: GetBuilder<ThemeController>(
         builder: (themeController) {
           return SafeArea(
@@ -57,13 +52,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                        themeController.isDarkMode ?
-                          SvgPicture.asset(
-                            'assets/svgs/onboarding/onboarding_01_dark.svg',
-                          ) : 
-                          SvgPicture.asset(
-                            'assets/svgs/onboarding/onboarding_01.svg',
-                          ),
+                          themeController.isDarkMode
+                              ? SvgPicture.asset(
+                                'assets/svgs/onboarding/onboarding_01_dark.svg',
+                              )
+                              : SvgPicture.asset(
+                                'assets/svgs/onboarding/onboarding_01.svg',
+                              ),
                         ],
                       ),
                       SizedBox(height: 60),
@@ -88,7 +83,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ),
                     ],
                   ),
-          
+
                   SizedBox(height: 16),
                   Row(
                     children: [
@@ -99,7 +94,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           variant: AppButtonVariant.primary,
                           size: AppButtonSize.large,
                           onPressed:
-                              () => Get.to(const PhoneNumberInputScreen(), transition: Transition.rightToLeft),
+                              () => Get.to(
+                                const PhoneNumberInputScreen(),
+                                transition: Transition.rightToLeft,
+                              ),
                         ),
                       ),
                     ],
@@ -108,7 +106,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
             ),
           );
-        }
+        },
       ),
     );
   }

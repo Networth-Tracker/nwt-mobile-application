@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/controllers/theme_controller.dart';
+import 'package:nwt_app/screens/assets/banks/banks.dart';
+import 'package:nwt_app/screens/assets/investments/investments.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 import 'package:nwt_app/widgets/avatar.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/screens/dashboard/widgets/asset_card.dart';
-import 'package:nwt_app/screens/assets/banks/banks.dart';
-import 'package:nwt_app/screens/assets/investments/investments.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -27,6 +28,8 @@ class _DashboardState extends State<Dashboard> {
       builder: (themeController) {
         return Scaffold(
           appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            surfaceTintColor: Colors.transparent,
             actionsPadding: EdgeInsets.zero,
             automaticallyImplyLeading: false,
             title: Container(
@@ -80,6 +83,7 @@ class _DashboardState extends State<Dashboard> {
           ),
           body: SafeArea(
             child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
               child: Column(
                 children: [
                   SizedBox(height: 20),
@@ -151,7 +155,7 @@ class _DashboardState extends State<Dashboard> {
                               right: AppSizing.scaffoldHorizontalPadding,
                             ),
                             child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 AppText(
@@ -171,6 +175,7 @@ class _DashboardState extends State<Dashboard> {
                           ),
                           SizedBox(height: 12),
                           SingleChildScrollView(
+                            physics: const BouncingScrollPhysics(),
                             scrollDirection: Axis.horizontal,
                             child: Row(
                               spacing: 15,
@@ -194,20 +199,33 @@ class _DashboardState extends State<Dashboard> {
                                     ),
                                   ),
                                 ),
-                                AssetCard(
-                                  title: "Banks",
-                                  amount: "₹1,00,000",
-                                  delta: "-10%",
-                                  deltaType: DeltaType.negative,
-                                  icon: Icons.account_balance_outlined,
-                                  destination: const AssetBankScreen(),
+                                InkWell(
+                                  onTap:
+                                      () => Get.to(
+                                        const AssetBankScreen(),
+                                        transition: Transition.rightToLeft,
+                                      ),
+                                  child: AssetCard(
+                                    title: "Banks",
+                                    amount: "₹1,00,000",
+                                    delta: "-10%",
+                                    deltaType: DeltaType.negative,
+                                    icon: Icons.account_balance_outlined,
+                                  ),
                                 ),
-                                AssetCard(
-                                  title: "Investment",
-                                  amount: "₹1,00,000",
-                                  delta: "10%",
-                                  deltaType: DeltaType.positive,
-                                  icon: Icons.account_balance_outlined,
+                                InkWell(
+                                  onTap:
+                                      () => Get.to(
+                                        const AssetInvestmentScreen(),
+                                        transition: Transition.rightToLeft,
+                                      ),
+                                  child: AssetCard(
+                                    title: "Investments",
+                                    amount: "₹1,00,000",
+                                    delta: "10%",
+                                    deltaType: DeltaType.positive,
+                                    icon: Icons.account_balance_outlined,
+                                  ),
                                 ),
                               ],
                             ),
@@ -270,7 +288,6 @@ class _DashboardState extends State<Dashboard> {
                                                 .darkButtonPrimaryBackground,
                                         borderRadius: BorderRadius.circular(6),
                                       ),
-
                                       child: AppText(
                                         "Connect",
                                         variant: AppTextVariant.bodySmall,
@@ -364,22 +381,23 @@ class _DashboardState extends State<Dashboard> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: List.generate(5, (index) {
                         return AnimatedContainer(
-                            duration: Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                            margin: EdgeInsets.symmetric(horizontal: 2),
-                            width: currentPage == index ? 24 : 8,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              color: currentPage == index
-                                  ? themeController.isDarkMode
-                                      ? AppColors.darkPrimary
-                                      : AppColors.lightPrimary
-                                  : themeController.isDarkMode
-                                      ? AppColors.darkButtonBorder
-                                      : AppColors.lightButtonBorder,
-                            ),
-                          );
+                          duration: Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                          margin: EdgeInsets.symmetric(horizontal: 2),
+                          width: currentPage == index ? 24 : 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color:
+                                currentPage == index
+                                    ? themeController.isDarkMode
+                                        ? AppColors.darkPrimary
+                                        : AppColors.lightPrimary
+                                    : themeController.isDarkMode
+                                    ? AppColors.darkButtonBorder
+                                    : AppColors.lightButtonBorder,
+                          ),
+                        );
                       }),
                     ),
                   ),

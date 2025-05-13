@@ -155,6 +155,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+                surfaceTintColor: Colors.transparent,
+        backgroundColor: Colors.transparent,
         automaticallyImplyLeading: false,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -177,6 +179,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           children: [
             Expanded(
               child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
                 child: Padding(
                   padding: EdgeInsets.symmetric(
                     horizontal: AppSizing.scaffoldHorizontalPadding,

@@ -23,6 +23,7 @@ class AppTheme {
 
     // App Bar Theme
     appBarTheme: const AppBarTheme(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: AppColors.lightBackground,
       foregroundColor: AppColors.lightTextPrimary,
       elevation: 0,
@@ -31,6 +32,7 @@ class AppTheme {
         color: AppColors.lightTextPrimary,
         fontSize: 18,
         fontWeight: FontWeight.w600,
+        fontFamily: "Poppins"
       ),
     ),
 
@@ -70,7 +72,7 @@ class AppTheme {
         borderRadius: const BorderRadius.all(Radius.circular(15)),
         borderSide: BorderSide(color: Colors.red, width: 1.5),
       ),
-      hintStyle: const TextStyle(color: AppColors.lightInputPrimaryText, fontSize: 16, fontWeight: FontWeight.w400),
+      hintStyle: const TextStyle(color: AppColors.lightInputPrimaryText, fontSize: 14, fontWeight: FontWeight.w400),
       errorStyle: const TextStyle(color: Colors.red, fontSize: 12),
     ),
 
@@ -121,6 +123,7 @@ class AppTheme {
 
     // App Bar Theme
     appBarTheme: const AppBarTheme(
+          surfaceTintColor: Colors.transparent,
       backgroundColor: AppColors.darkBackground,
       foregroundColor: AppColors.darkTextPrimary,
       elevation: 0,
@@ -129,6 +132,7 @@ class AppTheme {
         color: AppColors.darkTextPrimary,
         fontSize: 18,
         fontWeight: FontWeight.w600,
+        fontFamily: "Poppins"
       ),
     ),
 
@@ -168,7 +172,7 @@ class AppTheme {
         borderRadius: const BorderRadius.all(Radius.circular(15)),
         borderSide: BorderSide(color: Colors.redAccent, width: 1.5),
       ),
-      hintStyle: const TextStyle(color: AppColors.darkInputHintText, fontSize: 12, fontWeight: FontWeight.w400),
+      hintStyle: const TextStyle(color: AppColors.darkInputHintText, fontSize: 14, fontWeight: FontWeight.w400),
       errorStyle: const TextStyle(color: Colors.redAccent, fontSize: 12),
     ),
 
