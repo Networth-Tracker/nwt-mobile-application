@@ -53,7 +53,7 @@ class AppColors {
   
   // Additional Dark Theme Elements
   static const Color darkRoundedButtonBackground = Color(0xFF0C0C0C); // Very dark gray button background
-  static const Color darkCardBG = Color.fromRGBO(38, 40, 44, 0.6);                 // Very dark gray card background
+  static const Color darkCardBG = Color(0xFF17181A);                 // Very dark gray card background
   
   // Link Color
   static const Color linkColor = Color(0xFF006AFF);        // Blue link color
