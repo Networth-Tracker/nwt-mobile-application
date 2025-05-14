@@ -28,19 +28,11 @@ jobs:
           java-version: '17'
           cache: 'gradle'
       
-      # Cache Android SDK components
-      - name: Cache Android SDK
-        uses: actions/cache@v3
-        id: android-sdk-cache
-        with:
-          path: |
-            /usr/local/lib/android/sdk/ndk
-            /usr/local/lib/android/sdk/cmake
-          key: ${{ runner.os }}-android-sdk-${{ hashFiles('**/build.gradle') }}
-          restore-keys: |
-            ${{ runner.os }}-android-sdk-
+      # Accept Android SDK Licenses
+      - name: Accept Android SDK Licenses
+        run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
-      # Setup Flutter with cache
+      # Setup Flutter
       - name: Install Flutter Version 3.29.3
         uses: subosito/flutter-action@v2
         with:
@@ -74,8 +66,8 @@ jobs:
           Version: v0.0.${{ github.run_number }}
           Build Date: $(date +'%Y-%m-%d %H:%M:%S')
           Commit: ${{ github.sha }}
+          Notes: ${{ github.event.inputs.release_notes || 'Feature updates and improvements' }}
           EOL
-      
 
       - name: Upload to Firebase App Distribution
         id: firebase_distribution
@@ -86,21 +78,32 @@ jobs:
           groups: devs
           file: build/renamed_apks/nwt-app-v0.0.${{ github.run_number }}.apk
           releaseNotesFile: build/release_notes/release_notes.txt
-      
-      # Extract Firebase App Distribution URLs from output
-      - name: Extract Firebase Distribution URLs
-        id: extract_url
+
+      - name: Capture Firebase Distribution Output
+        id: capture_output
         run: |
-          # Look for the tester URL in the logs
-          TESTER_URL=$(grep -o 'https://appdistribution.firebase.google.com/testerapps/[^"]*' $GITHUB_STEP_SUMMARY || echo "URL not found")
-          echo "TESTER_URL=$TESTER_URL" >> $GITHUB_ENV
-          echo "Found tester URL: $TESTER_URL"
-          
-          # Look for the Firebase console URL in the logs
-          CONSOLE_URL=$(grep -o 'https://console.firebase.google.com/project/[^"]*' $GITHUB_STEP_SUMMARY || echo "URL not found")
-          echo "CONSOLE_URL=$CONSOLE_URL" >> $GITHUB_ENV
-          echo "Found console URL: $CONSOLE_URL"
-      
+          CONSOLE_URL="https://console.firebase.google.com/project/${{ secrets.FIREBASE_PROJECT_ID }}/appdistribution/app/${{ secrets.FIREBASE_APP_ID }}/releases"
+          TESTER_URL="https://appdistribution.firebase.google.com/testerapps/${{ secrets.FIREBASE_APP_ID }}"
+
+          cat > firebase_output.txt << EOL
+          ✅ App successfully uploaded to Firebase App Distribution!
+
+          🔗 Firebase Console: $CONSOLE_URL  
+          👨‍💻 Tester Link (requires login): $TESTER_URL  
+          EOL
+
+          echo "FIREBASE_OUTPUT<<EOF" >> $GITHUB_ENV
+          cat firebase_output.txt >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+          cat firebase_output.txt
+
+      - name: Read Release Notes to Env
+        run: |
+          echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
+          cat build/release_notes/release_notes.txt >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
       - name: Push to GitHub Releases
         uses: ncipollo/release-action@v1
         with:
@@ -111,10 +114,9 @@ jobs:
           body: |
             Release v0.0.${{ github.run_number }}
             Commit: ${{ github.sha }}
-            
+
             ## Firebase App Distribution
-            Test this build: ${{ env.TESTER_URL || 'URL not available' }}
-            View in Firebase Console: ${{ env.CONSOLE_URL || 'URL not available' }}
-            
+            ${{ env.FIREBASE_OUTPUT }}
+
             ## Release Notes
-            $(cat build/release_notes/release_notes.txt)
+            ${{ env.RELEASE_NOTES }}
