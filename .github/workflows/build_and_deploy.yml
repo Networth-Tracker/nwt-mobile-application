@@ -67,47 +67,13 @@ jobs:
           mkdir -p build/renamed_apks
           cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk build/renamed_apks/nwt-app-v0.0.${{ github.run_number }}.apk
       
-      - name: Get PR Description
-        if: github.event_name == 'pull_request'
-        id: pr_description
-        run: |
-          PR_DESCRIPTION="$(jq -r .pull_request.body "$GITHUB_EVENT_PATH" | sed 's/null/No description provided/')"
-          echo "PR_DESCRIPTION<<EOF" >> $GITHUB_ENV
-          echo "$PR_DESCRIPTION" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-
-      - name: Get Recent Commits
-        if: github.event_name != 'pull_request'
-        id: recent_commits
-        run: |
-          RECENT_COMMITS=$(git log -n 5 --pretty=format:"- %s" | grep -v "Merge")
-          echo "RECENT_COMMITS<<EOF" >> $GITHUB_ENV
-          echo "$RECENT_COMMITS" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-
-      - name: Generate Release Notes
+      - name: Generate Simple Release Notes
         run: |
           mkdir -p build/release_notes
-          
-          # Determine release notes content based on event type
-          if [ "${{ github.event_name }}" == "pull_request" ]; then
-            NOTES_CONTENT="${{ env.PR_DESCRIPTION }}"
-          elif [ "${{ github.event_name }}" == "workflow_dispatch" ] && [ -n "${{ github.event.inputs.release_notes }}" ]; then
-            NOTES_CONTENT="${{ github.event.inputs.release_notes }}"
-          else
-            NOTES_CONTENT="${{ env.RECENT_COMMITS }}"
-          fi
-          
           cat > build/release_notes/release_notes.txt << EOL
           Version: v0.0.${{ github.run_number }}
           Build Date: $(date +'%Y-%m-%d %H:%M:%S')
           Commit: ${{ github.sha }}
-          
-          ## What's New
-          $NOTES_CONTENT
-          
-          ## Known Issues
-          - None
           EOL
       
 
@@ -121,14 +87,19 @@ jobs:
           file: build/renamed_apks/nwt-app-v0.0.${{ github.run_number }}.apk
           releaseNotesFile: build/release_notes/release_notes.txt
       
-      # Extract Firebase App Distribution URL from output
-      - name: Extract Firebase Distribution URL
+      # Extract Firebase App Distribution URLs from output
+      - name: Extract Firebase Distribution URLs
         id: extract_url
         run: |
           # Look for the tester URL in the logs
           TESTER_URL=$(grep -o 'https://appdistribution.firebase.google.com/testerapps/[^"]*' $GITHUB_STEP_SUMMARY || echo "URL not found")
           echo "TESTER_URL=$TESTER_URL" >> $GITHUB_ENV
           echo "Found tester URL: $TESTER_URL"
+          
+          # Look for the Firebase console URL in the logs
+          CONSOLE_URL=$(grep -o 'https://console.firebase.google.com/project/[^"]*' $GITHUB_STEP_SUMMARY || echo "URL not found")
+          echo "CONSOLE_URL=$CONSOLE_URL" >> $GITHUB_ENV
+          echo "Found console URL: $CONSOLE_URL"
       
       - name: Push to GitHub Releases
         uses: ncipollo/release-action@v1
@@ -143,6 +114,7 @@ jobs:
             
             ## Firebase App Distribution
             Test this build: ${{ env.TESTER_URL || 'URL not available' }}
+            View in Firebase Console: ${{ env.CONSOLE_URL || 'URL not available' }}
             
             ## Release Notes
             $(cat build/release_notes/release_notes.txt)
