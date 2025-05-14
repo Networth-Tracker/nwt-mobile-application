@@ -1,4 +1,4 @@
-package com.nwt.app
+package com.app.networthtracker
 
 import io.flutter.embedding.android.FlutterActivity
 
