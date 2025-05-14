@@ -7,6 +7,7 @@ import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/controllers/theme_controller.dart';
 import 'package:nwt_app/screens/assets/banks/banks.dart';
 import 'package:nwt_app/screens/assets/investments/investments.dart';
+import 'package:nwt_app/screens/notifications/notification_list.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 import 'package:nwt_app/widgets/avatar.dart';
 import 'package:nwt_app/constants/colors.dart';
@@ -74,7 +75,7 @@ class _DashboardState extends State<Dashboard> {
                     ],
                   ),
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () => Get.to(() => NotificationListScreen(), transition: Transition.rightToLeft),
                     icon: const Icon(Icons.notifications_outlined),
                   ),
                 ],
