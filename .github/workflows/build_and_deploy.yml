@@ -20,42 +20,47 @@ jobs:
       - name: Checkout 
         uses: actions/checkout@v3
 
-      - name: Check Java Installation
-        id: check-java
-        run: |
-          if command -v java &> /dev/null && [[ $(java -version 2>&1) == *"version \"17"* ]]; then
-            echo "::set-output name=installed::true"
-          else
-            echo "::set-output name=installed::false"
-          fi
-
+      # Setup Java with cache
       - name: Setup Java 17
-        if: steps.check-java.outputs.installed != 'true'
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
+          cache: 'gradle'
+      
+      # Cache Android SDK components
+      - name: Cache Android SDK
+        uses: actions/cache@v3
+        id: android-sdk-cache
+        with:
+          path: |
+            /usr/local/lib/android/sdk/ndk
+            /usr/local/lib/android/sdk/cmake
+          key: ${{ runner.os }}-android-sdk-${{ hashFiles('**/build.gradle') }}
+          restore-keys: |
+            ${{ runner.os }}-android-sdk-
 
-      - name: Check Flutter Installation
-        id: check-flutter
-        run: |
-          if command -v flutter &> /dev/null && [[ $(flutter --version 2>&1) == *"3.29.3"* ]]; then
-            echo "::set-output name=installed::true"
-          else
-            echo "::set-output name=installed::false"
-          fi
-
+      # Setup Flutter with cache
       - name: Install Flutter Version 3.29.3
-        if: steps.check-flutter.outputs.installed != 'true'
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.29.3'
+          cache: true
+
+      # Cache Flutter dependencies
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.PUB_CACHE }}
+          key: ${{ runner.os }}-pub-cache-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-cache-
 
       - name: Install Dependencies
         run: flutter pub get
 
       - name: Build APK
-        run: flutter build apk --split-per-abi
+        run: flutter build apk --split-per-abi --no-tree-shake-icons
       
       - name: Rename APK with Build Number
         run: |
@@ -112,7 +117,7 @@ jobs:
         with:
           appId: ${{ secrets.FIREBASE_APP_ID }}
           serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          # Don't specify groups here to avoid the 404 error
+          groups: devs
           file: build/renamed_apks/nwt-app-v0.0.${{ github.run_number }}.apk
           releaseNotesFile: build/release_notes/release_notes.txt
       
