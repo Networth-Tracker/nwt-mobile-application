@@ -27,6 +27,7 @@ dependencies:
   flutter_inappwebview: ^6.1.5
   firebase_remote_config: ^5.4.3
   local_auth: ^2.3.0
+  file_picker: ^10.1.9
 
 dev_dependencies:
   flutter_test:
