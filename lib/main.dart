@@ -75,7 +75,8 @@ class MyApp extends StatelessWidget {
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: themeController.themeMode,
-        home: const OnboardingScreen(),
+        // home: const AuthWrapper(child: OnboardingScreen()),
+        home: const OnboardingScreen()
       ),
     );
   }

@@ -1,6 +1,8 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/sizing.dart';
+import 'package:nwt_app/widgets/common/button_widget.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 
 class TransactionDetails extends StatefulWidget {
@@ -14,6 +16,133 @@ class _TransactionDetailsState extends State<TransactionDetails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomSheet: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSizing.scaffoldHorizontalPadding,
+        ),
+        decoration: BoxDecoration(
+          color: AppColors.darkCardBG,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(18),
+            topRight: Radius.circular(18),
+          ),
+        ),
+        child: Column(
+          children: [
+            SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                AppText(
+                  "Filter",
+                  variant: AppTextVariant.headline3,
+                  weight: AppTextWeight.bold,
+                  colorType: AppTextColorType.primary,
+                ),
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: AppColors.darkButtonBorder,
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Icon(
+                    Icons.close,
+                    size: 16,
+                    color: AppColors.darkTextMuted,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                AppText(
+                  "Date Range",
+                  variant: AppTextVariant.bodyMedium,
+                  weight: AppTextWeight.medium,
+                  colorType: AppTextColorType.primary,
+                ),
+              ],
+            ),
+            SingleChildScrollView(
+              dragStartBehavior: DragStartBehavior.start,
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                spacing: 10,
+                children: [
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: AppColors.darkPrimary,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: AppText(
+                      "30 days",
+                      variant: AppTextVariant.bodySmall,
+                      weight: AppTextWeight.semiBold,
+                      colorType: AppTextColorType.secondary,
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: AppColors.lightPrimary,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: AppText(
+                      "60 days",
+                      variant: AppTextVariant.bodySmall,
+                      weight: AppTextWeight.semiBold,
+                      colorType: AppTextColorType.secondary,
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: AppColors.lightPrimary,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: AppText(
+                      "90 days",
+                      variant: AppTextVariant.bodySmall,
+                      weight: AppTextWeight.semiBold,
+                      colorType: AppTextColorType.secondary,
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: AppColors.lightPrimary,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: AppText(
+                      "Select Date",
+                      variant: AppTextVariant.bodySmall,
+                      weight: AppTextWeight.semiBold,
+                      colorType: AppTextColorType.secondary,
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: AppColors.lightPrimary,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: AppText(
+                      "F&O",
+                      variant: AppTextVariant.bodySmall,
+                      weight: AppTextWeight.semiBold,
+                      colorType: AppTextColorType.secondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
       appBar: AppBar(
         surfaceTintColor: Colors.transparent,
         backgroundColor: Colors.transparent,
@@ -199,21 +328,21 @@ class _TransactionDetailsState extends State<TransactionDetails> {
                       ),
                       child: Column(
                         children: [
-                         Icon(Icons.upload, color: AppColors.darkPrimary),
-                         SizedBox(height: 18),
-                         AppText(
-                           "Upload Document",
-                           variant: AppTextVariant.bodyMedium,
-                           weight: AppTextWeight.regular,
-                           colorType: AppTextColorType.primary,
-                         ),
-                         SizedBox(height: 4),
-                         AppText(
-                           "(pdf, png, jpg, jpeg, xls, xlsx, csv)",
-                           variant: AppTextVariant.bodySmall,
-                           weight: AppTextWeight.regular,
-                           colorType: AppTextColorType.secondary,
-                         ),
+                          Icon(Icons.upload, color: AppColors.darkPrimary),
+                          SizedBox(height: 18),
+                          AppText(
+                            "Upload Document",
+                            variant: AppTextVariant.bodyMedium,
+                            weight: AppTextWeight.regular,
+                            colorType: AppTextColorType.primary,
+                          ),
+                          SizedBox(height: 4),
+                          AppText(
+                            "(pdf, png, jpg, jpeg, xls, xlsx, csv)",
+                            variant: AppTextVariant.bodySmall,
+                            weight: AppTextWeight.regular,
+                            colorType: AppTextColorType.secondary,
+                          ),
                         ],
                       ),
                     ),
