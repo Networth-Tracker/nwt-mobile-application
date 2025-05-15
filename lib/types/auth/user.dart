@@ -45,7 +45,7 @@ class User {
     String guid;
     String firstname;
     String lastname;
-    String email;
+    String? email;
     dynamic createdat;
     bool isverified;
     DateTime dob;
@@ -59,7 +59,7 @@ class User {
         required this.guid,
         required this.firstname,
         required this.lastname,
-        required this.email,
+        this.email,
         required this.createdat,
         required this.isverified,
         required this.dob,
