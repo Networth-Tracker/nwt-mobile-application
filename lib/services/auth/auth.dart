@@ -5,6 +5,7 @@ import 'package:nwt_app/constants/storage_keys.dart';
 import 'package:nwt_app/controllers/user_controller.dart';
 import 'package:nwt_app/services/global_storage.dart';
 import 'package:nwt_app/types/auth/otp.dart';
+import 'package:nwt_app/types/auth/pan_verfication.dart';
 import 'package:nwt_app/types/auth/user.dart';
 import 'package:nwt_app/utils/api_helpers.dart';
 import 'package:nwt_app/utils/logger.dart';
@@ -114,6 +115,38 @@ class AuthService {
       return null;
     } catch (e, stackTrace) {
       AppLogger.error('Get User Profile Error', error: e, stackTrace: stackTrace, tag: 'AuthService');
+      return null;
+    } finally {
+      onLoading(false);
+    }
+  }
+  
+  Future<PanVerificationResponse?> verifyPanCard({
+    required String panNumber,
+    required Function(bool isLoading) onLoading,
+  }) async {
+    onLoading(true);
+    try {
+      // Make a POST request to the PAN verification endpoint
+      final response = await _apiHelper.post(ApiURLs.PAN_CARD_VERIFICATION, {
+        "pannumber": panNumber,
+      });
+      
+      if (response != null) {
+        final responseData = jsonDecode(response.body);
+        AppLogger.info('PAN Verification Response: ${responseData.toString()}', tag: 'AuthService');
+        
+        // Check if the response status code is successful (200 or 201)
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          // Create and return the PanVerificationResponse object from the JSON
+          return PanVerificationResponse.fromJson(responseData);
+        }
+      } else {
+        AppLogger.info('PAN Verification Response: ${response?.body.toString()}', tag: 'AuthService');
+      }
+      return null;
+    } catch (e, stackTrace) {
+      AppLogger.error('PAN Verification Error', error: e, stackTrace: stackTrace, tag: 'AuthService');
       return null;
     } finally {
       onLoading(false);
