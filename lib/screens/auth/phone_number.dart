@@ -52,7 +52,7 @@ class _PhoneNumberInputScreenState extends State<PhoneNumberInputScreen> {
       );
       if(response != null){
         Get.to(
-          PhoneOTPVerifyScreen(
+          () => PhoneOTPVerifyScreen(
             phoneNumber: _phoneController.text,
           ),
           transition: Transition.rightToLeft,

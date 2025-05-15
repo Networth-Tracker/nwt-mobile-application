@@ -1,25 +1,25 @@
 class UserDataResponse {
-  bool success;
+  int status;
   String message;
   UserData data;
+  bool get success => status == 200 || status == 201;
 
   UserDataResponse({
-    required this.success,
+    required this.status,
     required this.message,
     required this.data,
   });
 
   factory UserDataResponse.fromJson(Map<String, dynamic> json) {
-    print(json);
     return UserDataResponse(
-        success: json["success"],
+        status: json["status"],
         message: json["message"],
         data: UserData.fromJson(json["data"]),
       );
   }
 
   Map<String, dynamic> toJson() => {
-    "success": success,
+    "status": status,
     "message": message,
     "data": data.toJson(),
   };
@@ -94,25 +94,26 @@ class Status {
 }
 
 class UserProfileUpdatedResponse {
-  bool success;
+  int status;
   String message;
   UserProfileUpdatedData data;
+  bool get success => status == 200 || status == 201;
 
   UserProfileUpdatedResponse({
-    required this.success,
+    required this.status,
     required this.message,
     required this.data,
   });
 
   factory UserProfileUpdatedResponse.fromJson(Map<String, dynamic> json) =>
       UserProfileUpdatedResponse(
-        success: json["success"],
+        status: json["status"],
         message: json["message"],
         data: UserProfileUpdatedData.fromJson(json["data"]),
       );
 
   Map<String, dynamic> toJson() => {
-    "success": success,
+    "status": status,
     "message": message,
     "data": data.toJson(),
   };

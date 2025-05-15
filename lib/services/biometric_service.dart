@@ -7,7 +7,6 @@ class BiometricService {
 
   Future<bool> isBiometricsAvailable() async {
     try {
-      // Check if biometrics or secure lock screen is available
       final bool canAuthenticateWithBiometrics = await _localAuth.canCheckBiometrics;
       final bool canAuthenticate = await _localAuth.isDeviceSupported();
       
@@ -27,17 +26,14 @@ class BiometricService {
 
   Future<bool> authenticate() async {
     try {
-      // First check if the device supports biometric authentication
       final isSupported = await _localAuth.isDeviceSupported();
       if (!isSupported) {
-        print('Biometric authentication not supported on this device');
-        return true; // Allow access if biometrics is not supported
+        return true;
       }
 
       final canCheck = await _localAuth.canCheckBiometrics;
       if (!canCheck) {
-        print('Cannot check biometrics on this device');
-        return true; // Allow access if cannot check biometrics
+        return true;
       }
 
       final bool didAuthenticate = await _localAuth.authenticate(
@@ -49,17 +45,14 @@ class BiometricService {
       );
       return didAuthenticate;
     } on PlatformException catch (e) {
-      print('Biometric authentication error: ${e.code} - ${e.message}');
       if (e.code == auth_error.notAvailable || 
           e.code == auth_error.notEnrolled || 
           e.message?.contains('dlopen') == true) {
-        // Handle various platform-specific errors gracefully
-        return true; // Allow access if biometrics encounters platform issues
+        return true;
       }
       return false;
     } catch (e) {
-      print('Unexpected error during biometric authentication: $e');
-      return true; // Allow access in case of unexpected errors
+      return true;
     }
   }
 }
