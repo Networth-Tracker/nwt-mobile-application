@@ -1,5 +1,9 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:nwt_app/constants/colors.dart';
+import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
+import 'package:nwt_app/screens/notifications/widgets/notification_card.dart';
 
 class NotificationListScreen extends StatefulWidget {
   const NotificationListScreen({super.key});
@@ -12,7 +16,7 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     appBar: AppBar(
+      appBar: AppBar(
         surfaceTintColor: Colors.transparent,
         backgroundColor: Colors.transparent,
         automaticallyImplyLeading: false,
@@ -24,7 +28,7 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
               child: const Icon(Icons.chevron_left),
             ),
             AppText(
-              "Transaction Details",
+              "Notifications",
               variant: AppTextVariant.headline6,
               weight: AppTextWeight.semiBold,
             ),
@@ -33,14 +37,99 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
         ),
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            Container(
-              width: MediaQuery.of(context).size.width,
-              height: 100,
-              color: Colors.red,
-            )
-          ],
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSizing.scaffoldHorizontalPadding,
+          ),
+          child: Column(
+            children: [
+              SingleChildScrollView(
+                dragStartBehavior: DragStartBehavior.start,
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppSizing.scaffoldHorizontalPadding,
+                ),
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  spacing: 10,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.darkPrimary,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: AppText(
+                        "Advisory",
+                        variant: AppTextVariant.bodySmall,
+                        weight: AppTextWeight.semiBold,
+                        colorType: AppTextColorType.secondary,
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.lightPrimary,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: AppText(
+                        "Updates",
+                        variant: AppTextVariant.bodySmall,
+                        weight: AppTextWeight.semiBold,
+                        colorType: AppTextColorType.secondary,
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.lightPrimary,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: AppText(
+                        "Others",
+                        variant: AppTextVariant.bodySmall,
+                        weight: AppTextWeight.semiBold,
+                        colorType: AppTextColorType.secondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 22),
+              
+              Column(
+                spacing: 16,
+                children: [
+                  NotificationCard(
+                    notificationTitle: "Reminder",
+                    icon: Icons.notifications_outlined,
+                    notificationMessage: "Darshan, a minimum payment for card ending in 5614 is due.",
+                    date: "May 08, 06:20 PM",
+                    onTap: () {
+                      // Handle notification tap
+                    },
+                  ),
+                  NotificationCard(
+                    notificationTitle: "Reminder",
+                    icon: Icons.notifications_outlined,
+                    notificationMessage: "Darshan, a minimum payment for card ending in 5614 is due.",
+                    date: "May 08, 06:20 PM",
+                    onTap: () {
+                      // Handle notification tap
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
