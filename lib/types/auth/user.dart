@@ -1,131 +1,100 @@
 class UserDataResponse {
-  int status;
-  String message;
-  UserData data;
-  bool get success => status == 200 || status == 201;
+    int status;
+    String message;
+    DataResponse data;
+    bool get success => status == 200 || status == 201;
 
-  UserDataResponse({
-    required this.status,
-    required this.message,
-    required this.data,
-  });
+    UserDataResponse({
+        required this.status,
+        required this.message,
+        required this.data,
+    });
 
-  factory UserDataResponse.fromJson(Map<String, dynamic> json) {
-    return UserDataResponse(
+    factory UserDataResponse.fromJson(Map<String, dynamic> json) => UserDataResponse(
         status: json["status"],
         message: json["message"],
-        data: UserData.fromJson(json["data"]),
-      );
-  }
-
-  Map<String, dynamic> toJson() => {
-    "status": status,
-    "message": message,
-    "data": data.toJson(),
-  };
-}
-
-class UserData {
-  String firstName;
-  String lastName;
-  DateTime dob;
-  String phoneNumber;
-  String? pan;
-  String panName;
-  Status status;
-
-  UserData({
-    required this.firstName,
-    required this.lastName,
-    required this.dob,
-    required this.phoneNumber,
-    this.pan,
-    required this.panName,
-    required this.status,
-  });
-
-  factory UserData.fromJson(Map<String, dynamic> json) {
-    print(json);
-    return UserData(
-      firstName: json["firstName"],
-      lastName: json["lastName"],
-      dob: DateTime.parse(json["dob"]),
-      phoneNumber: json["phoneNumber"],
-      pan: json["pan"],
-      panName: json["panName"],
-      status: Status.fromJson(json["status"]),
+        data: DataResponse.fromJson(json["data"]),
     );
-  }
 
-  Map<String, dynamic> toJson() => {
-    "firstName": firstName,
-    "lastName": lastName,
-    "dob":
-        "${dob.year.toString().padLeft(4, '0')}-${dob.month.toString().padLeft(2, '0')}-${dob.day.toString().padLeft(2, '0')}",
-    "phoneNumber": phoneNumber,
-    "pan": pan,
-    "panName": panName,
-    "status": status.toJson(),
-  };
+    Map<String, dynamic> toJson() => {
+        "status": status,
+        "message": message,
+        "data": data.toJson(),
+    };
 }
 
-class Status {
-  bool isVerified;
-  bool isKycVerfied;
-  bool isProfileCompleted;
+class DataResponse {
+    User user;
 
-  Status({
-    required this.isVerified,
-    required this.isKycVerfied,
-    required this.isProfileCompleted,
-  });
+    DataResponse({
+        required this.user,
+    });
 
-  factory Status.fromJson(Map<String, dynamic> json) => Status(
-    isVerified: json["isVerified"],
-    isKycVerfied: json["isKYCVerfied"],
-    isProfileCompleted: json["isProfileCompleted"],
-  );
+    factory DataResponse.fromJson(Map<String, dynamic> json) => DataResponse(
+        user: User.fromJson(json["user"]),
+    );
 
-  Map<String, dynamic> toJson() => {
-    "isVerified": isVerified,
-    "isKYCVerfied": isKycVerfied,
-    "isProfileCompleted": isProfileCompleted,
-  };
+    Map<String, dynamic> toJson() => {
+        "user": user.toJson(),
+    };
 }
 
-class UserProfileUpdatedResponse {
-  int status;
-  String message;
-  UserProfileUpdatedData data;
-  bool get success => status == 200 || status == 201;
+class User {
+    int id;
+    String phonenumber;
+    String guid;
+    String firstname;
+    String lastname;
+    String email;
+    dynamic createdat;
+    bool isverified;
+    DateTime dob;
+    bool isonboardingcompleted;
+    bool ispanverified;
+    String gender;
 
-  UserProfileUpdatedResponse({
-    required this.status,
-    required this.message,
-    required this.data,
-  });
+    User({
+        required this.id,
+        required this.phonenumber,
+        required this.guid,
+        required this.firstname,
+        required this.lastname,
+        required this.email,
+        required this.createdat,
+        required this.isverified,
+        required this.dob,
+        required this.isonboardingcompleted,
+        required this.ispanverified,
+        required this.gender,
+    });
 
-  factory UserProfileUpdatedResponse.fromJson(Map<String, dynamic> json) =>
-      UserProfileUpdatedResponse(
-        status: json["status"],
-        message: json["message"],
-        data: UserProfileUpdatedData.fromJson(json["data"]),
-      );
+    factory User.fromJson(Map<String, dynamic> json) => User(
+        id: json["id"],
+        phonenumber: json["phonenumber"],
+        guid: json["guid"],
+        firstname: json["firstname"],
+        lastname: json["lastname"],
+        email: json["email"],
+        createdat: json["createdat"],
+        isverified: json["isverified"],
+        dob: DateTime.parse(json["dob"]),
+        isonboardingcompleted: json["isonboardingcompleted"],
+        ispanverified: json["ispanverified"],
+        gender: json["gender"],
+    );
 
-  Map<String, dynamic> toJson() => {
-    "status": status,
-    "message": message,
-    "data": data.toJson(),
-  };
-}
-
-class UserProfileUpdatedData {
-  bool isProfileCompleted;
-
-  UserProfileUpdatedData({required this.isProfileCompleted});
-
-  factory UserProfileUpdatedData.fromJson(Map<String, dynamic> json) =>
-      UserProfileUpdatedData(isProfileCompleted: json["isProfileCompleted"]);
-
-  Map<String, dynamic> toJson() => {"isProfileCompleted": isProfileCompleted};
+    Map<String, dynamic> toJson() => {
+        "id": id,
+        "phonenumber": phonenumber,
+        "guid": guid,
+        "firstname": firstname,
+        "lastname": lastname,
+        "email": email,
+        "createdat": createdat,
+        "isverified": isverified,
+        "dob": "${dob.year.toString().padLeft(4, '0')}-${dob.month.toString().padLeft(2, '0')}-${dob.day.toString().padLeft(2, '0')}",
+        "isonboardingcompleted": isonboardingcompleted,
+        "ispanverified": ispanverified,
+        "gender": gender,
+    };
 }

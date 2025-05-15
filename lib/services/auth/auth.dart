@@ -103,10 +103,13 @@ class AuthService {
         final responseData = jsonDecode(response.body);
         AppLogger.info('Get User Profile Response: ${responseData.toString()}', tag: 'AuthService');
 
-        if (response.statusCode == 200 && responseData['success'] == true) {
-
+        // Check if the response status code is successful (200 or 201)
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          // Create and return the UserDataResponse object from the JSON
           return UserDataResponse.fromJson(responseData);
         }
+      } else {
+        AppLogger.info('Get User Profile Response: ${response?.body.toString()}', tag: 'AuthService');
       }
       return null;
     } catch (e, stackTrace) {

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/controllers/theme_controller.dart';
 import 'package:nwt_app/screens/assets/banks/banks.dart';
 import 'package:nwt_app/screens/assets/investments/investments.dart';
 import 'package:nwt_app/screens/notifications/notification_list.dart';
+import 'package:nwt_app/services/auth/auth_flow.dart';
+import 'package:nwt_app/utils/logger.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 import 'package:nwt_app/widgets/avatar.dart';
 import 'package:nwt_app/constants/colors.dart';
@@ -45,11 +45,60 @@ class _DashboardState extends State<Dashboard> {
                     children: [
                       Row(
                         children: [
-                          const Avatar(
-                            path:
-                                'https://images.unsplash.com/photo-1633332755192-727a05c4013d?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by-1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                            width: 40,
-                            height: 40,
+                          GestureDetector(
+                            onTap: () {
+                              // Show confirmation dialog before logout
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const AppText(
+                                      "Logout",
+                                      variant: AppTextVariant.headline4,
+                                      weight: AppTextWeight.semiBold,
+                                    ),
+                                    content: const AppText(
+                                      "Are you sure you want to logout?",
+                                      variant: AppTextVariant.bodyMedium,
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: const AppText(
+                                          "Cancel",
+                                          variant: AppTextVariant.bodyMedium,
+                                          colorType: AppTextColorType.secondary,
+                                        ),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                          // Create AuthFlow instance and logout
+                                          try {
+                                            final authFlow = AuthFlow();
+                                            AppLogger.info('Logging out user', tag: 'Dashboard');
+                                            authFlow.logout();
+                                          } catch (e) {
+                                            AppLogger.error('Error during logout', error: e, tag: 'Dashboard');
+                                          }
+                                        },
+                                        child: const AppText(
+                                          "Logout",
+                                          variant: AppTextVariant.bodyMedium,
+                                          colorType: AppTextColorType.error,
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                            child: const Avatar(
+                              path:
+                                  'https://images.unsplash.com/photo-1633332755192-727a05c4013d?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by-1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                              width: 40,
+                              height: 40,
+                            ),
                           ),
                           const SizedBox(width: 8),
                           Column(
