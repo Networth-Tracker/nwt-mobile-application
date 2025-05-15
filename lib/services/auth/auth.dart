@@ -7,12 +7,11 @@ import 'package:nwt_app/services/global_storage.dart';
 import 'package:nwt_app/types/auth/otp.dart';
 import 'package:nwt_app/types/auth/pan_verfication.dart';
 import 'package:nwt_app/types/auth/user.dart';
-import 'package:nwt_app/utils/api_helpers.dart';
 import 'package:nwt_app/utils/logger.dart';
+import 'package:nwt_app/utils/network_api_helper.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 
 class AuthService {
-  final APIHelper _apiHelper = APIHelper();
 
   Future<GenerateOtpResponse?> generateOTP({
     required String phoneNumber,
@@ -21,7 +20,7 @@ class AuthService {
     onLoading(true);
     try {
       final appSignature = await SmsAutoFill().getAppSignature;
-      final response = await _apiHelper.post(ApiURLs.GENERATE_OTP, {
+      final response = await NetworkAPIHelper().post(ApiURLs.GENERATE_OTP, {
         "phonenumber": phoneNumber,
         'apphash': appSignature,
       }); 
@@ -49,7 +48,7 @@ class AuthService {
   }) async {
     onLoading(true);
     try {
-      final response = await _apiHelper.post(ApiURLs.VERIFY_OTP, {
+      final response = await NetworkAPIHelper().post(ApiURLs.VERIFY_OTP, {
         "phonenumber": phoneNumber,
         "otp": otp,
       });
@@ -99,7 +98,7 @@ class AuthService {
   }) async {
     onLoading(true);
     try {
-      final response = await APIHelper().get(ApiURLs.GET_USER_PROFILE);
+      final response = await NetworkAPIHelper().get(ApiURLs.GET_USER_PROFILE);
       if (response != null) {
         final responseData = jsonDecode(response.body);
         AppLogger.info('Get User Profile Response: ${responseData.toString()}', tag: 'AuthService');
@@ -128,7 +127,7 @@ class AuthService {
     onLoading(true);
     try {
       // Make a POST request to the PAN verification endpoint
-      final response = await _apiHelper.post(ApiURLs.PAN_CARD_VERIFICATION, {
+      final response = await NetworkAPIHelper().post(ApiURLs.PAN_CARD_VERIFICATION, {
         "pannumber": panNumber,
       });
       
@@ -138,8 +137,21 @@ class AuthService {
         
         // Check if the response status code is successful (200 or 201)
         if (response.statusCode == 200 || response.statusCode == 201) {
-          // Create and return the PanVerificationResponse object from the JSON
-          return PanVerificationResponse.fromJson(responseData);
+          // Create the PanVerificationResponse object from the JSON
+          final verificationResponse = PanVerificationResponse.fromJson(responseData);
+          
+          // If verification was successful, refresh the user profile
+          if (verificationResponse.success) {
+            AppLogger.info('PAN verification successful, refreshing user profile', tag: 'AuthService');
+            
+            // Fetch updated user profile
+            await getUserProfile(onLoading: (loading) {
+              // Don't update the loading state here to avoid UI flicker
+              // The parent loading state is still active
+            });
+          }
+          
+          return verificationResponse;
         }
       } else {
         AppLogger.info('PAN Verification Response: ${response?.body.toString()}', tag: 'AuthService');

@@ -13,6 +13,44 @@ import 'package:nwt_app/utils/logger.dart';
 class AuthFlow {
   final AuthService _authService = AuthService();
   final UserController _userController = Get.find<UserController>();
+  
+  /// Handles the flow after successful OTP verification
+  /// Fetches the latest user profile and redirects based on verification status
+  Future<void> handlePostOtpVerification() async {
+    AppLogger.info('Handling post-OTP verification flow', tag: 'AuthFlow');
+    
+    // Fetch the latest user profile
+    await _userController.fetchUserProfile(
+      onLoading: (loading) {
+        // Handle loading silently
+      },
+    );
+    
+    // Check if user data is available
+    if (_userController.userData != null) {
+      final user = _userController.userData!;
+      
+      // Check all verification statuses at once
+      if (user.isverified && user.ispanverified) {
+        // All verifications are complete, go directly to dashboard
+        AppLogger.info(
+          'User is fully verified, redirecting to dashboard',
+          tag: 'AuthFlow',
+        );
+        _navigateToDashboard();
+      } else {
+        // Handle verification status normally
+        _handleUserVerificationStatus(user);
+      }
+    } else {
+      // If user data couldn't be fetched, redirect to onboarding
+      AppLogger.info(
+        'Failed to fetch user data after OTP verification, redirecting to onboarding',
+        tag: 'AuthFlow',
+      );
+      _navigateToOnboarding();
+    }
+  }
 
   Future<void> initialize() async {
     final token = StorageService.read(StorageKeys.AUTH_TOKEN_KEY);
