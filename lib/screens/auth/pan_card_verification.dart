@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:nwt_app/screens/dashboard/dashboard.dart';
-import 'package:nwt_app/widgets/common/app_input_field.dart';
 import 'package:nwt_app/widgets/common/button_widget.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 import 'package:nwt_app/constants/sizing.dart';
@@ -55,7 +54,7 @@ class _PanCardVerificationState extends State<PanCardVerification> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-                surfaceTintColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
         backgroundColor: Colors.transparent,
         automaticallyImplyLeading: false,
         title: Row(
@@ -83,7 +82,7 @@ class _PanCardVerificationState extends State<PanCardVerification> {
             children: [
               Expanded(
                 child: SingleChildScrollView(
-                        physics: const BouncingScrollPhysics(),
+                  physics: const BouncingScrollPhysics(),
                   child: Column(
                     children: [
                       const SizedBox(height: 20),
@@ -109,14 +108,13 @@ class _PanCardVerificationState extends State<PanCardVerification> {
                         ],
                       ),
                       const SizedBox(height: 20),
-                      AppInputField(
+                      TextFormField(
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        validator: AppValidators.validatePanCard,
                         controller: _panController,
                         focusNode: _focusNode,
-                        hintText: "Enter your PAN number",
-
                         keyboardType: _currentKeyboardType,
                         textCapitalization: TextCapitalization.characters,
-                        validator: AppValidators.validatePanCard,
                         inputFormatters: [
                           LengthLimitingTextInputFormatter(10),
                           FilteringTextInputFormatter.deny(
@@ -126,7 +124,7 @@ class _PanCardVerificationState extends State<PanCardVerification> {
                             if (newValue.text.isEmpty) return newValue;
                             if (newValue.text.length > 10) return oldValue;
 
-
+                            // Allow backspace
                             if (newValue.text.length < oldValue.text.length) {
                               return newValue;
                             }
@@ -134,21 +132,21 @@ class _PanCardVerificationState extends State<PanCardVerification> {
                             final text = newValue.text;
                             final position = text.length;
 
-
+                            // Validate based on position
                             if (position <= 5) {
-
+                              // First 5 chars must be letters
                               if (!RegExp(r'^[A-Z]{1,5}$').hasMatch(text)) {
                                 return oldValue;
                               }
                             } else if (position <= 9) {
-
+                              // After first 5 letters, next 4 must be numbers
                               if (!RegExp(
                                 r'^[A-Z]{5}[0-9]{1,4}$',
                               ).hasMatch(text)) {
                                 return oldValue;
                               }
                             } else {
-
+                              // Last char must be letter
                               if (!RegExp(
                                 r'^[A-Z]{5}[0-9]{4}[A-Z]$',
                               ).hasMatch(text)) {
@@ -158,8 +156,6 @@ class _PanCardVerificationState extends State<PanCardVerification> {
                             return newValue;
                           }),
                         ],
-                        size: AppInputFieldSize.large,
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
                       ),
                     ],
                   ),
@@ -173,7 +169,10 @@ class _PanCardVerificationState extends State<PanCardVerification> {
                       variant: AppButtonVariant.primary,
                       size: AppButtonSize.large,
                       onPressed:
-                          () => Get.to(const Dashboard(), transition: Transition.rightToLeft),
+                          () => Get.to(
+                            const Dashboard(),
+                            transition: Transition.rightToLeft,
+                          ),
                     ),
                   ),
                 ],
