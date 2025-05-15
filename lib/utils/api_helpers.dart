@@ -1,27 +1,27 @@
 import 'dart:convert';
-import 'dart:developer' as developer;
 import 'package:http/http.dart' as http;
 import 'package:nwt_app/constants/storage_keys.dart';
 import 'package:nwt_app/services/global_storage.dart';
+import 'package:nwt_app/utils/logger.dart';
 
 class APIHelper {
   void _logApiCall(
       String method, String url, dynamic data, http.Response? response) {
-    developer.log('API $method Request:', name: 'API');
-    developer.log('URL: $url', name: 'API');
+    AppLogger.info('API $method Request:', tag: 'API');
+    AppLogger.info('URL: $url', tag: 'API');
     if (data != null) {
-      developer.log('Data: ${jsonEncode(data)}', name: 'API');
+      AppLogger.info('Data: ${jsonEncode(data)}', tag: 'API');
     }
     if (response != null) {
-      developer.log('Status Code: ${response.statusCode}', name: 'API');
+      AppLogger.info('Status Code: ${response.statusCode}', tag: 'API');
       try {
         final decodedResponse = jsonDecode(response.body);
-        developer.log(
+        AppLogger.info(
             'Message: ${decodedResponse['message'] ?? 'No message provided'}',
-            name: 'API');
+            tag: 'API');
       } catch (e) {
-        developer.log('Failed to decode response: ${response.body}',
-            name: 'API');
+        AppLogger.error('Failed to decode response', error: e, tag: 'API');
+        AppLogger.debug('Response body: ${response.body}', tag: 'API');
       }
     }
   }

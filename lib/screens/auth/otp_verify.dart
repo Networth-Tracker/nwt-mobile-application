@@ -10,13 +10,13 @@ import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/constants/theme.dart';
 import 'package:nwt_app/screens/auth/pan_card_verification.dart';
 import 'package:nwt_app/services/auth/auth.dart';
+import 'package:nwt_app/utils/logger.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 
 class PhoneOTPVerifyScreen extends StatefulWidget {
   final String phoneNumber;
 
-  const PhoneOTPVerifyScreen({Key? key, required this.phoneNumber})
-    : super(key: key);
+  const PhoneOTPVerifyScreen({super.key, required this.phoneNumber});
 
   @override
   State<PhoneOTPVerifyScreen> createState() => _PhoneOTPVerifyScreenState();
@@ -35,11 +35,11 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
   bool _isLoading = false;
   int _activeFieldIndex = 0;
 
-  // Animation controllers for each OTP field
+
   late List<AnimationController> _animationControllers;
   late List<Animation<double>> _scaleAnimations;
   
-  // Track filled status of each field
+
   final List<bool> _fieldFilled = List.generate(6, (index) => false);
 
   Timer? _resendTimer;
@@ -55,7 +55,7 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
   void initState() {
     super.initState();
     
-    // Initialize animation controllers
+
     _animationControllers = List.generate(
       6,
       (index) => AnimationController(
@@ -64,7 +64,7 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
       ),
     );
     
-    // Create scale animations
+
     _scaleAnimations = _animationControllers.map((controller) {
       return Tween<double>(begin: 1.0, end: 1.1).animate(
         CurvedAnimation(
@@ -83,7 +83,7 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
       await SmsAutoFill().getAppSignature;
       listenForCode();
     } catch (e) {
-      print('Error setting up SMS listener: $e');
+      AppLogger.error('Error setting up SMS listener', error: e, tag: 'OTPVerifyScreen');
     }
   }
   
@@ -96,13 +96,13 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
   
   void _autoFillOtp(String otp) {
     if (otp.length == 6) {
-      // Clear any existing OTP first
+
       for (int i = 0; i < 6; i++) {
         _controllers[i].clear();
         _fieldFilled[i] = false;
       }
       
-      // Fill each digit one by one with animation
+
       for (int i = 0; i < 6; i++) {
         Future.delayed(Duration(milliseconds: 200 * i), () {
           setState(() {
@@ -110,15 +110,15 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
             _fieldFilled[i] = true;
             _activeFieldIndex = i;
             
-            // Play animation for the current field
+
             _animationControllers[i].forward().then((_) {
               _animationControllers[i].reverse();
             });
           });
           
-          // If this is the last digit
+
           if (i == 5) {
-            // Play animation for all fields when complete
+
             Future.delayed(const Duration(milliseconds: 300), () {
               for (var controller in _animationControllers) {
                 controller.forward().then((_) {
@@ -126,7 +126,7 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
                 });
               }
               
-              // Submit the form after 1 second
+
               Future.delayed(const Duration(milliseconds: 1000), () {
                 _verifyOTP();
               });
@@ -190,12 +190,12 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
 
     final response = await _authService.verifyOTP(
       phoneNumber: widget.phoneNumber,
-      otp: int.parse(_otpCode),
+      otp: _otpCode,
       onLoading: _setLoading,
     );
 
     if (response != null && response.success) {
-      Get.to(const PanCardVerification(), transition: Transition.rightToLeft);
+      Get.to(() => const PanCardVerification(), transition: Transition.rightToLeft);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -213,7 +213,6 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
         _controllers[_activeFieldIndex].text = digit.toString();
         _fieldFilled[_activeFieldIndex] = true;
         
-        // Play animation for the current field
         _animationControllers[_activeFieldIndex].forward().then((_) {
           _animationControllers[_activeFieldIndex].reverse();
         });
@@ -222,9 +221,7 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
           _activeFieldIndex++;
         }
         
-        // Check if all fields are filled
         if (_controllers.every((controller) => controller.text.isNotEmpty)) {
-          // Play animation for all fields when complete
           for (var controller in _animationControllers) {
             controller.forward().then((_) {
               controller.reverse();
@@ -353,7 +350,7 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
                                 _activeFieldIndex = index;
                               });
                             },
-                            // Wrap with AnimatedBuilder for scale animation
+
                             child: AnimatedBuilder(
                               animation: _scaleAnimations[index],
                               builder: (context, child) {
@@ -471,7 +468,7 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
                           text: 'Continue',
                           variant: AppButtonVariant.primary,
                           size: AppButtonSize.large,
-                          // onPressed: _verifyOTP,
+
                           onPressed: () => Get.to(const PanCardVerification(), transition: Transition.rightToLeft),
                           isLoading: _isLoading,
                         ),

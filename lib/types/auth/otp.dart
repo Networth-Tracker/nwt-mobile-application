@@ -1,22 +1,23 @@
 class GenerateOtpResponse {
-    bool success;
+    int status;
     String message;
     GenerateOtpData? data;
+    bool get success => status == 200 || status == 201;
 
     GenerateOtpResponse({
-        required this.success,
+        required this.status,
         required this.message,
         this.data,
     });
 
     factory GenerateOtpResponse.fromJson(Map<String, dynamic> json) => GenerateOtpResponse(
-        success: json["success"],
+        status: json["status"],
         message: json["message"],
         data: json["data"]==null?null: GenerateOtpData.fromJson(json["data"]),
     );
 
     Map<String, dynamic> toJson() => {
-        "success": success,
+        "status": status,
         "message": message,
         "data": data?.toJson(),
     };
@@ -39,24 +40,25 @@ class GenerateOtpData {
 }
 
 class VerifyOtpResponse {
-    bool success;
+    int status;
     String message;
     VerifyOtpData? data;
+    bool get success => status == 200 || status == 201;
 
     VerifyOtpResponse({
-        required this.success,
+        required this.status,
         required this.message,
         this.data,
     });
 
     factory VerifyOtpResponse.fromJson(Map<String, dynamic> json) => VerifyOtpResponse(
-        success: json["success"],
+        status: json["status"],
         message: json["message"],
         data: json["data"]==null?null: VerifyOtpData.fromJson(json["data"]),
     );
 
     Map<String, dynamic> toJson() => {
-        "success": success,
+        "status": status,
         "message": message,
         "data": data?.toJson(),
     };

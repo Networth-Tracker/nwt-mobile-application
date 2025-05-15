@@ -1,14 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:nwt_app/widgets/common/app_input_field.dart';
 import 'package:nwt_app/widgets/common/button_widget.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 import 'package:nwt_app/constants/sizing.dart';
-import 'package:nwt_app/screens/dashboard/dashboard.dart';
-import 'package:nwt_app/services/auth/auth.dart';
 import 'package:nwt_app/utils/validators.dart';
+import 'package:nwt_app/constants/theme.dart';
 
 class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({super.key});
@@ -23,66 +21,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
   bool _isLoading = false;
-
-  Future<void> _updateProfile() async {
-    if (firstNameController.text.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please fill all fields',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.1),
-        colorText: Colors.red,
-      );
-      return;
-    }
-    if (lastNameController.text.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please enter your last name',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.1),
-        colorText: Colors.red,
-      );
-      return;
-    }
-    if (selectedDate == null) {
-      // AppRouter.showErrorSnackbar(
-      //   title: 'Error',
-      //   message: 'Please enter a valid date of birth',
-      //   position: SnackPosition.BOTTOM,
-      // );
-      return;
-    }
-
-    final response = await AuthService().updateProfile(
-      firstName: firstNameController.text,
-      lastName: lastNameController.text,
-      dob: selectedDate!,
-      onLoading: (isLoading) {
-        setState(() {
-          _isLoading = isLoading;
-        });
-      },
-    );
-
-    if (response != null) {
-      // AppRouter.showSuccessSnackbar(
-      //   title: 'Success',
-      //   message: 'Profile updated successfully',
-      //   position: SnackPosition.BOTTOM,
-      // );
-      // Navigator.pop(context);
-      Get.to(() => const Dashboard(), transition: Transition.rightToLeft);
-    } else {
-      // Get.snackbar(
-      //   'Error',
-      //   'Failed to update profile',
-      //   snackPosition: SnackPosition.BOTTOM,
-      //   backgroundColor: Colors.red.withValues(alpha: 0.1),
-      //   colorText: Colors.red,
-      // );
-    }
-  }
 
   @override
   void initState() {
@@ -117,27 +55,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       lastDate: DateTime.now(), // Not allowing future dates for DOB
       builder: (context, child) {
         return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: isDarkMode
-                ? const ColorScheme.dark(
-                    primary: Color(0xFFFFFFFF), // White in dark mode
-                    onPrimary: Color(0xFF000000), // Black text on primary
-                    surface: Color(0xFF0C0C0C), // Very dark gray surface
-                    onSurface: Color(0xFFFFFFFF), // White text on surface
-                  )
-                : const ColorScheme.light(
-                    primary: Color(0xFF000000), // Black in light mode
-                    onPrimary: Color(0xFFFFFFFF), // White text on primary
-                    surface: Color(0xFFFFFFFF), // White surface
-                    onSurface: Color(0xFF000000), // Black text on surface
-                  ),
-            dialogBackgroundColor: isDarkMode ? const Color(0xFF0C0C0C) : Colors.white,
-            textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(
-                foregroundColor: isDarkMode ? Colors.white : Colors.black,
-              ),
-            ),
-          ),
+          data: AppTheme.datePickerTheme(isDarkMode),
           child: child!,
         );
       },
@@ -255,7 +173,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       variant: AppButtonVariant.primary,
                       size: AppButtonSize.large,
                       isLoading: _isLoading,
-                      onPressed: _updateProfile,
+                      onPressed: () {},
                     ),
                   ),
                 ],

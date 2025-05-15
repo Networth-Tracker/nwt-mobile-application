@@ -35,7 +35,7 @@ class _PanCardVerificationState extends State<PanCardVerification> {
         setState(() {
           _currentKeyboardType = newType;
         });
-        // Force keyboard change
+
         _focusNode.unfocus();
         Future.delayed(const Duration(milliseconds: 50), () {
           _focusNode.requestFocus();
@@ -113,7 +113,7 @@ class _PanCardVerificationState extends State<PanCardVerification> {
                         controller: _panController,
                         focusNode: _focusNode,
                         hintText: "Enter your PAN number",
-                        // labelText: "PAN Number",
+
                         keyboardType: _currentKeyboardType,
                         textCapitalization: TextCapitalization.characters,
                         validator: AppValidators.validatePanCard,
@@ -126,7 +126,7 @@ class _PanCardVerificationState extends State<PanCardVerification> {
                             if (newValue.text.isEmpty) return newValue;
                             if (newValue.text.length > 10) return oldValue;
 
-                            // Allow backspace
+
                             if (newValue.text.length < oldValue.text.length) {
                               return newValue;
                             }
@@ -134,21 +134,21 @@ class _PanCardVerificationState extends State<PanCardVerification> {
                             final text = newValue.text;
                             final position = text.length;
 
-                            // Validate based on position
+
                             if (position <= 5) {
-                              // First 5 chars must be letters
+
                               if (!RegExp(r'^[A-Z]{1,5}$').hasMatch(text)) {
                                 return oldValue;
                               }
                             } else if (position <= 9) {
-                              // After first 5 letters, next 4 must be numbers
+
                               if (!RegExp(
                                 r'^[A-Z]{5}[0-9]{1,4}$',
                               ).hasMatch(text)) {
                                 return oldValue;
                               }
                             } else {
-                              // Last char must be letter
+
                               if (!RegExp(
                                 r'^[A-Z]{5}[0-9]{4}[A-Z]$',
                               ).hasMatch(text)) {
