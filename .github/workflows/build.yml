@@ -152,40 +152,35 @@ jobs:
           cat firebase_output.txt
 
   web:
-    name: Build Web
-    runs-on: ubuntu-latest
+    name: Web Build
     needs: android
-    
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Setup Flutter
+      - uses: actions/checkout@v4
+      
+      - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.29.3'
-          channel: 'stable'
-          cache: true
-
+          channel: stable
+          
       - name: Install Dependencies
         run: flutter pub get
-
+        
       - name: Build Web
         run: |
           flutter config --enable-web
           echo '##[group]Building Web...'
           flutter build web --release
-          echo '##[endgroup]'
-
-      - name: Create Versioned Build
+          echo '##[group]Web build complete'
+          
+      - name: Create Web Build Archive
         run: |
           mkdir -p build/renamed_builds
           cd build/web
-          # Use GitHub run number for versioning
           zip -r ../../build/renamed_builds/nwt-web-v0.0.${{ github.run_number }}.zip .
-          cd ../..
+          echo '##[group]Web build archive created'
+          ls -la ../../build/renamed_builds/
 
-      
       - name: Generate Web Release Notes
         run: |
           mkdir -p build/release_notes
