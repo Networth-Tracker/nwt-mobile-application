@@ -30,6 +30,7 @@ class AppInputField extends StatefulWidget {
   final TextCapitalization textCapitalization;
   final EdgeInsetsGeometry? contentPadding;
   final bool enabled;
+  final Color? fillColor;
 
   const AppInputField({
     Key? key,
@@ -56,6 +57,7 @@ class AppInputField extends StatefulWidget {
     this.textCapitalization = TextCapitalization.none,
     this.contentPadding,
     this.enabled = true,
+    this.fillColor,
   }) : super(key: key);
 
   @override
@@ -198,6 +200,8 @@ class _AppInputFieldState extends State<AppInputField> {
             prefixIcon: widget.prefix,
             suffixIcon: _buildSuffix(),
             contentPadding: _getContentPadding(),
+            fillColor: widget.fillColor,
+            filled: widget.fillColor != null,
           ),
         ),
       ],

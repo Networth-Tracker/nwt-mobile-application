@@ -1,0 +1,64 @@
+name: Build and Deploy Web App
+
+on:
+  push:
+    branches:
+      - dev
+  
+  workflow_dispatch:
+    inputs:
+      release_notes:
+        description: 'Release notes for this build'
+        required: false
+        default: 'Feature updates and improvements'
+
+jobs:
+  build:
+    name: Build Web
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.3'
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Build Web
+        run: |
+          flutter config --enable-web
+          flutter build web --release --web-renderer html --csp
+
+      - name: Create Versioned Build
+        run: |
+          mkdir -p build/renamed_builds
+          cd build/web
+          zip -r ../../build/renamed_builds/nwt-web-v0.0.${{ github.run_number }}.zip .
+          cd ../..
+
+      
+      - name: Generate Simple Release Notes
+        run: |
+          mkdir -p build/release_notes
+          cat > build/release_notes/web_release_notes.txt << EOL
+          Version: v0.0.${{ github.run_number }}
+          Build Date: $(date +'%Y-%m-%d %H:%M:%S')
+          Commit: ${{ github.sha }}
+          Notes: ${{ github.event.inputs.release_notes || 'Feature updates and improvements' }}
+          EOL
+          
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: web-build
+          path: |
+            build/renamed_builds/nwt-web-v0.0.${{ github.run_number }}.zip
+            build/release_notes/web_release_notes.txt
+          retention-days: 5

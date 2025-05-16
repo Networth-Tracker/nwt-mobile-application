@@ -4,10 +4,11 @@ import 'package:nwt_app/constants/storage_keys.dart';
 import 'package:nwt_app/services/auth/auth.dart';
 import 'package:nwt_app/services/global_storage.dart';
 import 'package:nwt_app/types/auth/user.dart';
+import 'package:nwt_app/utils/logger.dart';
 
 class UserController extends GetxController {
-  UserData? _userData;
-  UserData? get userData => _userData;
+  User? _userData;
+  User? get userData => _userData;
   
   final AuthService _authService = AuthService();
 
@@ -19,7 +20,7 @@ class UserController extends GetxController {
 
   Future<void> initializeUserData() async {
     final token = StorageService.read(StorageKeys.AUTH_TOKEN_KEY);
-    developer.log('Access token: $token');
+    AppLogger.info(token.toString(), tag: 'UserController');
     if (token != null) {
       await fetchUserProfile(
         onLoading: (loading) {
@@ -31,14 +32,18 @@ class UserController extends GetxController {
     }
   }
 
-  Future<void> fetchUserProfile({
+  Future<UserDataResponse?> fetchUserProfile({
     required Function(bool) onLoading,
   }) async {
     final response = await _authService.getUserProfile(onLoading: onLoading);
+    AppLogger.info(response.toString(), tag: 'UserController');
     if (response != null) {
-      _userData = response.data;
+      AppLogger.info(response.toString(), tag: 'UserController');
+      _userData = response.data.user;
       update();
+      return response;
     }
+    return null;
   }
 
   void clearUserData() {

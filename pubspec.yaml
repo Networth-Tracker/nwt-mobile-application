@@ -26,6 +26,9 @@ dependencies:
   app_links: ^6.4.0
   flutter_inappwebview: ^6.1.5
   firebase_remote_config: ^5.4.3
+  local_auth: ^2.3.0
+  file_picker: ^10.1.9
+  connectivity_plus: ^6.1.4
 
 dev_dependencies:
   flutter_test:

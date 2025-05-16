@@ -57,7 +57,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBDSVcrXmNbomQmBdFGduO2rOC-MWuJq6g',
-    appId: '1:823813601514:android:67883b8dbb9b3036453f93',
+    appId: '1:823813601514:android:4a89119dd051d1b0453f93',
     messagingSenderId: '823813601514',
     projectId: 'nwt-app-28415',
     storageBucket: 'nwt-app-28415.firebasestorage.app',
@@ -65,11 +65,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyB4zbVPVcbNa_aGQlkjGDjGSqpcZLbZF4Y',
-    appId: '1:823813601514:ios:2476a49e911080a4453f93',
+    appId: '1:823813601514:ios:2615d9be0a1927e2453f93',
     messagingSenderId: '823813601514',
     projectId: 'nwt-app-28415',
     storageBucket: 'nwt-app-28415.firebasestorage.app',
-    iosBundleId: 'com.nwt.app',
+    iosBundleId: 'com.app.networthtracker',
   );
 
 }

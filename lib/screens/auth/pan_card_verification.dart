@@ -3,7 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:nwt_app/screens/dashboard/dashboard.dart';
-import 'package:nwt_app/widgets/common/app_input_field.dart';
+import 'package:nwt_app/services/auth/auth.dart';
+import 'package:nwt_app/utils/logger.dart';
 import 'package:nwt_app/widgets/common/button_widget.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 import 'package:nwt_app/constants/sizing.dart';
@@ -20,6 +21,9 @@ class _PanCardVerificationState extends State<PanCardVerification> {
   final TextEditingController _panController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   TextInputType _currentKeyboardType = TextInputType.text;
+  bool _isLoading = false;
+  String? _errorMessage;
+  final AuthService _authService = AuthService();
 
   @override
   void initState() {
@@ -35,13 +39,81 @@ class _PanCardVerificationState extends State<PanCardVerification> {
         setState(() {
           _currentKeyboardType = newType;
         });
-        // Force keyboard change
+
         _focusNode.unfocus();
         Future.delayed(const Duration(milliseconds: 50), () {
           _focusNode.requestFocus();
         });
       }
     });
+  }
+
+  // Method to verify PAN card
+  void _verifyPanCard() async {
+    // Clear any previous error messages
+    setState(() {
+      _errorMessage = null;
+    });
+    
+    // Validate PAN number format
+    if (_panController.text.length != 10 || 
+        !RegExp(r'^[A-Z]{5}[0-9]{4}[A-Z]$').hasMatch(_panController.text)) {
+      setState(() {
+        _errorMessage = "Please enter a valid PAN number";
+      });
+      return;
+    }
+
+    // Call the PAN verification service
+    try {
+      final response = await _authService.verifyPanCard(
+        panNumber: _panController.text,
+        onLoading: (isLoading) {
+          setState(() {
+            _isLoading = isLoading;
+          });
+        },
+      );
+
+      // Check response
+      if (response != null) {
+        AppLogger.info('PAN Verification completed: ${response.message}', tag: 'PanCardVerification');
+        
+        if (response.success) {
+          // Show success message and navigate to dashboard
+          Get.snackbar(
+            'Success', 
+            'PAN verification successful',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.green,
+            colorText: Colors.white,
+          );
+          
+          // Navigate to dashboard after a short delay
+          Future.delayed(const Duration(seconds: 1), () {
+            Get.to(
+              () => const Dashboard(),
+              transition: Transition.rightToLeft,
+            );
+          });
+        } else {
+          // Show error message from the server
+          setState(() {
+            _errorMessage = response.message;
+          });
+        }
+      } else {
+        // Handle null response (service error)
+        setState(() {
+          _errorMessage = "Verification failed. Please try again.";
+        });
+      }
+    } catch (e) {
+      AppLogger.error('PAN Verification Error', error: e, tag: 'PanCardVerification');
+      setState(() {
+        _errorMessage = "An error occurred. Please try again.";
+      });
+    }
   }
 
   @override
@@ -55,7 +127,7 @@ class _PanCardVerificationState extends State<PanCardVerification> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-                surfaceTintColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
         backgroundColor: Colors.transparent,
         automaticallyImplyLeading: false,
         title: Row(
@@ -83,7 +155,7 @@ class _PanCardVerificationState extends State<PanCardVerification> {
             children: [
               Expanded(
                 child: SingleChildScrollView(
-                        physics: const BouncingScrollPhysics(),
+                  physics: const BouncingScrollPhysics(),
                   child: Column(
                     children: [
                       const SizedBox(height: 20),
@@ -109,14 +181,16 @@ class _PanCardVerificationState extends State<PanCardVerification> {
                         ],
                       ),
                       const SizedBox(height: 20),
-                      AppInputField(
+                      TextFormField(
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        validator: AppValidators.validatePanCard,
                         controller: _panController,
+                        decoration: InputDecoration(
+                          hintText: 'Enter your PAN number',
+                        ),
                         focusNode: _focusNode,
-                        hintText: "Enter your PAN number",
-                        // labelText: "PAN Number",
                         keyboardType: _currentKeyboardType,
                         textCapitalization: TextCapitalization.characters,
-                        validator: AppValidators.validatePanCard,
                         inputFormatters: [
                           LengthLimitingTextInputFormatter(10),
                           FilteringTextInputFormatter.deny(
@@ -158,22 +232,31 @@ class _PanCardVerificationState extends State<PanCardVerification> {
                             return newValue;
                           }),
                         ],
-                        size: AppInputFieldSize.large,
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
                       ),
                     ],
                   ),
                 ),
               ),
+              if (_errorMessage != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: AppText(
+                    _errorMessage!,
+                    variant: AppTextVariant.bodyMedium,
+                    colorType: AppTextColorType.error,
+                    weight: AppTextWeight.medium,
+                  ),
+                ),
               Row(
                 children: [
                   Expanded(
                     child: AppButton(
                       text: 'Verify',
                       variant: AppButtonVariant.primary,
+                      isLoading: _isLoading,
                       size: AppButtonSize.large,
-                      onPressed:
-                          () => Get.to(const Dashboard(), transition: Transition.rightToLeft),
+                      isDisabled: _isLoading || _panController.text.length != 10,
+                      onPressed: _verifyPanCard ,
                     ),
                   ),
                 ],

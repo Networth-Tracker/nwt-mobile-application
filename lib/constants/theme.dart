@@ -206,6 +206,29 @@ class AppTheme {
     // Add extension data to store our custom text colors
     extensions: <ThemeExtension<dynamic>>[AppTextThemeColors.dark],
   );
+
+  static ThemeData datePickerTheme(bool isDarkMode) {
+    return ThemeData(
+      colorScheme: isDarkMode
+          ? const ColorScheme.dark(
+              primary: Color(0xFFFFFFFF),
+              onPrimary: Color(0xFF000000),
+              surface: Color(0xFF0C0C0C),
+              onSurface: Color(0xFFFFFFFF),
+            )
+          : const ColorScheme.light(
+              primary: Color(0xFF000000),
+              onPrimary: Color(0xFFFFFFFF),
+              surface: Color(0xFFFFFFFF),
+              onSurface: Color(0xFF000000),
+            ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: isDarkMode ? Colors.white : Colors.black,
+        ),
+      ), dialogTheme: DialogThemeData(backgroundColor: isDarkMode ? const Color(0xFF0C0C0C) : Colors.white),
+    );
+  }
 }
 
 // Theme extension to properly handle text colors in theme changes

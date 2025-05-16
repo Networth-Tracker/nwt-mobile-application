@@ -1,4 +1,3 @@
-import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -6,10 +5,14 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:nwt_app/constants/theme.dart';
 import 'package:nwt_app/controllers/theme_controller.dart';
+import 'package:nwt_app/controllers/user_controller.dart';
 import 'package:nwt_app/firebase_options.dart';
 import 'package:nwt_app/notification/firebase_messaging.dart';
-import 'package:nwt_app/screens/onboarding/onboarding.dart';
+import 'package:nwt_app/screens/splash.dart';
 import 'package:nwt_app/services/global_storage.dart';
+import 'package:nwt_app/services/network/connectivity_service.dart';
+import 'package:nwt_app/utils/logger.dart';
+import 'package:nwt_app/widgets/network/network_sensitive.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 // Initialize the local notifications plugin at the top level
@@ -19,7 +22,7 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  print("Handling background message: ${message.notification?.title}");
+  AppLogger.info("Handling background message: ${message.notification?.title}", tag: 'FirebaseMessaging');
 }
 
 void main() async {
@@ -43,24 +46,29 @@ void main() async {
   final messagingAPI = FirebaseMessagingAPI();
   await messagingAPI.initPushNotifications();
   
+  // Initialize controllers and services
+  await Get.putAsync(() => ConnectivityService().init());
   Get.put(ThemeController());
+  Get.put(UserController());
+  
   runApp(const MyApp());
 }
-Future<void> setupRemoteConfig() async {
-  final remoteConfig = FirebaseRemoteConfig.instance;
+// Future<void> setupRemoteConfig() async {
+//   final remoteConfig = FirebaseRemoteConfig.instance;
 
-  await remoteConfig.setConfigSettings(
-    RemoteConfigSettings(
-      fetchTimeout: const Duration(seconds: 10),
-      minimumFetchInterval: const Duration(seconds: 10),
-    ),
-  );
+//   await remoteConfig.setConfigSettings(
+//     RemoteConfigSettings(
+//       fetchTimeout: const Duration(seconds: 10),
+//       minimumFetchInterval: const Duration(seconds: 10),
+//     ),
+//   );
 
-  await remoteConfig.setDefaults(<String, dynamic>{
-    'welcome_message': 'Hello from default!',
-  });
-  await remoteConfig.fetchAndActivate();
-}
+//   await remoteConfig.setDefaults(<String, dynamic>{
+//     'welcome_message': 'Hello from default!',
+//   });
+//   await remoteConfig.fetchAndActivate();
+// }
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -74,7 +82,17 @@ class MyApp extends StatelessWidget {
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: themeController.themeMode,
-        home: const OnboardingScreen(),
+        // home: const AuthWrapper(child: OnboardingScreen()),
+        home: const SplashScreen(),
+        builder: (context, child) {
+          // Wrap the entire app with network status banner
+          return Column(
+            children: [
+              const NetworkStatusBanner(),
+              Expanded(child: child!),
+            ],
+          );
+        },
       ),
     );
   }
