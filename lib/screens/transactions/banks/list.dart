@@ -41,6 +41,7 @@ class FilterCategories extends Category {
   bool get isMainCategory => parentId == null;
 }
 
+
 class BankTransactionListScreen extends StatefulWidget {
   const BankTransactionListScreen({super.key});
 
