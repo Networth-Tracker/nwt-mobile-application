@@ -8,8 +8,8 @@ import 'package:nwt_app/widgets/common/text_widget.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/constants/theme.dart';
-import 'package:nwt_app/screens/auth/pan_card_verification.dart';
 import 'package:nwt_app/services/auth/auth.dart';
+import 'package:nwt_app/services/auth/auth_flow.dart';
 import 'package:nwt_app/utils/logger.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 
@@ -179,30 +179,32 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
 
   Future<void> _verifyOTP() async {
     if (_otpCode.length != 6) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter the complete 6-digit OTP'),
-          duration: Duration(seconds: 2),
-        ),
-      );
       return;
     }
+
+    _setLoading(true);
 
     final response = await _authService.verifyOTP(
       phoneNumber: widget.phoneNumber,
       otp: _otpCode,
-      onLoading: _setLoading,
+      onLoading: (isLoading) {
+        _setLoading(isLoading);
+      },
     );
 
     if (response != null && response.success) {
-      Get.to(() => const PanCardVerification(), transition: Transition.rightToLeft);
+      // Use the AuthFlow to handle post-OTP verification flow
+      // This will check all verification statuses and redirect accordingly
+      final authFlow = AuthFlow();
+      await authFlow.handlePostOtpVerification();
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(response?.message ?? 'Failed to verify OTP'),
-          backgroundColor: Colors.red,
-          duration: const Duration(seconds: 2),
-        ),
+      // Show error
+      Get.snackbar(
+        'Error',
+        response?.message ?? 'Failed to verify OTP. Please try again.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
       );
     }
   }
@@ -468,8 +470,12 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
                           text: 'Continue',
                           variant: AppButtonVariant.primary,
                           size: AppButtonSize.large,
-
-                          onPressed: () => Get.to(const PanCardVerification(), transition: Transition.rightToLeft),
+                          isDisabled: _otpCode.length != 6 || _isLoading,
+                          onPressed: () {
+                            if (_otpCode.length == 6 && !_isLoading) {
+                              _verifyOTP();
+                            }
+                          },
                           isLoading: _isLoading,
                         ),
                       ),
