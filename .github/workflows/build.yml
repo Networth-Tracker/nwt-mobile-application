@@ -108,13 +108,26 @@ jobs:
         run: |
           CONSOLE_URL="https://console.firebase.google.com/project/${{ secrets.FIREBASE_PROJECT_ID }}/appdistribution/app/${{ secrets.FIREBASE_APP_ID }}/releases"
           TESTER_URL="https://appdistribution.firebase.google.com/testerapps/${{ secrets.FIREBASE_APP_ID }}"
+          
+          # Get the download URL for the APK
+          APK_URL="https://github.com/${{ github.repository }}/releases/download/v0.0.${{ github.run_number }}/nwt-app-v0.0.${{ github.run_number }}.apk"
+          WEB_ZIP_URL="https://github.com/${{ github.repository }}/releases/download/v0.0.${{ github.run_number }}/nwt-web-v0.0.${{ github.run_number }}.zip"
 
           cat > firebase_output.txt << EOL
-          ✅ Android App successfully uploaded to Firebase App Distribution!
-          Version: v0.0.${{ github.run_number }}
+          🚀 Build Artifacts Available for Download:
           
-          🔗 Firebase Console: $CONSOLE_URL  
-          👨‍💻 Tester Link (requires login): $TESTER_URL  
+          📱 Android APK:
+          - Direct Download: $APK_URL
+          
+          🌐 Web Build (ZIP):
+          - Direct Download: $WEB_ZIP_URL
+          
+          🔗 Firebase App Distribution:
+          - Console: $CONSOLE_URL  
+          - Tester Portal (login required): $TESTER_URL  
+          
+          ℹ️ Version: v0.0.${{ github.run_number }}
+          🔄 Run Number: ${{ github.run_number }}
           EOL
 
           echo "FIREBASE_OUTPUT<<EOF" >> $GITHUB_ENV
@@ -195,18 +208,13 @@ jobs:
           echo "$FIREBASE_SERVICE_ACCOUNT" > firebase-service-account.json
           firebase login:ci --no-localhost
           
-          # Upload to Firebase Storage
-          firebase use $FIREBASE_PROJECT_ID --token "$FIREBASE_TOKEN"
+          # Skip Firebase Hosting deployment for now
+          echo "Skipping Firebase Hosting deployment as per configuration"
           
-          # Create a temporary directory for the web build
-          mkdir -p web_build
-          unzip build/renamed_builds/nwt-web-v0.0.${{ github.run_number }}.zip -d web_build
-          
-          # Deploy to Firebase Hosting
-          firebase deploy --only hosting:web
-          
-          # Cleanup
-          rm -rf web_build firebase-service-account.json
+          # Just list the built files for verification
+          echo "Build artifacts ready for GitHub Release:"
+          ls -la build/renamed_apks/
+          ls -la build/renamed_builds/
 
   notify:
     name: Notify Completion
