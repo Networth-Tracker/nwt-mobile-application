@@ -22,30 +22,26 @@ class PhoneOTPVerifyScreen extends StatefulWidget {
   State<PhoneOTPVerifyScreen> createState() => _PhoneOTPVerifyScreenState();
 }
 
-class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAutoFill, TickerProviderStateMixin {
-
+class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen>
+    with CodeAutoFill, TickerProviderStateMixin {
   final List<TextEditingController> _controllers = List.generate(
     6,
     (index) => TextEditingController(),
   );
-
 
   final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
   final AuthService _authService = AuthService();
   bool _isLoading = false;
   int _activeFieldIndex = 0;
 
-
   late List<AnimationController> _animationControllers;
   late List<Animation<double>> _scaleAnimations;
-  
 
   final List<bool> _fieldFilled = List.generate(6, (index) => false);
 
   Timer? _resendTimer;
   int _timeLeft = 60;
   bool _canResendOTP = false;
-
 
   String get _otpCode {
     return _controllers.map((controller) => controller.text).join();
@@ -54,7 +50,6 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
   @override
   void initState() {
     super.initState();
-    
 
     _animationControllers = List.generate(
       6,
@@ -63,45 +58,44 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
         duration: const Duration(milliseconds: 300),
       ),
     );
-    
 
-    _scaleAnimations = _animationControllers.map((controller) {
-      return Tween<double>(begin: 1.0, end: 1.1).animate(
-        CurvedAnimation(
-          parent: controller,
-          curve: Curves.easeInOut,
-        ),
-      );
-    }).toList();
-    
+    _scaleAnimations =
+        _animationControllers.map((controller) {
+          return Tween<double>(begin: 1.0, end: 1.1).animate(
+            CurvedAnimation(parent: controller, curve: Curves.easeInOut),
+          );
+        }).toList();
+
     _startResendTimer();
     _setupSmsListener();
   }
-  
+
   void _setupSmsListener() async {
     try {
       await SmsAutoFill().getAppSignature;
       listenForCode();
     } catch (e) {
-      AppLogger.error('Error setting up SMS listener', error: e, tag: 'OTPVerifyScreen');
+      AppLogger.error(
+        'Error setting up SMS listener',
+        error: e,
+        tag: 'OTPVerifyScreen',
+      );
     }
   }
-  
+
   @override
   void codeUpdated() {
     if (code != null && code!.length == 6) {
       _autoFillOtp(code!);
     }
   }
-  
+
   void _autoFillOtp(String otp) {
     if (otp.length == 6) {
-
       for (int i = 0; i < 6; i++) {
         _controllers[i].clear();
         _fieldFilled[i] = false;
       }
-      
 
       for (int i = 0; i < 6; i++) {
         Future.delayed(Duration(milliseconds: 200 * i), () {
@@ -109,23 +103,19 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
             _controllers[i].text = otp[i];
             _fieldFilled[i] = true;
             _activeFieldIndex = i;
-            
 
             _animationControllers[i].forward().then((_) {
               _animationControllers[i].reverse();
             });
           });
-          
 
           if (i == 5) {
-
             Future.delayed(const Duration(milliseconds: 300), () {
               for (var controller in _animationControllers) {
                 controller.forward().then((_) {
                   controller.reverse();
                 });
               }
-              
 
               Future.delayed(const Duration(milliseconds: 1000), () {
                 _verifyOTP();
@@ -214,15 +204,15 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
       setState(() {
         _controllers[_activeFieldIndex].text = digit.toString();
         _fieldFilled[_activeFieldIndex] = true;
-        
+
         _animationControllers[_activeFieldIndex].forward().then((_) {
           _animationControllers[_activeFieldIndex].reverse();
         });
-        
+
         if (_activeFieldIndex < 5) {
           _activeFieldIndex++;
         }
-        
+
         if (_controllers.every((controller) => controller.text.isNotEmpty)) {
           for (var controller in _animationControllers) {
             controller.forward().then((_) {
@@ -236,15 +226,14 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
       });
     }
   }
-  
+
   void _onBackspace() {
     if (_activeFieldIndex >= 0 && _activeFieldIndex < 6) {
       setState(() {
         if (_controllers[_activeFieldIndex].text.isNotEmpty) {
           _controllers[_activeFieldIndex].text = '';
           _fieldFilled[_activeFieldIndex] = false;
-        }
-        else if (_activeFieldIndex > 0) {
+        } else if (_activeFieldIndex > 0) {
           _activeFieldIndex--;
           _controllers[_activeFieldIndex].text = '';
           _fieldFilled[_activeFieldIndex] = false;
@@ -370,49 +359,85 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen> with CodeAu
                                   maxLength: 1,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                    color: _fieldFilled[index]
-                                        ? Theme.of(context).colorScheme.primary
-                                        : context.textThemeColors.primaryText,
+                                    color:
+                                        _fieldFilled[index]
+                                            ? Theme.of(
+                                              context,
+                                            ).colorScheme.primary
+                                            : context
+                                                .textThemeColors
+                                                .primaryText,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
                                   ),
                                   decoration: InputDecoration(
                                     counterText: "",
-                                    contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      vertical: 16,
+                                    ),
                                     filled: true,
-                                    fillColor: _fieldFilled[index]
-                                        ? (Theme.of(context).brightness == Brightness.dark
-                                            ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
-                                            : Theme.of(context).colorScheme.primary.withValues(alpha: 0.05))
-                                        : (Theme.of(context).brightness == Brightness.dark
-                                            ? AppColors.darkInputBackground
-                                            : AppColors.lightInputPrimaryBackground),
+                                    fillColor:
+                                        _fieldFilled[index]
+                                            ? (Theme.of(context).brightness ==
+                                                    Brightness.dark
+                                                ? Theme.of(context)
+                                                    .colorScheme
+                                                    .primary
+                                                    .withValues(alpha: 0.1)
+                                                : Theme.of(context)
+                                                    .colorScheme
+                                                    .primary
+                                                    .withValues(alpha: 0.05))
+                                            : (Theme.of(context).brightness ==
+                                                    Brightness.dark
+                                                ? AppColors.darkInputBackground
+                                                : AppColors
+                                                    .lightInputPrimaryBackground),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(15),
                                       borderSide: BorderSide(
-                                        color: Theme.of(context).brightness == Brightness.dark
-                                            ? AppColors.darkInputBorder
-                                            : AppColors.lightInputPrimaryBorder,
+                                        color:
+                                            Theme.of(context).brightness ==
+                                                    Brightness.dark
+                                                ? AppColors.darkInputBorder
+                                                : AppColors
+                                                    .lightInputPrimaryBorder,
                                         width: 1,
                                       ),
                                     ),
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(15),
                                       borderSide: BorderSide(
-                                        color: _fieldFilled[index]
-                                            ? Theme.of(context).colorScheme.primary
-                                            : (_activeFieldIndex == index
-                                                ? Theme.of(context).colorScheme.primary
-                                                : Theme.of(context).brightness == Brightness.dark
+                                        color:
+                                            _fieldFilled[index]
+                                                ? Theme.of(
+                                                  context,
+                                                ).colorScheme.primary
+                                                : (_activeFieldIndex == index
+                                                    ? Theme.of(
+                                                      context,
+                                                    ).colorScheme.primary
+                                                    : Theme.of(
+                                                          context,
+                                                        ).brightness ==
+                                                        Brightness.dark
                                                     ? AppColors.darkInputBorder
-                                                    : AppColors.lightInputPrimaryBorder),
-                                        width: (_activeFieldIndex == index || _fieldFilled[index]) ? 1.5 : 1,
+                                                    : AppColors
+                                                        .lightInputPrimaryBorder),
+                                        width:
+                                            (_activeFieldIndex == index ||
+                                                    _fieldFilled[index])
+                                                ? 1.5
+                                                : 1,
                                       ),
                                     ),
                                     focusedBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(15),
                                       borderSide: BorderSide(
-                                        color: Theme.of(context).colorScheme.primary,
+                                        color:
+                                            Theme.of(
+                                              context,
+                                            ).colorScheme.primary,
                                         width: 1.5,
                                       ),
                                     ),

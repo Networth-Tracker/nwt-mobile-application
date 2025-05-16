@@ -52,7 +52,7 @@ jobs:
         run: flutter pub get
 
       - name: Build APK
-        run: flutter build apk --split-per-abi --no-tree-shake-icons
+        run: flutter build apk --split-per-abi
       
       - name: Rename APK with Build Number
         run: |
