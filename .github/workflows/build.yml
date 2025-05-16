@@ -94,15 +94,30 @@ jobs:
           file: build/renamed_apks/nwt-app-v0.0.${{ github.run_number }}.apk
           releaseNotesFile: build/release_notes/release_notes.txt
 
+      # Upload APK Artifact
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: apk-build
-          path: |
-            build/renamed_apks/nwt-app-v0.0.${{ github.run_number }}.apk
-            build/release_notes/release_notes.txt
+          path: build/renamed_apks/nwt-app-v0.0.${{ github.run_number }}.apk
           retention-days: 5
+          if-no-files-found: error
+          
+      # Upload Web Build Artifact
+      - name: Upload Web Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: build/renamed_builds/nwt-web-v0.0.${{ github.run_number }}.zip
+          retention-days: 5
+          if-no-files-found: error
 
+      - name: Verify Artifacts
+        run: |
+          echo "Verifying artifacts before release..."
+          ls -la build/renamed_apks/
+          ls -la build/renamed_builds/
+          
       - name: Capture Firebase Distribution Output
         id: capture_output
         run: |
@@ -286,21 +301,17 @@ jobs:
           cat release_notes.md
 
       - name: Push to GitHub Releases
-        uses: ncipollo/release-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        uses: softprops/action-gh-release@v1
         with:
-          artifacts: |
+          name: "NetWorth Tracker v0.0.${{ github.run_number }}"
+          tag_name: v0.0.${{ github.run_number }}
+          body: ${{ env.RELEASE_BODY }}
+          draft: false
+          prerelease: false
+          files: |
             build/renamed_apks/nwt-app-v0.0.${{ github.run_number }}.apk
             build/renamed_builds/nwt-web-v0.0.${{ github.run_number }}.zip
             build/release_notes/release_notes.txt
-          token: ${{ secrets.TOKEN }}
-          allowUpdates: true
-          generateReleaseNotes: false
-          replacesArtifacts: true
-          tag: v0.0.${{ github.run_number }}
-          name: "NetWorth Tracker v0.0.${{ github.run_number }}"
-          commit: ${{ github.sha }}
-          draft: false
-          prerelease: false
-          body: ${{ env.RELEASE_BODY }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
