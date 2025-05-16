@@ -13,85 +13,6 @@ on:
         default: 'Feature updates and improvements'
 
 jobs:
-  web:
-      name: Build Web
-      runs-on: ubuntu-latest
-      needs: android
-      
-      steps:
-        - name: Checkout Repository
-          uses: actions/checkout@v3
-
-        - name: Setup Flutter
-          uses: subosito/flutter-action@v2
-          with:
-            flutter-version: '3.29.3'
-            channel: 'stable'
-            cache: true
-
-        - name: Install Dependencies
-          run: flutter pub get
-
-        - name: Build Web
-          run: |
-            flutter config --enable-web
-            echo '##[group]Building Web...'
-            flutter build web --release
-            echo '##[endgroup]'
-
-        - name: Create Versioned Build
-          run: |
-            mkdir -p build/renamed_builds
-            cd build/web
-            # Use GitHub run number for versioning
-            zip -r ../../build/renamed_builds/nwt-web-v0.0.${{ github.run_number }}.zip .
-            cd ../..
-
-        - name: Generate Web Release Notes
-          run: |
-            mkdir -p build/release_notes
-            cat > build/release_notes/web_release_notes.txt << EOL
-            Version: v0.0.${{ github.run_number }}
-            Build Date: $(date +'%Y-%m-%d %H:%M:%S')
-            Commit: ${{ github.sha }}
-            Notes: ${{ github.event.inputs.release_notes || 'Feature updates and improvements' }}
-            EOL
-            
-        - name: Upload Web Build Artifact
-          uses: actions/upload-artifact@v4
-          with:
-            name: web-build
-            path: |
-              build/renamed_builds/nwt-web-v0.0.${{ github.run_number }}.zip
-              build/release_notes/web_release_notes.txt
-            retention-days: 5
-
-        - name: Upload to Firebase Storage
-          if: github.ref == 'refs/heads/dev'
-          env:
-            FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-            FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
-          run: |
-            # Install Firebase CLI
-            curl -sL https://firebase.tools | bash
-            
-            # Authenticate with Firebase
-            echo "$FIREBASE_SERVICE_ACCOUNT" > firebase-service-account.json
-            firebase login:ci --no-localhost
-            
-            # Upload to Firebase Storage
-            firebase use $FIREBASE_PROJECT_ID --token "$FIREBASE_TOKEN"
-            
-            # Create a temporary directory for the web build
-            mkdir -p web_build
-            unzip build/renamed_builds/nwt-web-v0.0.${{ github.run_number }}.zip -d web_build
-            
-            # Deploy to Firebase Hosting
-            firebase deploy --only hosting:web
-            
-            # Cleanup
-            rm -rf web_build firebase-service-account.json
-
   android:
     name: Build Android
     runs-on: ubuntu-latest
@@ -202,7 +123,91 @@ jobs:
 
           cat firebase_output.txt
 
-  
+  web:
+    name: Build Web
+    runs-on: ubuntu-latest
+    needs: android
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.3'
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Build Web
+        run: |
+          flutter config --enable-web
+          echo '##[group]Building Web...'
+          flutter build web --release
+          echo '##[endgroup]'
+
+      - name: Create Versioned Build
+        run: |
+          mkdir -p build/renamed_builds
+          cd build/web
+          # Use GitHub run number for versioning
+          zip -r ../../build/renamed_builds/nwt-web-v0.0.${{ github.run_number }}.zip .
+          cd ../..
+
+      
+      - name: Generate Web Release Notes
+        run: |
+          mkdir -p build/release_notes
+          cat > build/release_notes/web_release_notes.txt << 'EOL'
+          Version: v0.0.${{ github.run_number }}
+          Build Date: $(date +'%Y-%m-%d %H:%M:%S')
+          Commit: ${{ github.sha }}
+          Notes: ${{ github.event.inputs.release_notes || 'Feature updates and improvements' }}
+          EOL
+          
+          # Also create a copy for the main release notes if it doesn't exist
+          if [ ! -f "build/release_notes/release_notes.txt" ]; then
+            cp build/release_notes/web_release_notes.txt build/release_notes/release_notes.txt
+          fi
+          
+      - name: Upload Web Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: |
+            build/renamed_builds/nwt-web-v0.0.${{ github.run_number }}.zip
+            build/release_notes/web_release_notes.txt
+          retention-days: 5
+
+      - name: Upload to Firebase Storage
+        if: github.ref == 'refs/heads/dev'
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+        run: |
+          # Install Firebase CLI
+          curl -sL https://firebase.tools | bash
+          
+          # Authenticate with Firebase
+          echo "$FIREBASE_SERVICE_ACCOUNT" > firebase-service-account.json
+          firebase login:ci --no-localhost
+          
+          # Upload to Firebase Storage
+          firebase use $FIREBASE_PROJECT_ID --token "$FIREBASE_TOKEN"
+          
+          # Create a temporary directory for the web build
+          mkdir -p web_build
+          unzip build/renamed_builds/nwt-web-v0.0.${{ github.run_number }}.zip -d web_build
+          
+          # Deploy to Firebase Hosting
+          firebase deploy --only hosting:web
+          
+          # Cleanup
+          rm -rf web_build firebase-service-account.json
+
   notify:
     name: Notify Completion
     needs: [android, web]
@@ -220,12 +225,24 @@ jobs:
           echo "🌐 Web Build:"
           echo "   - Version: v0.0.${{ github.run_number }}"
           echo "   - Download: Available in the workflow artifacts"
-          echo "   - Deployed to: https://${{ secrets.FIREBASE_PROJECT_ID }}.web.app"
+          
+          # Set default FIREBASE_PROJECT_ID if not set
+          if [ -z "${{ secrets.FIREBASE_PROJECT_ID }}" ]; then
+            echo "   - Warning: FIREBASE_PROJECT_ID secret not set"
+          else
+            echo "   - Deployed to: https://${{ secrets.FIREBASE_PROJECT_ID }}.web.app"
+          fi
           
           # Set release notes in environment
-          echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
-          cat build/release_notes/release_notes.txt >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          if [ -f "build/release_notes/release_notes.txt" ]; then
+            RELEASE_NOTES=$(cat build/release_notes/release_notes.txt)
+            echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
+            echo "$RELEASE_NOTES" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
+          else
+            echo "Warning: release_notes.txt not found"
+            echo "RELEASE_NOTES=No release notes available" >> $GITHUB_ENV
+          fi
 
       - name: Push to GitHub Releases
         uses: ncipollo/release-action@v1
