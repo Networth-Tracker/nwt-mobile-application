@@ -1,4 +1,4 @@
-name: Build and Deploy App
+name: Build and Deploy All Platforms
 
 on:  
   push:
@@ -13,7 +13,8 @@ on:
         default: 'Feature updates and improvements'
 
 jobs:
-  build:
+  android:
+    name: Build Android
     runs-on: ubuntu-latest
 
     steps:
@@ -33,7 +34,7 @@ jobs:
         run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
       # Setup Flutter
-      - name: Install Flutter Version 3.29.3
+      - name: Install Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.29.3'
@@ -48,6 +49,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pub-cache-
 
+
       - name: Install Dependencies
         run: flutter pub get
 
@@ -59,7 +61,7 @@ jobs:
           mkdir -p build/renamed_apks
           cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk build/renamed_apks/nwt-app-v0.0.${{ github.run_number }}.apk
       
-      - name: Generate Simple Release Notes
+      - name: Generate Release Notes
         run: |
           mkdir -p build/release_notes
           cat > build/release_notes/release_notes.txt << EOL
@@ -86,8 +88,9 @@ jobs:
           TESTER_URL="https://appdistribution.firebase.google.com/testerapps/${{ secrets.FIREBASE_APP_ID }}"
 
           cat > firebase_output.txt << EOL
-          ✅ App successfully uploaded to Firebase App Distribution!
-
+          ✅ Android App successfully uploaded to Firebase App Distribution!
+          Version: v0.0.${{ github.run_number }}
+          
           🔗 Firebase Console: $CONSOLE_URL  
           👨‍💻 Tester Link (requires login): $TESTER_URL  
           EOL
@@ -98,7 +101,99 @@ jobs:
 
           cat firebase_output.txt
 
-      - name: Read Release Notes to Env
+  web:
+    name: Build Web
+    runs-on: ubuntu-latest
+    needs: android
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.3'
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Build Web
+        run: |
+          flutter config --enable-web
+          flutter build web --release --web-renderer html --csp
+
+      - name: Create Versioned Build
+        run: |
+          mkdir -p build/renamed_builds
+          cd build/web
+          zip -r ../../build/renamed_builds/nwt-web-v0.0.${{ github.run_number }}.zip .
+          cd ../..
+
+      - name: Generate Web Release Notes
+        run: |
+          mkdir -p build/release_notes
+          cat > build/release_notes/web_release_notes.txt << EOL
+          Version: v0.0.${{ github.run_number }}
+          Build Date: $(date +'%Y-%m-%d %H:%M:%S')
+          Commit: ${{ github.sha }}
+          Notes: ${{ github.event.inputs.release_notes || 'Feature updates and improvements' }}
+          EOL
+          
+      - name: Upload Web Build Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: web-build
+          path: |
+            build/renamed_builds/nwt-web-v0.0.${{ github.run_number }}.zip
+            build/release_notes/web_release_notes.txt
+          retention-days: 5
+
+      - name: Upload to Firebase Storage
+        if: github.ref == 'refs/heads/dev'
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+        run: |
+          # Install Firebase CLI
+          curl -sL https://firebase.tools | bash
+          
+          # Authenticate with Firebase
+          echo "$FIREBASE_SERVICE_ACCOUNT" > firebase-service-account.json
+          firebase login:ci --no-localhost
+          
+          # Upload to Firebase Storage
+          firebase use $FIREBASE_PROJECT_ID --token "$FIREBASE_TOKEN"
+          
+          # Create a temporary directory for the web build
+          mkdir -p web_build
+          unzip build/renamed_builds/nwt-web-v0.0.${{ github.run_number }}.zip -d web_build
+          
+          # Deploy to Firebase Hosting
+          firebase deploy --only hosting:web
+          
+          # Cleanup
+          rm -rf web_build firebase-service-account.json
+
+  notify:
+    name: Notify Completion
+    needs: [android, web]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show Build Results
+        run: |
+          echo "✅ Build and deployment completed successfully!"
+          echo ""
+          echo "📱 Android Build:"
+          echo "   - Version: v0.0.${{ github.run_number }}"
+          echo "   - Check the Firebase App Distribution for download links"
+          echo ""
+          echo "🌐 Web Build:"
+          echo "   - Version: v0.0.${{ github.run_number }}"
+          echo "   - Download: Available in the workflow artifacts"
+          echo "   - Deployed to: https://${{ secrets.FIREBASE_PROJECT_ID }}.web.app"
         run: |
           echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
           cat build/release_notes/release_notes.txt >> $GITHUB_ENV
