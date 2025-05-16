@@ -186,11 +186,14 @@ jobs:
     needs: [android, web]
     runs-on: ubuntu-latest
     steps:
-      - name: Show Build Results
+      - name: Set up environment and show build results
         run: |
+          # Set timestamp
+          TIMESTAMP=$(date +'%Y%m%d%H%M%S')
+          
+          # Show build results
           echo "✅ Build and deployment completed successfully!"
           echo ""
-          TIMESTAMP=$(date +'%Y%m%d%H%M%S')
           echo "📱 Android Build:"
           echo "   - Version: v0.0.$TIMESTAMP"
           echo "   - Check the Firebase App Distribution for download links"
@@ -199,7 +202,8 @@ jobs:
           echo "   - Version: v0.0.$TIMESTAMP"
           echo "   - Download: Available in the workflow artifacts"
           echo "   - Deployed to: https://${{ secrets.FIREBASE_PROJECT_ID }}.web.app"
-        run: |
+          
+          # Set release notes in environment
           echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
           cat build/release_notes/release_notes.txt >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
