@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:nwt_app/constants/api.dart';
 import 'package:nwt_app/constants/storage_keys.dart';
@@ -22,7 +23,7 @@ class AuthService {
       final appSignature = await SmsAutoFill().getAppSignature;
       final response = await NetworkAPIHelper().post(ApiURLs.GENERATE_OTP, {
         "phonenumber": phoneNumber,
-        'apphash': appSignature,
+        'apphash': kIsWeb ? 'nwt-app' : appSignature,
       }); 
       if (response != null) {
         final responseData = jsonDecode(response.body);

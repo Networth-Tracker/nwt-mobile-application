@@ -250,7 +250,7 @@ jobs:
           artifacts: |
             build/renamed_apks/*.apk
             build/renamed_builds/*.zip
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.TOKEN }}
           allowUpdates: true
           generateReleaseNotes: false
           replacesArtifacts: true
