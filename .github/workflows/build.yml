@@ -3,7 +3,7 @@ name: Build and Deploy All Platforms
 on:  
   push:
     branches:
-      - dev
+      - mrudul
   
   workflow_dispatch:
     inputs:
@@ -215,11 +215,10 @@ jobs:
           generateReleaseNotes: false
           replacesArtifacts: true
           tag: v0.0.$(date +'%Y%m%d%H%M%S')
-          name: 'Release v0.0.$(date +'%Y%m%d%H%M%S')'
+          name: "NetWorth Tracker v0.0.$(date +'%Y%m%d%H%M%S')"
           commit: ${{ github.sha }}
           draft: false
           prerelease: false
-          name: "NetWorth Tracker v0.0.$(date +'%Y%m%d%H%M%S')"
           body: |
             **Build Information**
             - Version: v0.0.$(date +'%Y%m%d%H%M%S')
