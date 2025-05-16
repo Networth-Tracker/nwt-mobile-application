@@ -58,8 +58,10 @@ jobs:
       
       - name: Rename APK with Build Number
         run: |
+          # Generate a timestamp for unique versioning
+          TIMESTAMP=$(date +'%Y%m%d%H%M%S')
           mkdir -p build/renamed_apks
-          cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk build/renamed_apks/nwt-app-v0.0.${{ github.run_number }}.apk
+          cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk build/renamed_apks/nwt-app-v0.0.$TIMESTAMP.apk
       
       - name: Generate Release Notes
         run: |
@@ -78,7 +80,7 @@ jobs:
           appId: ${{ secrets.FIREBASE_APP_ID }}
           serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           groups: devs
-          file: build/renamed_apks/nwt-app-v0.0.${{ github.run_number }}.apk
+          file: build/renamed_apks/nwt-app-v0.0.$TIMESTAMP.apk
           releaseNotesFile: build/release_notes/release_notes.txt
 
       - name: Capture Firebase Distribution Output
@@ -129,7 +131,9 @@ jobs:
         run: |
           mkdir -p build/renamed_builds
           cd build/web
-          zip -r ../../build/renamed_builds/nwt-web-v0.0.${{ github.run_number }}.zip .
+          # Use the same timestamp for web build versioning
+          TIMESTAMP=$(date +'%Y%m%d%H%M%S')
+          zip -r ../../build/renamed_builds/nwt-web-v0.0.$TIMESTAMP.zip .
           cd ../..
 
       - name: Generate Web Release Notes
@@ -147,7 +151,7 @@ jobs:
         with:
           name: web-build
           path: |
-            build/renamed_builds/nwt-web-v0.0.${{ github.run_number }}.zip
+            build/renamed_builds/nwt-web-v0.0.$TIMESTAMP.zip
             build/release_notes/web_release_notes.txt
           retention-days: 5
 
@@ -169,7 +173,7 @@ jobs:
           
           # Create a temporary directory for the web build
           mkdir -p web_build
-          unzip build/renamed_builds/nwt-web-v0.0.${{ github.run_number }}.zip -d web_build
+          unzip build/renamed_builds/nwt-web-v0.0.$TIMESTAMP.zip -d web_build
           
           # Deploy to Firebase Hosting
           firebase deploy --only hosting:web
@@ -186,12 +190,13 @@ jobs:
         run: |
           echo "✅ Build and deployment completed successfully!"
           echo ""
+          TIMESTAMP=$(date +'%Y%m%d%H%M%S')
           echo "📱 Android Build:"
-          echo "   - Version: v0.0.${{ github.run_number }}"
+          echo "   - Version: v0.0.$TIMESTAMP"
           echo "   - Check the Firebase App Distribution for download links"
           echo ""
           echo "🌐 Web Build:"
-          echo "   - Version: v0.0.${{ github.run_number }}"
+          echo "   - Version: v0.0.$TIMESTAMP"
           echo "   - Download: Available in the workflow artifacts"
           echo "   - Deployed to: https://${{ secrets.FIREBASE_PROJECT_ID }}.web.app"
         run: |
@@ -202,16 +207,33 @@ jobs:
       - name: Push to GitHub Releases
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "build/renamed_apks/nwt-app-v0.0.${{ github.run_number }}.apk"
-          token: ${{ secrets.TOKEN }}
-          tag: "v0.0.${{ github.run_number }}"
-          name: "NetWorth Tracker v0.0.${{ github.run_number }}"
+          artifacts: |
+            build/renamed_apks/*.apk
+            build/renamed_builds/*.zip
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+          generateReleaseNotes: false
+          replacesArtifacts: true
+          tag: v0.0.$(date +'%Y%m%d%H%M%S')
+          name: 'Release v0.0.$(date +'%Y%m%d%H%M%S')'
+          commit: ${{ github.sha }}
+          draft: false
+          prerelease: false
+          name: "NetWorth Tracker v0.0.$(date +'%Y%m%d%H%M%S')"
           body: |
-            Release v0.0.${{ github.run_number }}
-            Commit: ${{ github.sha }}
-
-            ## Firebase App Distribution
-            ${{ env.FIREBASE_OUTPUT }}
-
-            ## Release Notes
-            ${{ env.RELEASE_NOTES }}
+            **Build Information**
+            - Version: v0.0.$(date +'%Y%m%d%H%M%S')
+            - Commit: ${{ github.sha }}
+            - Build Date: $(date +'%Y-%m-%d %H:%M:%S')
+            - Run Number: ${{ github.run_number }}
+            
+            **Included Artifacts**
+            - Android APK (armeabi-v7a)
+            - Web Build (ZIP)
+            
+            **Release Notes**
+            ${{ github.event.inputs.release_notes || 'Feature updates and improvements' }}
+            
+            **Deployment**
+            - Android: Available in Firebase App Distribution
+            - Web: Deployed to https://${{ secrets.FIREBASE_PROJECT_ID }}.web.app
