@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 import 'package:nwt_app/screens/connections/widgets/connections_card.dart';
