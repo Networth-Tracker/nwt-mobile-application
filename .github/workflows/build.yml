@@ -71,10 +71,8 @@ jobs:
       
       - name: Rename APK with Build Number
         run: |
-          # Generate a timestamp for unique versioning
-          TIMESTAMP=$(date +'%Y%m%d%H%M%S')
           mkdir -p build/renamed_apks
-          cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk build/renamed_apks/nwt-app-v0.0.$TIMESTAMP.apk
+          cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk build/renamed_apks/nwt-app-v0.0.${{ github.run_number }}.apk
       
       - name: Generate Release Notes
         run: |
@@ -146,9 +144,8 @@ jobs:
         run: |
           mkdir -p build/renamed_builds
           cd build/web
-          # Use the same timestamp for web build versioning
-          TIMESTAMP=$(date +'%Y%m%d%H%M%S')
-          zip -r ../../build/renamed_builds/nwt-web-v0.0.$TIMESTAMP.zip .
+          # Use GitHub run number for versioning
+          zip -r ../../build/renamed_builds/nwt-web-v0.0.${{ github.run_number }}.zip .
           cd ../..
 
       - name: Generate Web Release Notes
@@ -166,7 +163,7 @@ jobs:
         with:
           name: web-build
           path: |
-            build/renamed_builds/nwt-web-v0.0.$TIMESTAMP.zip
+            build/renamed_builds/nwt-web-v0.0.${{ github.run_number }}.zip
             build/release_notes/web_release_notes.txt
           retention-days: 5
 
@@ -188,7 +185,7 @@ jobs:
           
           # Create a temporary directory for the web build
           mkdir -p web_build
-          unzip build/renamed_builds/nwt-web-v0.0.$TIMESTAMP.zip -d web_build
+          unzip build/renamed_builds/nwt-web-v0.0.${{ github.run_number }}.zip -d web_build
           
           # Deploy to Firebase Hosting
           firebase deploy --only hosting:web
@@ -210,11 +207,11 @@ jobs:
           echo "✅ Build and deployment completed successfully!"
           echo ""
           echo "📱 Android Build:"
-          echo "   - Version: v0.0.$TIMESTAMP"
+          echo "   - Version: v0.0.${{ github.run_number }}"
           echo "   - Check the Firebase App Distribution for download links"
           echo ""
           echo "🌐 Web Build:"
-          echo "   - Version: v0.0.$TIMESTAMP"
+          echo "   - Version: v0.0.${{ github.run_number }}"
           echo "   - Download: Available in the workflow artifacts"
           echo "   - Deployed to: https://${{ secrets.FIREBASE_PROJECT_ID }}.web.app"
           
@@ -233,14 +230,14 @@ jobs:
           allowUpdates: true
           generateReleaseNotes: false
           replacesArtifacts: true
-          tag: v0.0.$(date +'%Y%m%d%H%M%S')
-          name: "NetWorth Tracker v0.0.$(date +'%Y%m%d%H%M%S')"
+          tag: v0.0.${{ github.run_number }}
+          name: "NetWorth Tracker v0.0.${{ github.run_number }}"
           commit: ${{ github.sha }}
           draft: false
           prerelease: false
           body: |
             **Build Information**
-            - Version: v0.0.$(date +'%Y%m%d%H%M%S')
+            - Version: v0.0.${{ github.run_number }}
             - Commit: ${{ github.sha }}
             - Build Date: $(date +'%Y-%m-%d %H:%M:%S')
             - Run Number: ${{ github.run_number }}
