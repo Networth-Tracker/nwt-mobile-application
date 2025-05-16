@@ -292,7 +292,7 @@ class _TransactionDetailsState extends State<TransactionDetails> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           AppText(
-                            "Transaction Screenshot:",
+                            "Supporting Receipt:",
                             variant: AppTextVariant.bodyMedium,
                             weight: AppTextWeight.medium,
                             colorType: AppTextColorType.primary,
