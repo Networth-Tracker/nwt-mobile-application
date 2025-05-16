@@ -64,11 +64,10 @@ jobs:
       - name: Build APK
         run: |
           # Accept NDK licenses and build with suppressed warnings
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
-          flutter build apk --split-per-abi --no-tree-shake-icons \
-            -dverbose_failure \
-            --no-warn-on-http \
-            --no-pub --suppress-analytics
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses >/dev/null 2>&1 || true
+          echo '##[group]Building APK...'
+          flutter build apk --split-per-abi --no-tree-shake-icons --suppress-analytics
+          echo '##[endgroup]'
       
       - name: Rename APK with Build Number
         run: |
@@ -139,10 +138,9 @@ jobs:
       - name: Build Web
         run: |
           flutter config --enable-web
-          flutter build web --release --web-renderer html --csp \
-            --no-tree-shake-icons \
-            --no-warn-on-http \
-            --no-pub --suppress-analytics
+          echo '##[group]Building Web...'
+          flutter build web --release --web-renderer html --csp --no-tree-shake-icons --suppress-analytics
+          echo '##[endgroup]'
 
       - name: Create Versioned Build
         run: |
