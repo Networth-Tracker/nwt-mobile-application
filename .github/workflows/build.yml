@@ -53,17 +53,29 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
 
-      - name: Build APK
-        run: flutter build apk --split-per-abi
-      
-      - name: Generate Build Timestamp
-        id: timestamp
-        run: echo "TIMESTAMP=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
+      - name: Cache NDK
+        uses: actions/cache@v3
+        with:
+          path: /usr/local/lib/android/sdk/ndk
+          key: ${{ runner.os }}-ndk-27.0.12077973
+          restore-keys: |
+            ${{ runner.os }}-ndk-27.0.12077973
 
+      - name: Build APK
+        run: |
+          # Accept NDK licenses and build with suppressed warnings
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+          flutter build apk --split-per-abi --no-tree-shake-icons \
+            -dverbose_failure \
+            --no-warn-on-http \
+            --no-pub --suppress-analytics
+      
       - name: Rename APK with Build Number
         run: |
+          # Generate a timestamp for unique versioning
+          TIMESTAMP=$(date +'%Y%m%d%H%M%S')
           mkdir -p build/renamed_apks
-          cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk build/renamed_apks/nwt-app-v0.0.${{ env.TIMESTAMP }}.apk
+          cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk build/renamed_apks/nwt-app-v0.0.$TIMESTAMP.apk
       
       - name: Generate Release Notes
         run: |
@@ -82,7 +94,7 @@ jobs:
           appId: ${{ secrets.FIREBASE_APP_ID }}
           serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           groups: devs
-          file: build/renamed_apks/nwt-app-v0.0.${{ env.TIMESTAMP }}.apk
+          file: build/renamed_apks/nwt-app-v0.0.$TIMESTAMP.apk
           releaseNotesFile: build/release_notes/release_notes.txt
 
       - name: Capture Firebase Distribution Output
@@ -127,13 +139,18 @@ jobs:
       - name: Build Web
         run: |
           flutter config --enable-web
-          flutter build web --release --web-renderer html --csp
+          flutter build web --release --web-renderer html --csp \
+            --no-tree-shake-icons \
+            --no-warn-on-http \
+            --no-pub --suppress-analytics
 
       - name: Create Versioned Build
         run: |
           mkdir -p build/renamed_builds
           cd build/web
-          zip -r ../../build/renamed_builds/nwt-web-v0.0.${{ env.TIMESTAMP }}.zip .
+          # Use the same timestamp for web build versioning
+          TIMESTAMP=$(date +'%Y%m%d%H%M%S')
+          zip -r ../../build/renamed_builds/nwt-web-v0.0.$TIMESTAMP.zip .
           cd ../..
 
       - name: Generate Web Release Notes
@@ -151,7 +168,7 @@ jobs:
         with:
           name: web-build
           path: |
-            build/renamed_builds/nwt-web-v0.0.${{ env.TIMESTAMP }}.zip
+            build/renamed_builds/nwt-web-v0.0.$TIMESTAMP.zip
             build/release_notes/web_release_notes.txt
           retention-days: 5
 
@@ -173,7 +190,7 @@ jobs:
           
           # Create a temporary directory for the web build
           mkdir -p web_build
-          unzip build/renamed_builds/nwt-web-v0.0.${{ env.TIMESTAMP }}.zip -d web_build
+          unzip build/renamed_builds/nwt-web-v0.0.$TIMESTAMP.zip -d web_build
           
           # Deploy to Firebase Hosting
           firebase deploy --only hosting:web
