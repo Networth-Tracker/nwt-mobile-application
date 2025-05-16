@@ -6,6 +6,7 @@ import 'package:nwt_app/controllers/theme_controller.dart';
 import 'package:nwt_app/controllers/user_controller.dart';
 import 'package:nwt_app/screens/assets/banks/banks.dart';
 import 'package:nwt_app/screens/assets/investments/investments.dart';
+import 'package:nwt_app/screens/connections/connections.dart';
 import 'package:nwt_app/screens/notifications/notification_list.dart';
 import 'package:nwt_app/services/auth/auth_flow.dart';
 import 'package:nwt_app/utils/logger.dart';
@@ -248,22 +249,28 @@ class _DashboardState extends State<Dashboard> {
                                 child: Row(
                                   spacing: 15,
                                   children: [
-                                    ConstrainedBox(
-                                      constraints: BoxConstraints(
-                                        minHeight:
-                                            120, // Set a minimum height to match AssetCard
+                                    InkWell(
+                                      onTap: () => Get.to(
+                                        const ConnectionsScreen(),
+                                        transition: Transition.rightToLeft,
                                       ),
-                                      child: Container(
-                                        width: 50,
-                                        decoration: BoxDecoration(
-                                          color: AppColors.darkCardBG,
-                                          borderRadius: BorderRadius.circular(12),
-                                          border: Border.all(
-                                            color: AppColors.darkButtonBorder,
-                                          ),
+                                      child: ConstrainedBox(
+                                        constraints: BoxConstraints(
+                                          minHeight:
+                                              120, // Set a minimum height to match AssetCard
                                         ),
-                                        child: Center(
-                                          child: Icon(Icons.add_rounded, size: 26),
+                                        child: Container(
+                                          width: 50,
+                                          decoration: BoxDecoration(
+                                            color: AppColors.darkCardBG,
+                                            borderRadius: BorderRadius.circular(12),
+                                            border: Border.all(
+                                              color: AppColors.darkButtonBorder,
+                                            ),
+                                          ),
+                                          child: Center(
+                                            child: Icon(Icons.add_rounded, size: 26),
+                                          ),
                                         ),
                                       ),
                                     ),

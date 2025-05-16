@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nwt_app/constants/colors.dart';
+import 'package:nwt_app/constants/data/categories/categories.dart';
+import 'package:nwt_app/constants/data/categories/categories.types.dart';
 import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/screens/transactions/banks/widgets/transaction_card.dart';
 import 'package:nwt_app/widgets/common/app_input_field.dart';
@@ -25,6 +27,34 @@ class Bank {
   });
 }
 
+class FilterCategories extends Category {
+  bool isSelected;
+
+  FilterCategories({
+    required super.id,
+    required super.name,
+    super.parentId,
+    this.isSelected = false,
+  });
+
+  // Helper to check if this is a main category
+  bool get isMainCategory => parentId == null;
+}
+
+class FilterCategories extends Category {
+  bool isSelected;
+
+  FilterCategories({
+    required super.id,
+    required super.name,
+    super.parentId,
+    this.isSelected = false,
+  });
+
+  // Helper to check if this is a main category
+  bool get isMainCategory => parentId == null;
+}
+
 class BankTransactionListScreen extends StatefulWidget {
   const BankTransactionListScreen({super.key});
 
@@ -39,9 +69,12 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
   // Filter state variables
   DateTime? _startDate;
   DateTime? _endDate;
-  String _selectedCategory = 'All';
+  String? _selectedDateRange = '30 days';
   double _minAmount = 0;
   double _maxAmount = 10000;
+  
+  // Categories list with hierarchical structure
+
 
   final List<Bank> _banks = [
     Bank(
@@ -73,9 +106,14 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
       isPrimary: true,
     ),
   ];
-
+  final List<Category> _categories = categories;
   List<Bank> get selectedBanks =>
       _banks.where((bank) => bank.isSelected).toList();
+      
+  // Store selected categories
+  final List<FilterCategories> _selectedFilterCategories = [];
+  
+  List<FilterCategories> get selectedCategories => _selectedFilterCategories;
 
   Widget _buildBankChip(Bank bank, [StateSetter? setModalState]) {
     return Container(
@@ -99,6 +137,43 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
             onTap: () {
               bank.isSelected = false;
               setState(() {});
+              if (setModalState != null) {
+                setModalState(() {});
+              }
+            },
+            child: const Icon(
+              Icons.close,
+              size: 14,
+              color: AppColors.darkTextMuted,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  Widget _buildCategoryChip(FilterCategories category, [StateSetter? setModalState]) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: AppColors.darkButtonBorder,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AppText(
+            category.name,
+            variant: AppTextVariant.bodySmall,
+            colorType: AppTextColorType.primary,
+          ),
+          const SizedBox(width: 4),
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                // Remove the category from the selected categories list
+                _selectedFilterCategories.removeWhere((cat) => cat.id == category.id);
+              });
               if (setModalState != null) {
                 setModalState(() {});
               }
@@ -177,12 +252,13 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
                               variant: AppTextVariant.bodySmall,
                               colorType: AppTextColorType.secondary,
                             ),
-                            trailing: bank.isSelected
-                                ? Icon(
-                                    Icons.check_circle,
-                                    color: Colors.green,
-                                  )
-                                : null,
+                            trailing:
+                              bank.isSelected
+                                    ? Icon(
+                                      Icons.check_circle,
+                                      color: Colors.green,
+                                    )
+                                    : null,
                             onTap: () {
                               setBottomSheetState(() {
                                 bank.isSelected = !bank.isSelected;
@@ -211,8 +287,175 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
       },
     );
   }
+  
+  void _showCategorySelectionBottomSheet(
+    BuildContext context,
+    StateSetter setModalState,
+  ) {
+    // Create a temporary list to track selections during the bottom sheet session
+    final List<FilterCategories> tempSelectedCategories = List.from(_selectedFilterCategories);
+    
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: false,
+      backgroundColor: Colors.black,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setBottomSheetState) {
+            // Group categories by their parent
+            final Map<String?, List<Category>> groupedCategories = {};
+            
+            // Initialize with empty lists for each parent type
+            groupedCategories[null] = [];
+            
+            // Group categories by parent
+            for (final category in _categories) {
+              if (!groupedCategories.containsKey(category.parentId)) {
+                groupedCategories[category.parentId] = [];
+              }
+              groupedCategories[category.parentId]!.add(category);
+            }
+            
+            // Get main categories (those without a parent)
+            final mainCategories = groupedCategories[null] ?? [];
+            
+            return Container(
+              padding: const EdgeInsets.all(16),
+              height: MediaQuery.of(context).size.height * 0.9,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const SizedBox(width: 24),
+                      AppText(
+                        "Select Categories",
+                        variant: AppTextVariant.headline4,
+                        weight: AppTextWeight.semiBold,
+                      ),
+                      GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: const Icon(Icons.close, size: 24),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: mainCategories.length,
+                      itemBuilder: (context, index) {
+                        final mainCategory = mainCategories[index];
+                        final subCategories = groupedCategories[mainCategory.id] ?? [];
+                        
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Main category header
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              child: AppText(
+                                mainCategory.name,
+                                variant: AppTextVariant.bodyLarge,
+                                weight: AppTextWeight.semiBold,
+                              ),
+                            ),
+                            // Subcategories
+                            ...subCategories.map((subCategory) {
+                              // Check if this category is selected
+                              final isSelected = tempSelectedCategories.any(
+                                (cat) => cat.id == subCategory.id
+                              );
+                              
+                              return Container(
+                                margin: const EdgeInsets.only(bottom: 8.0),
+                                decoration: BoxDecoration(
+                                  color: AppColors.darkInputBackground,
+                                ),
+                                child: ListTile(
+                                  title: AppText(
+                                    subCategory.name,
+                                    variant: AppTextVariant.bodyMedium,
+                                  ),
+                                  trailing: isSelected
+                                    ? Icon(
+                                        Icons.check_circle,
+                                        color: Colors.green,
+                                      )
+                                    : null,
+                                  onTap: () {
+                                    setBottomSheetState(() {
+                                      // Find if this category is already selected
+                                      final existingIndex = tempSelectedCategories.indexWhere(
+                                        (cat) => cat.id == subCategory.id
+                                      );
+                                      
+                                      if (existingIndex >= 0) {
+                                        // If already selected, remove it
+                                        tempSelectedCategories.removeAt(existingIndex);
+                                      } else {
+                                        // If not selected, add it
+                                        tempSelectedCategories.add(
+                                          FilterCategories(
+                                            id: subCategory.id,
+                                            name: subCategory.name,
+                                            parentId: subCategory.parentId,
+                                            isSelected: true,
+                                          ),
+                                        );
+                                      }
+                                    });
+                                  },
+                                ),
+                              );
+                            }).toList(),
+                            const SizedBox(height: 16),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    child: AppButton(
+                      onPressed: () {
+                        // Update the actual selected categories list
+                        setModalState(() {
+                          _selectedFilterCategories.clear();
+                          _selectedFilterCategories.addAll(tempSelectedCategories);
+                        });
+                        Navigator.pop(context);
+                      },
+                      variant: AppButtonVariant.primary,
+                      text: "Done",
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
 
   void openFilterBottomsheet() {
+    // Initialize dates based on selected date range if not already set
+    final now = DateTime.now();
+    if (_selectedDateRange == "30 days") {
+      _startDate = now.subtract(const Duration(days: 30));
+    } else if (_selectedDateRange == "60 days") {
+      _startDate = now.subtract(const Duration(days: 60));
+    } else if (_selectedDateRange == "90 days") {
+      _startDate = now.subtract(const Duration(days: 90));
+    }
+    _endDate = now;
+    
     Navigator.of(context).push(
       PageRouteBuilder(
         opaque: true,
@@ -247,7 +490,170 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
                           children: [
                             const SizedBox(height: 10),
                             AppText(
+                              "Banks",
+                              variant: AppTextVariant.bodyMedium,
+                              weight: AppTextWeight.semiBold,
+                            ),
+                            const SizedBox(height: 8),
+                            GestureDetector(
+                              onTap:
+                                  () => _showBankSelectionBottomSheet(
+                                    context,
+                                    setModalState,
+                                  ),
+                              child: Container(
+                                width: MediaQuery.of(context).size.width,
+                                constraints: BoxConstraints(minHeight: 60),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 12,
+                                ),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: AppColors.darkButtonBorder,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    if (selectedBanks.isEmpty)
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          AppText(
+                                            "Select Banks",
+                                            variant: AppTextVariant.bodyMedium,
+                                            colorType: AppTextColorType.primary,
+                                          ),
+                                          const Icon(Icons.keyboard_arrow_down),
+                                        ],
+                                      ),
+                                    if (selectedBanks.isNotEmpty) ...[
+                                      // const SizedBox(height: 8),
+                                      Wrap(
+                                        spacing: 8,
+                                        runSpacing: 8,
+                                        children:
+                                            selectedBanks
+                                                .map(
+                                                  (bank) => _buildBankChip(
+                                                    bank,
+                                                    setModalState,
+                                                  ),
+                                                )
+                                                .toList(),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            AppText(
                               "Date Range",
+                              variant: AppTextVariant.bodyMedium,
+                              weight: AppTextWeight.semiBold,
+                            ),
+                            Row(
+                              spacing: 12,
+                              children: [
+                                ChoiceChip(
+                                  selected: _selectedDateRange == "30 days",
+                                  showCheckmark: false,
+                                  surfaceTintColor: AppColors.darkButtonBorder,
+                                  backgroundColor: AppColors.darkButtonBorder,
+                                  selectedColor: AppColors.darkButtonBorder,
+                                  disabledColor: AppColors.darkButtonBorder,
+                                  side: BorderSide(
+                                    color: _selectedDateRange == "30 days" ? Colors.white : AppColors.darkButtonBorder,
+                                    width: _selectedDateRange == "30 days" ? 1.5 : 1.0,
+                                  ),
+                                  onSelected: (selected) {
+                                    if (selected) {
+                                      final now = DateTime.now();
+                                      final startDate = now.subtract(const Duration(days: 30));
+                                      
+                                      setModalState(() {
+                                        _startDate = startDate;
+                                        _endDate = now;
+                                        _selectedDateRange = "30 days";
+                                      });
+                                    }
+                                  },
+                                  label: AppText(
+                                    "30 days",
+                                    variant: AppTextVariant.bodySmall,
+                                    weight: AppTextWeight.semiBold,
+                                  ),
+                                ),
+                                ChoiceChip(
+                                  selected: _selectedDateRange == "60 days",
+                                  showCheckmark: false,
+                                  surfaceTintColor: AppColors.darkButtonBorder,
+                                  backgroundColor: AppColors.darkButtonBorder,
+                                  selectedColor: AppColors.darkButtonBorder,
+                                  disabledColor: AppColors.darkButtonBorder,
+                                  side: BorderSide(
+                                    color: _selectedDateRange == "60 days" ? Colors.white : AppColors.darkButtonBorder,
+                                    width: _selectedDateRange == "60 days" ? 1.5 : 1.0,
+                                  ),
+                                  onSelected: (selected) {
+                                    if (selected) {
+                                      final now = DateTime.now();
+                                      final startDate = now.subtract(const Duration(days: 60));
+                                      
+                                      setModalState(() {
+                                        _startDate = startDate;
+                                        _endDate = now;
+                                        _selectedDateRange = "60 days";
+                                      });
+                                    }
+                                  },
+                                  label: AppText(
+                                    "60 days",
+                                    variant: AppTextVariant.bodySmall,
+                                    weight: AppTextWeight.semiBold,
+                                  ),
+                                ),
+                                ChoiceChip(
+                                  selected: _selectedDateRange == "90 days",
+                                  showCheckmark: false,
+                                  surfaceTintColor: AppColors.darkButtonBorder,
+                                  backgroundColor: AppColors.darkButtonBorder,
+                                  selectedColor: AppColors.darkButtonBorder,
+                                  disabledColor: AppColors.darkButtonBorder,
+                                  side: BorderSide(
+                                    color: _selectedDateRange == "90 days" ? Colors.white : AppColors.darkButtonBorder,
+                                    width: _selectedDateRange == "90 days" ? 1.5 : 1.0,
+                                  ),
+                                  onSelected: (selected) {
+                                    if (selected) {
+                                      final now = DateTime.now();
+                                      final startDate = now.subtract(const Duration(days: 90));
+                                      
+                                      setModalState(() {
+                                        _startDate = startDate;
+                                        _endDate = now;
+                                        _selectedDateRange = "90 days";
+                                      });
+                                    }
+                                  },
+                                  label: AppText(
+                                    "90 days",
+                                    variant: AppTextVariant.bodySmall,
+                                    weight: AppTextWeight.semiBold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                            AppText(
+                              "Select Date",
                               variant: AppTextVariant.bodyMedium,
                               weight: AppTextWeight.semiBold,
                             ),
@@ -322,21 +728,20 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
                               ],
                             ),
 
+                            // Bank Selection
                             const SizedBox(height: 20),
 
-                            // Bank Selection
                             AppText(
-                              "Banks",
+                              "Categories",
                               variant: AppTextVariant.bodyMedium,
                               weight: AppTextWeight.semiBold,
                             ),
                             const SizedBox(height: 8),
                             GestureDetector(
-                              onTap:
-                                  () => _showBankSelectionBottomSheet(
-                                    context,
-                                    setModalState,
-                                  ),
+                              onTap: () => _showCategorySelectionBottomSheet(
+                                context,
+                                setModalState,
+                              ),
                               child: Container(
                                 width: MediaQuery.of(context).size.width,
                                 constraints: BoxConstraints(minHeight: 60),
@@ -346,36 +751,38 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
                                 ),
                                 decoration: BoxDecoration(
                                   border: Border.all(
-                                    color: Colors.grey.shade300,
+                                    color: AppColors.darkButtonBorder,
                                   ),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    if (selectedBanks.isEmpty)
+                                    if (selectedCategories.isEmpty)
                                       Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           AppText(
-                                            "Select Banks",
+                                            "Select Categories",
                                             variant: AppTextVariant.bodyMedium,
                                             colorType: AppTextColorType.primary,
                                           ),
                                           const Icon(Icons.keyboard_arrow_down),
                                         ],
                                       ),
-                                    if (selectedBanks.isNotEmpty) ...[
-                                      // const SizedBox(height: 8),
+                                    if (selectedCategories.isNotEmpty) ...[
                                       Wrap(
                                         spacing: 8,
                                         runSpacing: 8,
                                         children:
-                                            selectedBanks
+                                            selectedCategories
                                                 .map(
-                                                  (bank) => _buildBankChip(
-                                                    bank,
+                                                  (category) => _buildCategoryChip(
+                                                    category,
                                                     setModalState,
                                                   ),
                                                 )
@@ -384,55 +791,6 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
                                     ],
                                   ],
                                 ),
-                              ),
-                            ),
-
-                            const SizedBox(height: 20),
-
-                            AppText(
-                              "Category",
-                              variant: AppTextVariant.bodyMedium,
-                              weight: AppTextWeight.semiBold,
-                            ),
-                            const SizedBox(height: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                              ),
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey.shade300),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: DropdownButton<String>(
-                                value: _selectedCategory,
-                                isExpanded: true,
-                                underline: const SizedBox(),
-                                icon: const Icon(Icons.keyboard_arrow_down),
-                                items:
-                                    <String>[
-                                      'All',
-                                      'Food',
-                                      'Transport',
-                                      'Shopping',
-                                      'Entertainment',
-                                      'Utilities',
-                                      'Others',
-                                    ].map<DropdownMenuItem<String>>((
-                                      String value,
-                                    ) {
-                                      return DropdownMenuItem<String>(
-                                        value: value,
-                                        child: AppText(
-                                          value,
-                                          variant: AppTextVariant.bodyMedium,
-                                        ),
-                                      );
-                                    }).toList(),
-                                onChanged: (String? newValue) {
-                                  setModalState(() {
-                                    _selectedCategory = newValue!;
-                                  });
-                                },
                               ),
                             ),
 

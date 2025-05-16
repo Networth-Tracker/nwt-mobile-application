@@ -88,6 +88,36 @@ class AppTheme {
       ),
     ),
     
+    // Chip Theme
+    chipTheme: ChipThemeData(
+      backgroundColor: AppColors.darkBackground,
+      disabledColor: AppColors.darkBackground,
+      selectedColor: AppColors.darkBackground,
+      secondarySelectedColor: AppColors.darkBackground,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      labelStyle: const TextStyle(
+        color: AppColors.darkTextPrimary,
+        fontFamily: 'Poppins',
+        fontSize: 12,
+        fontWeight: FontWeight.w600,
+      ),
+      secondaryLabelStyle: const TextStyle(
+        color: AppColors.darkTextPrimary,
+        fontFamily: 'Poppins',
+        fontSize: 12,
+        fontWeight: FontWeight.w600,
+      ),
+      brightness: Brightness.dark,
+      checkmarkColor: Colors.transparent,
+      showCheckmark: false,
+      selectedShadowColor: Colors.transparent,
+      side: const BorderSide(color: AppColors.darkButtonBorder),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: const BorderSide(color: AppColors.darkButtonBorder),
+      ),
+    ),
+    
     // Icon button theme
     iconButtonTheme: IconButtonThemeData(
       style: ButtonStyle(
@@ -203,6 +233,32 @@ class AppTheme {
       ),
     ),
 
+    // Chip Theme
+    chipTheme: ChipThemeData(
+      backgroundColor: AppColors.darkButtonBorder,
+      disabledColor: AppColors.darkButtonBorder.withValues(alpha: 0.5),
+      selectedColor: AppColors.darkButtonBorder,
+      secondarySelectedColor: AppColors.darkButtonBorder,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      labelStyle: const TextStyle(
+        color: AppColors.darkTextPrimary,
+        fontFamily: 'Poppins',
+        fontSize: 12,
+        fontWeight: FontWeight.w600,
+      ),
+      secondaryLabelStyle: const TextStyle(
+        color: AppColors.darkTextPrimary,
+        fontFamily: 'Poppins',
+        fontSize: 12,
+        fontWeight: FontWeight.w600,
+      ),
+      brightness: Brightness.dark,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: const BorderSide(color: AppColors.darkButtonBorder),
+      ),
+    ),
+    
     // Add extension data to store our custom text colors
     extensions: <ThemeExtension<dynamic>>[AppTextThemeColors.dark],
   );
