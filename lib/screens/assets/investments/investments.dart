@@ -22,7 +22,7 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-                surfaceTintColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
         backgroundColor: Colors.transparent,
         automaticallyImplyLeading: false,
         title: Row(
@@ -196,6 +196,70 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen> {
                         ),
                       ],
                     ),
+                    SizedBox(height: 8),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.darkCardBG,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 15,
+                        vertical: 15,
+                      ),
+                      child: Column(
+                        spacing: 6,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              AppText(
+                                "Invested",
+                                variant: AppTextVariant.bodyMedium,
+                                weight: AppTextWeight.medium,
+                                colorType: AppTextColorType.primary,
+                              ),
+                              SizedBox(height: 3),
+                              AppText(
+                                "₹62,00,320",
+                                variant: AppTextVariant.bodyMedium,
+                                weight: AppTextWeight.medium,
+                                colorType: AppTextColorType.primary,
+                              ),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              AppText(
+                                "Gain",
+                                variant: AppTextVariant.bodyMedium,
+                                weight: AppTextWeight.medium,
+                                colorType: AppTextColorType.primary,
+                              ),
+                              SizedBox(height: 3),
+                              AppText(
+                                "₹162,00,320",
+                                variant: AppTextVariant.bodyMedium,
+                                weight: AppTextWeight.medium,
+                                colorType: AppTextColorType.primary,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        AppText(
+                          "Speak to advisor for Investment advise",
+                          variant: AppTextVariant.bodySmall,
+                          colorType: AppTextColorType.link,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -295,7 +359,7 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen> {
             SizedBox(height: 16),
             Expanded(
               child: SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
                 padding: EdgeInsets.symmetric(
                   horizontal: AppSizing.scaffoldHorizontalPadding,
                 ),
@@ -317,7 +381,7 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen> {
                       gainAmount: "7,500",
                       icon: Icons.bar_chart_rounded,
                     ),
-                     HoldingCard(
+                    HoldingCard(
                       fundName: "HDFC Top 50 Fund",
                       navValue: "92.50",
                       investedAmount: "75,000",
@@ -337,14 +401,11 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen> {
               child: Row(
                 children: [
                   Expanded(
-                    child: AppButton(
-                      text: "Add Investments",
-                      onPressed: () {},
-                    ),
+                    child: AppButton(text: "Add Investments", onPressed: () {}),
                   ),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),

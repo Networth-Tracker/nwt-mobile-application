@@ -215,13 +215,24 @@ class _AssetBankScreenState extends State<AssetBankScreen> {
                   child: Column(
                     spacing: 15,
                     children: [
-                      const BankCard(
-                        icon: Icons.account_balance,
-                        bankName: "ICICI Bank",
-                        accountNumber: "XXXX XXXX XXXX 2087",
-                        balance: "₹10,500",
-                        deltaValue: "0.28%",
-                        isPositiveDelta: true,
+                      Banner(
+                        message: 'Primary',
+                        textStyle: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 10,
+                          fontFamily: 'Poppins',
+                        ),
+                        color: AppColors.linkColor,
+                        location: BannerLocation.topStart,
+                        child: const BankCard(
+                          icon: Icons.account_balance,
+                          bankName: "ICICI Bank",
+                          accountNumber: "XXXX XXXX XXXX 2087",
+                          balance: "₹10,500",
+                          deltaValue: "0.28%",
+                          isPositiveDelta: true,
+                        ),
                       ),
                       const BankCard(
                         icon: Icons.credit_card,

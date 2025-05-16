@@ -56,7 +56,7 @@ class AppColors {
   static const Color darkCardBG = Color.fromRGBO(38, 40, 44, 0.6);                 // Very dark gray card background
   
   // Link Color
-  static const Color linkColor = Color(0xFF006AFF);        // Blue link color
+  static const Color linkColor = Color(0xFF48AEE4);        // Blue link color
   
   // Semantic Colors
   static const Color success = Color(0xFF4CAF50);          // Green for success states

@@ -366,6 +366,7 @@ class BasicText extends StatelessWidget {
         color: _resolveBasicTextColor(context, color),
         height: lineHeight,
         fontFamily: "Poppins",
+        decorationColor: _resolveBasicTextColor(context, color),
       ),
     );
   }

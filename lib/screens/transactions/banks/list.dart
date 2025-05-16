@@ -13,6 +13,7 @@ class Bank {
   final String accountNumber;
   final IconData icon;
   bool isSelected;
+  bool isPrimary;
 
   Bank({
     required this.id,
@@ -20,6 +21,7 @@ class Bank {
     required this.accountNumber,
     required this.icon,
     this.isSelected = false,
+    this.isPrimary = false,
   });
 }
 
@@ -47,24 +49,28 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
       name: 'HDFC Bank',
       accountNumber: 'XXXX 1234',
       icon: Icons.account_balance,
+      isPrimary: false,
     ),
     Bank(
       id: '2',
       name: 'ICICI Bank',
       accountNumber: 'XXXX 5678',
       icon: Icons.account_balance,
+      isPrimary: false,
     ),
     Bank(
       id: '3',
       name: 'SBI',
       accountNumber: 'XXXX 9012',
       icon: Icons.account_balance,
+      isPrimary: false,
     ),
     Bank(
       id: '4',
       name: 'Axis Bank',
       accountNumber: 'XXXX 3456',
       icon: Icons.account_balance,
+      isPrimary: true,
     ),
   ];
 
@@ -146,40 +152,44 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
                       separatorBuilder: (context, index) => const SizedBox(),
                       itemBuilder: (context, index) {
                         final bank = _banks[index];
-                        return ListTile(
-                          leading: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: AppColors.darkButtonBorder,
-                              borderRadius: BorderRadius.circular(8),
+                        return Banner(
+                          message: bank.isPrimary ? 'Primary' : '',
+                          location: BannerLocation.topStart,
+                          child: ListTile(
+                            leading: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: AppColors.darkButtonBorder,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Icon(
+                                bank.icon,
+                                color: AppColors.darkTextMuted,
+                              ),
                             ),
-                            child: Icon(
-                              bank.icon,
-                              color: AppColors.darkTextMuted,
+                            title: AppText(
+                              bank.name,
+                              variant: AppTextVariant.bodyLarge,
+                              weight: AppTextWeight.medium,
                             ),
+                            subtitle: AppText(
+                              bank.accountNumber,
+                              variant: AppTextVariant.bodySmall,
+                              colorType: AppTextColorType.secondary,
+                            ),
+                            trailing: bank.isSelected
+                                ? Icon(
+                                    Icons.check_circle,
+                                    color: Colors.green,
+                                  )
+                                : null,
+                            onTap: () {
+                              setBottomSheetState(() {
+                                bank.isSelected = !bank.isSelected;
+                              });
+                              setModalState(() {});
+                            },
                           ),
-                          title: AppText(
-                            bank.name,
-                            variant: AppTextVariant.bodyLarge,
-                            weight: AppTextWeight.medium,
-                          ),
-                          subtitle: AppText(
-                            bank.accountNumber,
-                            variant: AppTextVariant.bodySmall,
-                            colorType: AppTextColorType.secondary,
-                          ),
-                          trailing: bank.isSelected
-                              ? Icon(
-                                  Icons.check_circle,
-                                  color: Colors.green,
-                                )
-                              : null,
-                          onTap: () {
-                            setBottomSheetState(() {
-                              bank.isSelected = !bank.isSelected;
-                            });
-                            setModalState(() {});
-                          },
                         );
                       },
                     ),
