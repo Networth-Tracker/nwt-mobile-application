@@ -41,20 +41,6 @@ class FilterCategories extends Category {
   bool get isMainCategory => parentId == null;
 }
 
-class FilterCategories extends Category {
-  bool isSelected;
-
-  FilterCategories({
-    required super.id,
-    required super.name,
-    super.parentId,
-    this.isSelected = false,
-  });
-
-  // Helper to check if this is a main category
-  bool get isMainCategory => parentId == null;
-}
-
 class BankTransactionListScreen extends StatefulWidget {
   const BankTransactionListScreen({super.key});
 
