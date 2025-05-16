@@ -1,7 +1,10 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:nwt_app/firebase_options.dart';
 import 'package:nwt_app/main.dart' show flutterLocalNotificationsPlugin;
+import 'package:nwt_app/utils/logger.dart';
 
 class FirebaseMessagingAPI {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
@@ -45,11 +48,48 @@ class FirebaseMessagingAPI {
 
   Future<void> initPushNotifications() async {
     try {
-      await _firebaseMessaging.setForegroundNotificationPresentationOptions(
+      // Request notification permissions
+      await _firebaseMessaging.requestPermission(
         alert: true,
+        announcement: false,
         badge: true,
+        carPlay: false,
+        criticalAlert: false,
+        provisional: false,
         sound: true,
       );
+
+      // Initialize service worker for web
+      if (kIsWeb) {
+        try {
+          await Firebase.initializeApp(
+            options: DefaultFirebaseOptions.currentPlatform,
+          );
+          
+          // Register the service worker
+          await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+            alert: true,
+            badge: true,
+            sound: true,
+          );
+          
+          // Get the token
+          String? token = await FirebaseMessaging.instance.getToken(
+            vapidKey: "YOUR_VAPID_KEY" // Get this from Firebase Console > Project Settings > Cloud Messaging > Web configuration
+          );
+          debugPrint('FCM Token: $token');
+          
+        } catch (e) {
+          debugPrint('Error initializing FCM: $e');
+        }
+      } else {
+        // Mobile platforms
+        await _firebaseMessaging.setForegroundNotificationPresentationOptions(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
+      }
 
       // Only register the background message handler in non-web environments
       if (!kIsWeb) {
@@ -66,10 +106,10 @@ class FirebaseMessagingAPI {
       });
 
       FirebaseMessaging.instance.getInitialMessage().then((value) {
-        print("Initial message: $value");
+        AppLogger.info("Initial message: $value", tag: 'FirebaseMessaging');
       });
     } catch (e) {
-      print("Error initializing push notifications: $e");
+      AppLogger.error("Error initializing push notifications: $e", tag: 'FirebaseMessaging');
     }
   }
 

@@ -31,6 +31,38 @@
 
   <title>nwt_app</title>
   <link rel="manifest" href="manifest.json">
+  
+  <!-- Add Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-messaging-compat.js"></script>
+  
+  <script>
+    // Initialize Firebase with configuration from firebase_options.dart
+    const firebaseConfig = {
+      apiKey: "AIzaSyByuekHT6ISVDHhaLngcSMSz_LlAaWg64g",
+      authDomain: "nwt-app-28415.firebaseapp.com",
+      projectId: "nwt-app-28415",
+      storageBucket: "nwt-app-28415.firebasestorage.app",
+      messagingSenderId: "823813601514",
+      appId: "1:823813601514:web:d75f9e956c97ab91453f93"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/firebase-messaging-sw.js')
+          .then(function(registration) {
+            console.log('Service Worker registered with scope: ', registration.scope);
+          })
+          .catch(function(error) {
+            console.error('Service Worker registration failed: ', error);
+          });
+      });
+    }
+  </script>
 </head>
 <body>
   <script src="flutter_bootstrap.js" async></script>
