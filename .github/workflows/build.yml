@@ -94,6 +94,15 @@ jobs:
           file: build/renamed_apks/nwt-app-v0.0.${{ github.run_number }}.apk
           releaseNotesFile: build/release_notes/release_notes.txt
 
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: apk-build
+          path: |
+            build/renamed_apks/nwt-app-v0.0.${{ github.run_number }}.apk
+            build/release_notes/release_notes.txt
+          retention-days: 5
+
       - name: Capture Firebase Distribution Output
         id: capture_output
         run: |
@@ -159,7 +168,7 @@ jobs:
           EOL
           
       - name: Upload Web Build Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: web-build
           path: |
