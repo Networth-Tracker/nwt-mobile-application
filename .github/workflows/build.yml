@@ -244,12 +244,48 @@ jobs:
             echo "RELEASE_NOTES=No release notes available" >> $GITHUB_ENV
           fi
 
+      - name: Create Release Notes
+        id: create_release_notes
+        run: |
+          # Get current timestamp in a variable
+          TIMESTAMP=$(date +'%Y-%m-%d %H:%M:%S')
+          
+          # Create release notes with timestamp
+          cat > release_notes.md << EOL
+          ## Build Information
+          - **Version**: v0.0.${{ github.run_number }}
+          - **Commit**: ${{ github.sha }}
+          - **Build Date**: $TIMESTAMP
+          - **Run Number**: ${{ github.run_number }}
+          
+          ## Included Artifacts
+          - Android APK (armeabi-v7a)
+          - Web Build (ZIP)
+          
+          ## Deployment
+          - **Android**: Available in Firebase App Distribution
+          - **Web**: Deployed to https://${{ secrets.FIREBASE_PROJECT_ID }}.web.app
+          EOL
+          
+          # Set output for release body
+          RELEASE_BODY=$(cat release_notes.md)
+          echo "RELEASE_BODY<<EOF" >> $GITHUB_ENV
+          echo "$RELEASE_BODY" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+          
+          # Output for debugging
+          echo "Release notes created:"
+          cat release_notes.md
+
       - name: Push to GitHub Releases
         uses: ncipollo/release-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
           artifacts: |
-            build/renamed_apks/*.apk
-            build/renamed_builds/*.zip
+            build/renamed_apks/nwt-app-v0.0.${{ github.run_number }}.apk
+            build/renamed_builds/nwt-web-v0.0.${{ github.run_number }}.zip
+            build/release_notes/release_notes.txt
           token: ${{ secrets.TOKEN }}
           allowUpdates: true
           generateReleaseNotes: false
@@ -259,20 +295,4 @@ jobs:
           commit: ${{ github.sha }}
           draft: false
           prerelease: false
-          body: |
-            **Build Information**
-            - Version: v0.0.${{ github.run_number }}
-            - Commit: ${{ github.sha }}
-            - Build Date: $(date +'%Y-%m-%d %H:%M:%S')
-            - Run Number: ${{ github.run_number }}
-            
-            **Included Artifacts**
-            - Android APK (armeabi-v7a)
-            - Web Build (ZIP)
-            
-            **Release Notes**
-            ${{ github.event.inputs.release_notes || 'Feature updates and improvements' }}
-            
-            **Deployment**
-            - Android: Available in Firebase App Distribution
-            - Web: Deployed to https://${{ secrets.FIREBASE_PROJECT_ID }}.web.app
+          body: ${{ env.RELEASE_BODY }}
