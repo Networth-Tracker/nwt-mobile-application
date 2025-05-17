@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/sizing.dart';
+import 'package:nwt_app/controllers/assets/investments.dart';
 import 'package:nwt_app/screens/assets/investments/widgets/holding_card.dart';
 import 'package:nwt_app/widgets/common/app_input_field.dart';
 import 'package:nwt_app/widgets/common/button_widget.dart';
@@ -36,7 +37,10 @@ class _StickyHeaderDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
     return SizedBox.expand(child: child);
   }
 
@@ -48,10 +52,20 @@ class _StickyHeaderDelegate extends SliverPersistentHeaderDelegate {
   }
 }
 
+const categories = [
+  "All",
+  "Stocks",
+  "Mutual Funds",
+  "Commodity",
+  "F&O",
+];
+
 class _AssetInvestmentScreenState extends State<AssetInvestmentScreen> {
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  bool _showFullHeader = true;
+  bool showFullHeader = true;
+  final InvestmentController investmentController = Get.put(InvestmentController());
+
   Widget _buildAppbar() {
     return SliverAppBar(
       surfaceTintColor: AppColors.darkBackground,
@@ -107,14 +121,14 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen> {
       automaticallyImplyLeading: false,
       pinned: false,
       floating: false,
-      expandedHeight: _showFullHeader ? 360 : 90,
+      expandedHeight: showFullHeader ? 360 : 90,
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
           color: AppColors.darkBackground,
           child: Column(
             children: [
               // Mini Header (always visible)
-              if (_showFullHeader) ...[
+              if (showFullHeader) ...[
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSizing.scaffoldHorizontalPadding,
@@ -257,8 +271,8 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen> {
                         ),
                         SizedBox(height: 8),
                         Wrap(
-                          spacing: 8, // Horizontal spacing between items
-                          runSpacing: 8, // Vertical spacing between rows
+                          spacing: 8,
+                          runSpacing: 8,
                           alignment: WrapAlignment.start,
                           children: [
                             CategoryLegend(
@@ -402,113 +416,126 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.darkBackground,
-      body: SafeArea(
-        child: CustomScrollView(
-
-          controller: _scrollController,
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            _buildAppbar(),
-            _buildHeader(),
-
-            // Combined Search and Categories in a sticky header
-            SliverPersistentHeader(
-              pinned: true,
-              delegate: _StickyHeaderDelegate(
-                minHeight: 130,
-                maxHeight: 130,
-                child: Container(
-                  color: AppColors.darkBackground,
-                  child: Column(
-                    children: [
-                      // Search Bar
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSizing.scaffoldHorizontalPadding,
-                          vertical: 8,
-                        ),
-                        child: AppInputField(
-                          controller: _searchController,
-                          prefix: const Icon(
-                            CupertinoIcons.search,
-                            color: AppColors.darkTextMuted,
+      body: GetBuilder<InvestmentController>(
+        builder: (investmentController) {
+          return SafeArea(
+            child: CustomScrollView(
+              controller: _scrollController,
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                _buildAppbar(),
+                _buildHeader(),
+          
+                // Combined Search and Categories in a sticky header
+                SliverPersistentHeader(
+                  pinned: true,
+                  delegate: _StickyHeaderDelegate(
+                    minHeight: 130,
+                    maxHeight: 130,
+                    child: Container(
+                      color: AppColors.darkBackground,
+                      child: Column(
+                        children: [
+                          // Search Bar
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppSizing.scaffoldHorizontalPadding,
+                              vertical: 8,
+                            ),
+                            child: AppInputField(
+                              controller: _searchController,
+                              prefix: const Icon(
+                                CupertinoIcons.search,
+                                color: AppColors.darkTextMuted,
+                              ),
+                              hintText: "Search...",
+                            ),
                           ),
-                          hintText: "Search...",
-                        ),
-                      ),
-                      
-                      // Categories
-                      SizedBox(
-                        height: 50,
-                        child: ListView(
-                          scrollDirection: Axis.horizontal,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: AppSizing.scaffoldHorizontalPadding,
+          
+                          // Categories
+                          SizedBox(
+                            height: 50,
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AppSizing.scaffoldHorizontalPadding,
+                              ),
+                              itemBuilder: (context, index) {
+                                return _buildCategoryChip(
+                                  categories[index],
+                                  index == 0,
+                                );
+                              },
+                              separatorBuilder: (context, index) {
+                                return const SizedBox(width: 8);
+                              },
+                              itemCount: categories.length,
+                            ),
                           ),
-                          children: [
-                            _buildCategoryChip("All", true),
-                            _buildCategoryChip("Stocks"),
-                            _buildCategoryChip("Mutual Funds"),
-                            _buildCategoryChip("Commodity"),
-                            _buildCategoryChip("F&O"),
-                          ],
-                        ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
-            ),
-
-            // Holdings list
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSizing.scaffoldHorizontalPadding,
-                vertical: 8,
-              ),
-              sliver: SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: HoldingCard(
-                        fundName: "Holding ${index + 1}",
-                        navValue: "100.00",
-                        investedAmount: "10,000",
-                        currentAmount: "12,000",
-                        gainAmount: "2,000",
-                      ),
-                    );
-                  },
-                  childCount: 10, // Replace with your actual item count
+          
+                // Holdings list
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSizing.scaffoldHorizontalPadding,
+                    vertical: 8,
+                  ),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: HoldingCard(
+                            fundName: "Holding ${index + 1}",
+                            navValue: "100.00",
+                            investedAmount: "10,000",
+                            currentAmount: "12,000",
+                            gainAmount: "2,000",
+                          ),
+                        );
+                      },
+                      childCount: 10, // Replace with your actual item count
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
-
-            // Bottom padding
-            const SliverToBoxAdapter(child: SizedBox(height: 80)),
-          ],
-        ),
+          );
+        }
       ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: AppButton(text: "Add Investments", onPressed: () {}),
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.only(
+          right: AppSizing.scaffoldHorizontalPadding,
+          left: AppSizing.scaffoldHorizontalPadding,
+          bottom: MediaQuery.of(context).padding.bottom,
+        ),
+        child: SizedBox(
+          width: double.infinity,
+          child: AppButton(text: "Add Investments", onPressed: () {}),
+        ),
       ),
     );
   }
 
   Widget _buildCategoryChip(String label, [bool isSelected = false]) {
-    return Container(
-      margin: const EdgeInsets.only(right: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: isSelected ? AppColors.darkPrimary : AppColors.darkButtonBorder,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: AppText(
+    return ChoiceChip(
+      selected: isSelected,
+      showCheckmark: false,
+      surfaceTintColor: AppColors.darkButtonBorder,
+      backgroundColor: AppColors.darkButtonBorder,
+      selectedColor: AppColors.darkPrimary,
+      disabledColor: AppColors.darkButtonBorder,
+      side: BorderSide(color: AppColors.darkButtonBorder, width: 1.0),
+      onSelected: (selected) {},
+      label: AppText(
         label,
         variant: AppTextVariant.bodySmall,
-        weight: isSelected ? AppTextWeight.semiBold : AppTextWeight.regular,
+        weight: AppTextWeight.semiBold,
+        colorType: isSelected ? AppTextColorType.secondary : AppTextColorType.primary,
       ),
     );
   }

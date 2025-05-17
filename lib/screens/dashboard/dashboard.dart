@@ -5,8 +5,8 @@ import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/controllers/theme_controller.dart';
 import 'package:nwt_app/controllers/user_controller.dart';
 import 'package:nwt_app/screens/assets/banks/banks.dart';
-import 'package:nwt_app/screens/assets/investments/investments.dart';
 import 'package:nwt_app/screens/connections/connections.dart';
+import 'package:nwt_app/screens/dashboard/types/dashboard_assets.dart';
 import 'package:nwt_app/screens/notifications/notification_list.dart';
 import 'package:nwt_app/services/auth/auth_flow.dart';
 import 'package:nwt_app/utils/logger.dart';
@@ -14,6 +14,8 @@ import 'package:nwt_app/widgets/common/text_widget.dart';
 import 'package:nwt_app/widgets/avatar.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/screens/dashboard/widgets/asset_card.dart';
+import 'package:nwt_app/services/dashboard/dashboard_assets.dart';
+import 'package:nwt_app/utils/currency_formatter.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -23,6 +25,37 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
+  final _dashboardAssetsService = DashboardAssetsService();
+  DashboardAssetsResponse? _dashboardAssets;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDashboardAssets();
+  }
+
+  Future<void> _loadDashboardAssets() async {
+    final response = await _dashboardAssetsService.getDashboardAssets(
+      onLoading: (loading) => setState(() {}),
+    );
+    if (response != null) {
+      AppLogger.info(
+        'Dashboard Assets Response: ${response.toJson()}',
+        tag: 'DashboardAssetsService',
+      );
+      AppLogger.info(
+        'Asset Data: ${response.data?.assetdata.map((asset) => asset.toJson()).toList()}',
+        tag: 'DashboardAssetsService',
+      );
+      setState(() => _dashboardAssets = response);
+    } else {
+      AppLogger.error(
+        'Dashboard Assets Response is null',
+        tag: 'DashboardAssetsService',
+      );
+    }
+  }
+
   String _getGreetingMessage() {
     final hour = DateTime.now().hour;
 
@@ -299,40 +332,34 @@ class _DashboardState extends State<Dashboard> {
                                         ),
                                       ),
                                     ),
-                                    SizedBox(width: 15),
-                                    InkWell(
-                                      onTap:
-                                          () => Get.to(
-                                            const AssetBankScreen(),
-                                            transition: Transition.rightToLeft,
-                                          ),
-                                      child: AssetCard(
-                                        title: "Banks",
-                                        amount: "₹1,00,000",
-                                        delta: "-10%",
-                                        deltaType: DeltaType.negative,
-                                        icon: Icons.account_balance_outlined,
-                                      ),
-                                    ),
-                                    SizedBox(width: 15),
-                                    InkWell(
-                                      onTap:
-                                          () => Get.to(
-                                            const AssetInvestmentScreen(),
-                                            transition: Transition.rightToLeft,
-                                          ),
-                                      child: AssetCard(
-                                        title: "Investments",
-                                        amount: "₹1,00,000",
-                                        delta: "10%",
-                                        deltaType: DeltaType.positive,
-                                        icon: Icons.account_balance_outlined,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width:
-                                          AppSizing.scaffoldHorizontalPadding,
-                                    ),
+                                    if (_dashboardAssets != null)
+                                      ..._dashboardAssets!.data!.assetdata
+                                          .map(
+                                            (asset) => InkWell(
+                                              onTap:
+                                                  () => Get.to(
+                                                    const AssetBankScreen(),
+                                                    transition:
+                                                        Transition.rightToLeft,
+                                                  ),
+                                              child: AssetCard(
+                                                title: asset.name,
+                                                amount:
+                                                    CurrencyFormatter.formatRupee(
+                                                      asset.value,
+                                                    ),
+                                                delta: "${asset.delta}%",
+                                                deltaType:
+                                                    asset.delta >= 0
+                                                        ? DeltaType.positive
+                                                        : DeltaType.negative,
+                                                icon:
+                                                    Icons
+                                                        .account_balance_outlined,
+                                              ),
+                                            ),
+                                          )
+                                          .toList(),
                                   ],
                                 ),
                               ),
