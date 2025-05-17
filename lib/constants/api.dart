@@ -7,4 +7,5 @@ class ApiURLs {
   static const SET_SECURITY_PIN = "$baseUrl/auth/set-security-pin";
   static const LOGIN_WITH_PIN = "$baseUrl/auth/security-pin";
   static const GET_USER_PROFILE = "$baseUrl/userdetail/profile";
+  static const USER_DASHBOARD_ASSETS = "$baseUrl/dashboard/assets";
 }

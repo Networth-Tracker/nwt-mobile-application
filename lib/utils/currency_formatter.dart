@@ -3,16 +3,27 @@ import 'package:intl/intl.dart';
 /// A utility class for formatting currency values in Indian Rupee format
 /// with appropriate suffixes (K, L, Cr) based on the value.
 class CurrencyFormatter {
-  /// Formats a number as Indian Rupee with the ₹ symbol
+  /// Formats a number as Indian Rupee with the ₹ symbol and appropriate suffix
   /// 
-  /// Example: 1000 becomes ₹1,000
+  /// Examples:
+  /// - 1000 becomes ₹1,000
+  /// - 100000 becomes ₹1L
+  /// - 10000000 becomes ₹1Cr
   static String formatRupee(num amount) {
-    final formatter = NumberFormat.currency(
-      locale: 'en_IN',
-      symbol: '₹',
-      decimalDigits: 0,
-    );
-    return formatter.format(amount);
+    if (amount >= 10000000) { // 1 Crore
+      final crores = amount / 10000000;
+      return '₹${crores.toStringAsFixed(crores.truncateToDouble() == crores ? 0 : 1)}Cr';
+    } else if (amount >= 100000) { // 1 Lakh
+      final lakhs = amount / 100000;
+      return '₹${lakhs.toStringAsFixed(lakhs.truncateToDouble() == lakhs ? 0 : 1)}L';
+    } else {
+      final formatter = NumberFormat.currency(
+        locale: 'en_IN',
+        symbol: '₹',
+        decimalDigits: 0,
+      );
+      return formatter.format(amount);
+    }
   }
 
   /// Formats a number as Indian Rupee with the ₹ symbol and 2 decimal places
@@ -27,7 +38,7 @@ class CurrencyFormatter {
     return formatter.format(amount);
   }
 
-  /// Formats a number with appropriate Indian suffixes (K, L, Cr)
+  /// Formats a number with appropriate Indian suffixes (L, Cr)
   /// 
   /// Examples:
   /// - 1000 becomes 1K
