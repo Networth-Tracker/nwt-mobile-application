@@ -21,6 +21,14 @@ dependencies:
   get_storage: ^2.1.1
   sms_autofill: ^2.4.1
   firebase_messaging: ^15.2.5
+  flutter_local_notifications: ^19.1.0
+  firebase_core: ^3.13.0
+  app_links: ^6.4.0
+  flutter_inappwebview: ^6.1.5
+  firebase_remote_config: ^5.4.3
+  local_auth: ^2.3.0
+  file_picker: ^10.1.9
+  connectivity_plus: ^6.1.4
 
 dev_dependencies:
   flutter_test:
@@ -32,6 +40,10 @@ flutter:
     - assets/svgs/onboarding/
     - assets/app/
     - assets/lottie/
+    - assets/svgs/dashboard/
+    - assets/svgs/assets/banks/
+    - assets/svgs/connections/
+    
   uses-material-design: true
   fonts:
     - family: Poppins

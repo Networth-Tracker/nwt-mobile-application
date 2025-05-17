@@ -7,9 +7,28 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:823813601514:android:8be274f9435324fd453f93",
+        "mobilesdk_app_id": "1:823813601514:android:4a89119dd051d1b0453f93",
         "android_client_info": {
-          "package_name": "com.nwt.nwt_app"
+          "package_name": "com.app.networthtracker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDSVcrXmNbomQmBdFGduO2rOC-MWuJq6g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:823813601514:android:67883b8dbb9b3036453f93",
+        "android_client_info": {
+          "package_name": "com.nwt.app"
         }
       },
       "oauth_client": [],

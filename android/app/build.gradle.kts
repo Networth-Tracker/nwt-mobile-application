@@ -9,13 +9,15 @@ plugins {
 }
 
 android {
-    namespace = "com.nwt.nwt_app"
+    namespace = "com.app.networthtracker"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "27.0.12077973" // Updated NDK version to match plugin requirements
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        // Enable core library desugaring for Java 8 features
+        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
@@ -24,10 +26,10 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.nwt.nwt_app"
+        applicationId = "com.app.networthtracker"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        minSdk = 21 // Minimum SDK version for biometric support
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -44,4 +46,11 @@ android {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    // Add core library desugaring dependency
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+    implementation("androidx.biometric:biometric:1.1.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")
 }

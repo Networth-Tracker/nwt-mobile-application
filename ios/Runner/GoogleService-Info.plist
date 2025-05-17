@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.nwt.nwtApp</string>
+	<string>com.app.networthtracker</string>
 	<key>PROJECT_ID</key>
 	<string>nwt-app-28415</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:823813601514:ios:7b5fe155c09b8393453f93</string>
+	<string>1:823813601514:ios:2615d9be0a1927e2453f93</string>
 </dict>
 </plist>

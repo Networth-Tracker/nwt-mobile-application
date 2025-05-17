@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/theme.dart';
 
 /// Text variants available in the application
 enum AppTextVariant {
+  display,    // New variant with font size 30
   headline1,
   headline2,
   headline3,
@@ -12,6 +14,7 @@ enum AppTextVariant {
   bodyLarge,
   bodyMedium,
   bodySmall,
+  tiny,      // New variant with font size 8
   caption,
   button,
   label
@@ -32,18 +35,15 @@ enum AppTextColorType {
   secondary,
   tertiary,
   muted,
+  gray,
   error,
   success,
   warning,
-  custom
+  link,
 }
 
 /// Resolves [AppTextColorType] to an actual [Color] from the current theme extension
 Color _resolveTextColor(BuildContext context, AppTextColorType colorType, Color? customColor) {
-  if (colorType == AppTextColorType.custom && customColor != null) {
-    return customColor;
-  }
-  
   final textThemeColors = context.textThemeColors;
   final theme = Theme.of(context);
   
@@ -56,15 +56,16 @@ Color _resolveTextColor(BuildContext context, AppTextColorType colorType, Color?
       return textThemeColors.tertiaryText;
     case AppTextColorType.muted:
       return textThemeColors.mutedText;
+    case AppTextColorType.gray:
+      return textThemeColors.grayText;
     case AppTextColorType.error:
       return theme.colorScheme.error;
     case AppTextColorType.success:
       return Colors.green;
     case AppTextColorType.warning:
       return Colors.orange;
-    case AppTextColorType.custom:
-      // Fallback if customColor is null
-      return textThemeColors.primaryText;
+    case AppTextColorType.link:
+      return AppColors.linkColor;
   }
 }
 
@@ -95,41 +96,47 @@ TextStyle _getTextStyle(BuildContext context, AppTextVariant variant, AppTextWei
   // Base style with variant-specific properties
   TextStyle style;
   switch (variant) {
+    case AppTextVariant.display:
+      style = TextStyle(fontSize: 36, fontWeight: fontWeight, fontFamily: "Poppins");
+      break;
     case AppTextVariant.headline1:
-      style = TextStyle(fontSize: 28, fontWeight: fontWeight);
+      style = TextStyle(fontSize: 28, fontWeight: fontWeight, fontFamily: "Poppins");
       break;
     case AppTextVariant.headline2:
-      style = TextStyle(fontSize: 24, fontWeight: fontWeight);
+      style = TextStyle(fontSize: 24, fontWeight: fontWeight, fontFamily: "Poppins");
       break;
     case AppTextVariant.headline3:
-      style = TextStyle(fontSize: 20, fontWeight: fontWeight);
+      style = TextStyle(fontSize: 20, fontWeight: fontWeight, fontFamily: "Poppins");
       break;
     case AppTextVariant.headline4:
-      style = TextStyle(fontSize: 18, fontWeight: fontWeight);
+      style = TextStyle(fontSize: 18, fontWeight: fontWeight, fontFamily: "Poppins");
       break;
     case AppTextVariant.headline5:
-      style = TextStyle(fontSize: 16, fontWeight: fontWeight);
+      style = TextStyle(fontSize: 16, fontWeight: fontWeight, fontFamily: "Poppins");
       break;
     case AppTextVariant.headline6:
-      style = TextStyle(fontSize: 14, fontWeight: fontWeight);
+      style = TextStyle(fontSize: 14, fontWeight: fontWeight, fontFamily: "Poppins");
       break;
     case AppTextVariant.bodyLarge:
-      style = TextStyle(fontSize: 16, fontWeight: fontWeight);
+      style = TextStyle(fontSize: 16, fontWeight: fontWeight, fontFamily: "Poppins");
       break;
     case AppTextVariant.bodyMedium:
-      style = TextStyle(fontSize: 14, fontWeight: fontWeight);
+      style = TextStyle(fontSize: 14, fontWeight: fontWeight, fontFamily: "Poppins");
       break;
     case AppTextVariant.bodySmall:
-      style = TextStyle(fontSize: 12, fontWeight: fontWeight);
+      style = TextStyle(fontSize: 12, fontWeight: fontWeight, fontFamily: "Poppins");
+      break;
+    case AppTextVariant.tiny:
+      style = TextStyle(fontSize: 10, fontWeight: fontWeight, fontFamily: "Poppins");
       break;
     case AppTextVariant.caption:
-      style = TextStyle(fontSize: 12, fontWeight: fontWeight);
+      style = TextStyle(fontSize: 12, fontWeight: fontWeight, fontFamily: "Poppins");
       break;
     case AppTextVariant.button:
-      style = TextStyle(fontSize: 14, fontWeight: fontWeight);
+      style = TextStyle(fontSize: 14, fontWeight: fontWeight, fontFamily: "Poppins");
       break;
     case AppTextVariant.label:
-      style = TextStyle(fontSize: 12, fontWeight: fontWeight);
+      style = TextStyle(fontSize: 12, fontWeight: fontWeight, fontFamily: "Poppins");
       break;
   }
 
@@ -301,6 +308,7 @@ enum BasicTextColor {
   error,
   success,
   warning,
+  link,
 }
 
 /// Resolves [BasicTextColor] to an actual [Color] from the current theme extension
@@ -320,6 +328,8 @@ Color _resolveBasicTextColor(BuildContext context, BasicTextColor color) {
     case BasicTextColor.warning:
       // You may want to add a 'warningText' to your theme extension for true theme support
       return Colors.orange;
+    case BasicTextColor.link:
+      return AppColors.linkColor;
   }
 }
 
@@ -355,6 +365,8 @@ class BasicText extends StatelessWidget {
         fontWeight: fontWeight,
         color: _resolveBasicTextColor(context, color),
         height: lineHeight,
+        fontFamily: "Poppins",
+        decorationColor: _resolveBasicTextColor(context, color),
       ),
     );
   }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:nwt_app/constants/colors.dart';
+import 'package:nwt_app/widgets/common/text_widget.dart';
 
 class KeyPad extends StatefulWidget {
   final Function(int) onKeyPressed;
@@ -28,7 +30,7 @@ class _KeyPadState extends State<KeyPad> {
             KeyPadButton(text: 3, onPressed: () => widget.onKeyPressed(3)),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 6),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -37,7 +39,7 @@ class _KeyPadState extends State<KeyPad> {
             KeyPadButton(text: 6, onPressed: () => widget.onKeyPressed(6)),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 6),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -46,7 +48,7 @@ class _KeyPadState extends State<KeyPad> {
             KeyPadButton(text: 9, onPressed: () => widget.onKeyPressed(9)),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 6),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -80,31 +82,46 @@ class KeyPadButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+    
     return Expanded(
       child: GestureDetector(
         onTap: isBlank ? null : onPressed,
         child: Container(
-          height: 60,
+          height: 65,
           margin: const EdgeInsets.symmetric(horizontal: 4),
           decoration: BoxDecoration(
-            color:
-                isBlank
-                    ? Colors.transparent
-                    : const Color.fromRGBO(249, 250, 251, 1),
+            color: isBlank 
+                ? Colors.transparent
+                : isDarkMode 
+                    ? AppColors.darkInputBackground
+                    : AppColors.lightInputPrimaryBackground,
             borderRadius: BorderRadius.circular(15),
+            border: Border.all(
+              color: isBlank ? Colors.transparent : isDarkMode 
+                  ? Colors.white.withValues(alpha: 0.1) 
+                  : Colors.black.withValues(alpha: 0.05),
+              width: 1,
+            ),
           ),
           child: Center(
-            child:
-                isBackSpace
-                    ? const Icon(Icons.backspace, size: 20)
-                    : Text(
-                      isBlank ? "" : text.toString(),
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
+            child: isBackSpace
+                ? Icon(
+                    Icons.backspace,
+                    size: 20,
+                    color: isDarkMode ? Colors.white70 : Colors.black87,
+                  )
+                : isBlank 
+                    ? const SizedBox() 
+                    : AppText(
+                        text.toString(),
+                        variant: AppTextVariant.headline5,
+                        weight: AppTextWeight.semiBold,
+                        colorType: isDarkMode 
+                            ? AppTextColorType.primary 
+                            : AppTextColorType.tertiary,
                       ),
-                    ),
           ),
         ),
       ),
