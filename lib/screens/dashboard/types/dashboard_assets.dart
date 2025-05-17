@@ -42,23 +42,31 @@ class Data {
 class Assetdatum {
     String name;
     int value;
-    double delta;
+    String type;
+    double deltavalue;
+    double deltapercentage;
 
     Assetdatum({
         required this.name,
         required this.value,
-        required this.delta,
+        required this.type,
+        required this.deltavalue,
+        required this.deltapercentage,
     });
 
     factory Assetdatum.fromJson(Map<String, dynamic> json) => Assetdatum(
         name: json["name"],
         value: json["value"],
-        delta: json["delta"]?.toDouble(),
+        type: json["type"],
+        deltavalue: json["deltavalue"]?.toDouble(),
+        deltapercentage: json["deltapercentage"]?.toDouble(),
     );
 
     Map<String, dynamic> toJson() => {
         "name": name,
         "value": value,
-        "delta": delta,
+        "type": type,
+        "deltavalue": deltavalue,
+        "deltapercentage": deltapercentage,
     };
 }

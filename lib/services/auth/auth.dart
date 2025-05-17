@@ -102,15 +102,13 @@ class AuthService {
       final response = await NetworkAPIHelper().get(ApiURLs.GET_USER_PROFILE);
       if (response != null) {
         final responseData = jsonDecode(response.body);
-        AppLogger.info('Get User Profile Response: ${responseData.toString()}', tag: 'AuthService');
-
-        // Check if the response status code is successful (200 or 201)
+        AppLogger.info('Get User Profile Response 105: ${responseData.toString()}   ${response.statusCode}', tag: 'AuthService');
         if (response.statusCode == 200 || response.statusCode == 201) {
-          // Create and return the UserDataResponse object from the JSON
-          return UserDataResponse.fromJson(responseData);
+          final userDataResponse = UserDataResponse.fromJson(responseData);
+          return userDataResponse;
         }
       } else {
-        AppLogger.info('Get User Profile Response: ${response?.body.toString()}', tag: 'AuthService');
+        AppLogger.info('Get User Profile Response 115: ${response?.body.toString()}', tag: 'AuthService');
       }
       return null;
     } catch (e, stackTrace) {

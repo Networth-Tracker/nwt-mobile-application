@@ -64,20 +64,22 @@ class AuthFlow {
       return;
     }
 
-    await _userController.fetchUserProfile(
+    final userData = await _userController.fetchUserProfile(
       onLoading: (loading) {
         // Handle loading silently for initial fetch
       },
     );
-    
+    AppLogger.info(userData?.message ?? "", tag: 'AuthFlow===================');
     // Check if user data is available in the controller
-    if (_userController.userData != null) {
+    if (userData != null) {
+      print("adasdasdasda======================");
       AppLogger.info(
         'User data found, handling verification status',
         tag: 'AuthFlow',
       );
-      _handleUserVerificationStatus(_userController.userData!);
+      _handleUserVerificationStatus(userData.data.user);
     } else {
+      print("adasdasdasda=====================1312312312t361278656387126378126783612873687123687=");
       AppLogger.info(
         'Failed to fetch user data, redirecting to onboarding',
         tag: 'AuthFlow',

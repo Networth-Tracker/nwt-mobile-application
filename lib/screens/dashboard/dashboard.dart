@@ -354,9 +354,9 @@ class _DashboardState extends State<Dashboard> {
                                                     CurrencyFormatter.formatRupee(
                                                       asset.value,
                                                     ),
-                                                delta: "${asset.delta}%",
+                                                delta: "${asset.deltapercentage}%",
                                                 deltaType:
-                                                    asset.delta >= 0
+                                                    asset.deltavalue >= 0
                                                         ? DeltaType.positive
                                                         : DeltaType.negative,
                                                 icon:

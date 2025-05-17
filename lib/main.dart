@@ -8,8 +8,8 @@ import 'package:nwt_app/controllers/theme_controller.dart';
 import 'package:nwt_app/controllers/user_controller.dart';
 import 'package:nwt_app/firebase_options.dart';
 import 'package:nwt_app/notification/firebase_messaging.dart';
-import 'package:nwt_app/screens/onboarding/onboarding.dart';
 import 'package:nwt_app/screens/splash.dart';
+import 'package:nwt_app/services/auth/auth_flow.dart';
 import 'package:nwt_app/services/global_storage.dart';
 import 'package:nwt_app/services/network/connectivity_service.dart';
 import 'package:nwt_app/utils/logger.dart';
@@ -83,8 +83,7 @@ class MyApp extends StatelessWidget {
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: themeController.themeMode,
-        // home: const AuthWrapper(child: OnboardingScreen()),
-        home: const OnboardingScreen(),
+        home: const SplashScreen(),
         builder: (context, child) {
           // Wrap the entire app with network status banner
           return Column(
@@ -94,6 +93,11 @@ class MyApp extends StatelessWidget {
             ],
           );
         },
+        // Initialize GetX for navigation
+        initialBinding: BindingsBuilder(() {
+          Get.put<UserController>(UserController());
+          Get.put<AuthFlow>(AuthFlow());
+        }),
       ),
     );
   }

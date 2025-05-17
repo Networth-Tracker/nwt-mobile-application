@@ -38,7 +38,6 @@ class UserController extends GetxController {
     final response = await _authService.getUserProfile(onLoading: onLoading);
     AppLogger.info(response.toString(), tag: 'UserController');
     if (response != null) {
-      AppLogger.info(response.toString(), tag: 'UserController');
       _userData = response.data.user;
       update();
       return response;
