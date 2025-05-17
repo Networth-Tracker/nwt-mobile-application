@@ -4,10 +4,10 @@ import 'package:get/get.dart';
 import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/controllers/theme_controller.dart';
 import 'package:nwt_app/controllers/user_controller.dart';
+import 'package:nwt_app/controllers/dashboard/dashboard_asset.dart';
 import 'package:nwt_app/screens/assets/banks/banks.dart';
 import 'package:nwt_app/screens/assets/investments/investments.dart';
 import 'package:nwt_app/screens/connections/connections.dart';
-import 'package:nwt_app/screens/dashboard/types/dashboard_assets.dart';
 import 'package:nwt_app/screens/notifications/notification_list.dart';
 import 'package:nwt_app/services/auth/auth_flow.dart';
 import 'package:nwt_app/utils/logger.dart';
@@ -15,7 +15,6 @@ import 'package:nwt_app/widgets/common/text_widget.dart';
 import 'package:nwt_app/widgets/avatar.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/screens/dashboard/widgets/asset_card.dart';
-import 'package:nwt_app/services/dashboard/dashboard_assets.dart';
 import 'package:nwt_app/utils/currency_formatter.dart';
 
 class Dashboard extends StatefulWidget {
@@ -25,36 +24,43 @@ class Dashboard extends StatefulWidget {
   State<Dashboard> createState() => _DashboardState();
 }
 
-class _DashboardState extends State<Dashboard> {
-  final _dashboardAssetsService = DashboardAssetsService();
-  DashboardAssetsResponse? _dashboardAssets;
+class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMixin {
+  final dashboardAssetController = Get.put(DashboardAssetController());
+  late AnimationController _refreshController;
+  bool isAssetsLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _loadDashboardAssets();
+    _refreshController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    );
+    fetchDashboardAssets();
   }
 
-  Future<void> _loadDashboardAssets() async {
-    final response = await _dashboardAssetsService.getDashboardAssets(
-      onLoading: (loading) => setState(() {}),
+  @override
+  void dispose() {
+    _refreshController.dispose();
+    super.dispose();
+  }
+
+  Future<void> fetchDashboardAssets() async {
+    dashboardAssetController.getDashboardAssets(
+      onLoading: (isLoading) {
+        if (mounted) {
+          setState(() {
+            isAssetsLoading = isLoading;
+          });
+          if (isLoading) {
+            _refreshController.repeat();
+          } else {
+            _refreshController.stop();
+            _refreshController.reset();
+          }
+        }
+      },
     );
-    if (response != null) {
-      AppLogger.info(
-        'Dashboard Assets Response: ${response.toJson()}',
-        tag: 'DashboardAssetsService',
-      );
-      AppLogger.info(
-        'Asset Data: ${response.data?.assetdata.map((asset) => asset.toJson()).toList()}',
-        tag: 'DashboardAssetsService',
-      );
-      setState(() => _dashboardAssets = response);
-    } else {
-      AppLogger.error(
-        'Dashboard Assets Response is null',
-        tag: 'DashboardAssetsService',
-      );
-    }
   }
 
   String _getGreetingMessage() {
@@ -336,36 +342,31 @@ class _DashboardState extends State<Dashboard> {
                                         ),
                                       ),
                                     ),
-                                    if (_dashboardAssets != null)
-                                      ..._dashboardAssets!.data!.assetdata
-                                          .map(
-                                            (asset) => InkWell(
-                                              onTap:
-                                                  () => Get.to(
-                                                    asset.name == "Banks"
-                                                        ? const AssetBankScreen()
-                                                        : const AssetInvestmentScreen(),
-                                                    transition:
-                                                        Transition.rightToLeft,
-                                                  ),
-                                              child: AssetCard(
-                                                title: asset.name,
-                                                amount:
-                                                    CurrencyFormatter.formatRupee(
-                                                      asset.value,
-                                                    ),
-                                                delta: "${asset.deltapercentage}%",
-                                                deltaType:
-                                                    asset.deltavalue >= 0
-                                                        ? DeltaType.positive
-                                                        : DeltaType.negative,
-                                                icon:
-                                                    Icons
-                                                        .account_balance_outlined,
+                                    GetBuilder<DashboardAssetController>(
+                                      builder: (controller) {
+                                        if (controller.dashboardAssets?.data != null) {
+                                          return Row(
+                                            children: controller.dashboardAssets!.data!.assetdata.map((asset) => Padding(
+                                              padding: const EdgeInsets.only(right: 15),
+                                              child: InkWell(
+                                                onTap: () => Get.to(
+                                                  asset.name == "Banks" ? const AssetBankScreen() : const AssetInvestmentScreen(),
+                                                  transition: Transition.rightToLeft,
+                                                ),
+                                                child: AssetCard(
+                                                  title: asset.name,
+                                                  amount: CurrencyFormatter.formatRupee(asset.value),
+                                                  delta: "${asset.deltapercentage}%",
+                                                  deltaType: asset.deltavalue >= 0 ? DeltaType.positive : DeltaType.negative,
+                                                  icon: Icons.account_balance_outlined,
+                                                ),
                                               ),
-                                            ),
-                                          )
-                                          .toList(),
+                                            )).toList(),
+                                          );
+                                        }
+                                        return const SizedBox.shrink();
+                                      },
+                                    ),
                                   ],
                                 ),
                               ),

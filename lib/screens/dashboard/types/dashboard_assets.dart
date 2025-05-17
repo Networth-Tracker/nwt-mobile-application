@@ -1,7 +1,7 @@
 class DashboardAssetsResponse {
     int status;
     String message;
-    Data? data;
+    DashboardAssetData? data;
     bool get success => status == 200 || status == 201;
 
     DashboardAssetsResponse({
@@ -13,7 +13,7 @@ class DashboardAssetsResponse {
     factory DashboardAssetsResponse.fromJson(Map<String, dynamic> json) => DashboardAssetsResponse(
         status: json["status"],
         message: json["message"],
-        data: json["data"] == null ? null : Data.fromJson(json["data"]),
+        data: json["data"] == null ? null : DashboardAssetData.fromJson(json["data"]),
     );
 
     Map<String, dynamic> toJson() => {
@@ -23,14 +23,14 @@ class DashboardAssetsResponse {
     };
 }
 
-class Data {
+class DashboardAssetData {
     List<Assetdatum> assetdata;
 
-    Data({
+    DashboardAssetData({
         required this.assetdata,
     });
 
-    factory Data.fromJson(Map<String, dynamic> json) => Data(
+    factory DashboardAssetData.fromJson(Map<String, dynamic> json) => DashboardAssetData(
         assetdata: List<Assetdatum>.from(json["assetdata"].map((x) => Assetdatum.fromJson(x))),
     );
 
@@ -41,7 +41,7 @@ class Data {
 
 class Assetdatum {
     String name;
-    int value;
+    double value;
     String type;
     double deltavalue;
     double deltapercentage;
@@ -56,10 +56,10 @@ class Assetdatum {
 
     factory Assetdatum.fromJson(Map<String, dynamic> json) => Assetdatum(
         name: json["name"],
-        value: json["value"],
+        value: json["value"]+0.0,
         type: json["type"],
-        deltavalue: json["deltavalue"]?.toDouble(),
-        deltapercentage: json["deltapercentage"]?.toDouble(),
+        deltavalue: json["deltavalue"]+0.0,
+        deltapercentage: json["deltapercentage"]+0.0,
     );
 
     Map<String, dynamic> toJson() => {

@@ -2,6 +2,7 @@ class BankSummaryResponse {
     int status;
     String message;
     Data data;
+    bool get success => status == 200 || status == 201;
 
     BankSummaryResponse({
         required this.status,
@@ -70,25 +71,15 @@ class Bank {
     String linkrefnumber;
     String maskedaccnumber;
     String currentbalance;
-    dynamic currency;
-    dynamic balancedatetime;
     dynamic accounttype;
     String accountsubtype;
-    dynamic branch;
-    dynamic facility;
-    dynamic ifsc;
-    dynamic micrcode;
-    dynamic openingdate;
-    dynamic currentodlimit;
-    dynamic drawinglimit;
     dynamic status;
     DateTime createdat;
     DateTime updatedat;
-    dynamic sourceprovider;
-    dynamic delta;
     String userguid;
     bool activestate;
     int id;
+    bool isprimary;
     String currentpercentage;
     String currentamount;
     int deltavalue;
@@ -102,25 +93,15 @@ class Bank {
         required this.linkrefnumber,
         required this.maskedaccnumber,
         required this.currentbalance,
-        required this.currency,
-        required this.balancedatetime,
         required this.accounttype,
         required this.accountsubtype,
-        required this.branch,
-        required this.facility,
-        required this.ifsc,
-        required this.micrcode,
-        required this.openingdate,
-        required this.currentodlimit,
-        required this.drawinglimit,
         required this.status,
         required this.createdat,
         required this.updatedat,
-        required this.sourceprovider,
-        required this.delta,
         required this.userguid,
         required this.activestate,
         required this.id,
+        required this.isprimary,
         required this.currentpercentage,
         required this.currentamount,
         required this.deltavalue,
@@ -135,25 +116,15 @@ class Bank {
         linkrefnumber: json["linkrefnumber"],
         maskedaccnumber: json["maskedaccnumber"],
         currentbalance: json["currentbalance"],
-        currency: json["currency"],
-        balancedatetime: json["balancedatetime"],
         accounttype: json["accounttype"],
         accountsubtype: json["accountsubtype"],
-        branch: json["branch"],
-        facility: json["facility"],
-        ifsc: json["ifsc"],
-        micrcode: json["micrcode"],
-        openingdate: json["openingdate"],
-        currentodlimit: json["currentodlimit"],
-        drawinglimit: json["drawinglimit"],
         status: json["status"],
         createdat: DateTime.parse(json["createdat"]),
         updatedat: DateTime.parse(json["updatedat"]),
-        sourceprovider: json["sourceprovider"],
-        delta: json["delta"],
         userguid: json["userguid"],
         activestate: json["activestate"],
         id: json["id"],
+        isprimary: json["isprimary"],
         currentpercentage: json["currentpercentage"],
         currentamount: json["currentamount"],
         deltavalue: json["deltavalue"],
@@ -168,25 +139,15 @@ class Bank {
         "linkrefnumber": linkrefnumber,
         "maskedaccnumber": maskedaccnumber,
         "currentbalance": currentbalance,
-        "currency": currency,
-        "balancedatetime": balancedatetime,
         "accounttype": accounttype,
         "accountsubtype": accountsubtype,
-        "branch": branch,
-        "facility": facility,
-        "ifsc": ifsc,
-        "micrcode": micrcode,
-        "openingdate": openingdate,
-        "currentodlimit": currentodlimit,
-        "drawinglimit": drawinglimit,
         "status": status,
         "createdat": createdat.toIso8601String(),
         "updatedat": updatedat.toIso8601String(),
-        "sourceprovider": sourceprovider,
-        "delta": delta,
         "userguid": userguid,
         "activestate": activestate,
         "id": id,
+        "isprimary": isprimary,
         "currentpercentage": currentpercentage,
         "currentamount": currentamount,
         "deltavalue": deltavalue,
