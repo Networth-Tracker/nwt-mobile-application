@@ -5,6 +5,7 @@ import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/controllers/theme_controller.dart';
 import 'package:nwt_app/controllers/user_controller.dart';
 import 'package:nwt_app/screens/assets/banks/banks.dart';
+import 'package:nwt_app/screens/assets/investments/investments.dart';
 import 'package:nwt_app/screens/connections/connections.dart';
 import 'package:nwt_app/screens/dashboard/types/dashboard_assets.dart';
 import 'package:nwt_app/screens/notifications/notification_list.dart';
@@ -296,10 +297,13 @@ class _DashboardState extends State<Dashboard> {
                               ),
                               SizedBox(height: 12),
                               SingleChildScrollView(
+                                padding: EdgeInsets.only(
+                                  right: AppSizing.scaffoldHorizontalPadding,
+                                ),
                                 physics: const BouncingScrollPhysics(),
                                 scrollDirection: Axis.horizontal,
                                 child: Row(
-                                  spacing: 0,
+                                  spacing: 15,
                                   children: [
                                     InkWell(
                                       onTap:
@@ -338,7 +342,9 @@ class _DashboardState extends State<Dashboard> {
                                             (asset) => InkWell(
                                               onTap:
                                                   () => Get.to(
-                                                    const AssetBankScreen(),
+                                                    asset.name == "Banks"
+                                                        ? const AssetBankScreen()
+                                                        : const AssetInvestmentScreen(),
                                                     transition:
                                                         Transition.rightToLeft,
                                                   ),
