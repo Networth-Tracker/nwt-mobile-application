@@ -46,7 +46,9 @@ class FilterCategories extends Category {
 }
 
 class BankTransactionListScreen extends StatefulWidget {
-  const BankTransactionListScreen({super.key});
+  const BankTransactionListScreen({super.key, required this.bankGUID});
+
+  final String bankGUID;
 
   @override
   State<BankTransactionListScreen> createState() =>
@@ -59,7 +61,7 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
   final bankTransactionController = Get.put(BankTransactionController());
   void getTransactions() {
     bankTransactionController.getBankTransactions(
-      bankGUID: "B_1747388324308",
+      bankGUID: widget.bankGUID,
       onLoading: (isLoading) {
         if (mounted) {
           setState(() {

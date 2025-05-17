@@ -297,6 +297,7 @@ class _AssetBankScreenState extends State<AssetBankScreen> with SingleTickerProv
                             spacing: 15,
                             children: controller.bankSummary!.data!.banks.map((bank) {
                               final Widget bankCard = BankCard(
+                                bankGUID: bank.guid,
                                 icon: Icons.account_balance,
                                 bankName: bank.finame,
                                 accountNumber: bank.maskedaccnumber,

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/sizing.dart';
+import 'package:nwt_app/utils/currency_formatter.dart';
+import 'package:intl/intl.dart';
 import 'package:nwt_app/widgets/common/app_input_field.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 import 'package:file_picker/file_picker.dart';
@@ -73,19 +75,27 @@ class _TransactionDetailsState extends State<TransactionDetails> {
                               borderRadius: BorderRadius.circular(50),
                             ),
                             child: Icon(
-                              Icons.arrow_upward,
+                              widget.transaction.type == Type.CREDIT
+                                  ? Icons.arrow_upward
+                                  : Icons.arrow_downward,
                               size: 22,
-                              color: AppColors.error,
+                              color:
+                                  widget.transaction.type == Type.CREDIT
+                                      ? AppColors.success
+                                      : AppColors.error,
                             ),
                           ),
                           AppText(
-                            "₹10,500",
+                            "${widget.transaction.type == Type.CREDIT ? "+" : "-"}${CurrencyFormatter.formatRupee(widget.transaction.amount)}",
                             variant: AppTextVariant.headline2,
                             weight: AppTextWeight.bold,
-                            colorType: AppTextColorType.primary,
+                            colorType:
+                                widget.transaction.type == Type.CREDIT
+                                    ? AppTextColorType.success
+                                    : AppTextColorType.error,
                           ),
                           AppText(
-                            "Shopping",
+                            widget.transaction.reference,
                             variant: AppTextVariant.bodySmall,
                             weight: AppTextWeight.medium,
                             colorType: AppTextColorType.secondary,
@@ -119,14 +129,18 @@ class _TransactionDetailsState extends State<TransactionDetails> {
                             spacing: 8,
                             children: [
                               AppText(
-                                "1234567890",
+                                widget.transaction.txnid,
                                 variant: AppTextVariant.bodyMedium,
                                 weight: AppTextWeight.medium,
                                 colorType: AppTextColorType.primary,
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  Clipboard.setData(const ClipboardData(text: "1234567890"));
+                                  Clipboard.setData(
+                                    ClipboardData(
+                                      text: widget.transaction.txnid,
+                                    ),
+                                  );
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
                                       content: Text('Copied to clipboard'),
@@ -167,7 +181,7 @@ class _TransactionDetailsState extends State<TransactionDetails> {
                             colorType: AppTextColorType.primary,
                           ),
                           AppText(
-                            "Myntra@okpayaxis",
+                            widget.transaction.narration,
                             variant: AppTextVariant.bodyMedium,
                             weight: AppTextWeight.medium,
                             colorType: AppTextColorType.primary,
@@ -197,7 +211,7 @@ class _TransactionDetailsState extends State<TransactionDetails> {
                             colorType: AppTextColorType.primary,
                           ),
                           AppText(
-                            "Visa Card.0976",
+                            widget.transaction.mode,
                             variant: AppTextVariant.bodyMedium,
                             weight: AppTextWeight.medium,
                             colorType: AppTextColorType.primary,
@@ -239,7 +253,9 @@ class _TransactionDetailsState extends State<TransactionDetails> {
                                 ),
                               ),
                               AppText(
-                                "Completed",
+                                widget.transaction.activestate
+                                    ? "Completed"
+                                    : "Pending",
                                 variant: AppTextVariant.bodyMedium,
                                 weight: AppTextWeight.medium,
                                 colorType: AppTextColorType.primary,
@@ -251,7 +267,7 @@ class _TransactionDetailsState extends State<TransactionDetails> {
                     ],
                   ),
                 ),
-                 Container(
+                Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: AppColors.darkCardBG,
@@ -271,7 +287,9 @@ class _TransactionDetailsState extends State<TransactionDetails> {
                             colorType: AppTextColorType.primary,
                           ),
                           AppText(
-                            "May 12, 12:15 AM",
+                            DateFormat(
+                              'MMM d, h:mm a',
+                            ).format(widget.transaction.transactiontimestamp),
                             variant: AppTextVariant.bodyMedium,
                             weight: AppTextWeight.medium,
                             colorType: AppTextColorType.primary,
@@ -281,7 +299,7 @@ class _TransactionDetailsState extends State<TransactionDetails> {
                     ],
                   ),
                 ),
-                  Container(
+                Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: AppColors.darkCardBG,
@@ -302,10 +320,19 @@ class _TransactionDetailsState extends State<TransactionDetails> {
                           ),
                           GestureDetector(
                             onTap: () async {
-                              final result = await FilePicker.platform.pickFiles(
-                                type: FileType.custom,
-                                allowedExtensions: ['pdf', 'png', 'jpg', 'jpeg', 'xls', 'xlsx', 'csv'],
-                              );
+                              final result = await FilePicker.platform
+                                  .pickFiles(
+                                    type: FileType.custom,
+                                    allowedExtensions: [
+                                      'pdf',
+                                      'png',
+                                      'jpg',
+                                      'jpeg',
+                                      'xls',
+                                      'xlsx',
+                                      'csv',
+                                    ],
+                                  );
                               if (result != null) {
                                 final file = result.files.first;
                                 _receiptController.text = file.name;
