@@ -9,4 +9,5 @@ class ApiURLs {
   static const GET_USER_PROFILE = "$baseUrl/userdetail/profile";
   static const USER_DASHBOARD_ASSETS = "$baseUrl/dashboard/assets";
   static const GET_USER_INVESTMENTS = "$baseUrl/dashboard/portfolio";
+  static const GET_BANK_SUMMARY = "$baseUrl/bank/summary";
 }
