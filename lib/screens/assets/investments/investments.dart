@@ -1,9 +1,9 @@
-import 'package:animate_do/animate_do.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/sizing.dart';
+import 'package:nwt_app/widgets/common/animated_amount.dart';
 import 'dart:async';
 import 'package:nwt_app/controllers/assets/investments.dart';
 import 'package:nwt_app/screens/assets/investments/types/portfolio.dart';
@@ -61,14 +61,15 @@ const categories = ["All", "Stocks", "Mutual Funds", "Commodity", "F&O"];
 class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
     with TickerProviderStateMixin {
   final TextEditingController _searchController = TextEditingController();
-  final ScrollController _scrollController = ScrollController();
+  bool _isAmountVisible = true;
+  final _scrollController = ScrollController();
+  late AnimationController _animationController;
   bool showFullHeader = true;
   final InvestmentController investmentController = Get.put(
     InvestmentController(),
   );
   bool isPortfolioLoading = true;
   late AnimationController _refreshController;
-  bool _isAmountVisible = true;
 
   Widget _buildAppbar() {
     return SliverAppBar(
@@ -200,18 +201,14 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            FadeInUp(
-                              from: 10,
-                              duration: Duration(milliseconds: 300),
-                              child: AppText(
-                                _isAmountVisible
-                                    ? CurrencyFormatter.formatRupee(
-                                      portfolio?.value ?? 0,
-                                    )
-                                    : '••••••',
-                                variant: AppTextVariant.display,
-                                weight: AppTextWeight.bold,
-                                colorType: AppTextColorType.primary,
+                            AnimatedAmount(
+                              isAmountVisible: _isAmountVisible,
+                              amount: CurrencyFormatter.formatRupee(portfolio?.value ?? 0),
+                              hiddenText: '₹••••••',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 36,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                             InkWell(
@@ -219,36 +216,46 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
                                 setState(() {
                                   _isAmountVisible = !_isAmountVisible;
                                 });
+                                // Reset and restart the animation
+                                _animationController.reset();
+                                _animationController.forward();
                               },
-                              child: Icon(
-                                _isAmountVisible
-                                    ? Icons.visibility_outlined
-                                    : Icons.visibility_off_outlined,
+                              child: AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 300),
+                                transitionBuilder: (Widget child, Animation<double> animation) {
+                                  return FadeTransition(
+                                    opacity: animation,
+                                    child: child,
+                                  );
+                                },
+                                child: Icon(
+                                  _isAmountVisible
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                  key: ValueKey<bool>(_isAmountVisible),
+                                  color: AppColors.darkTextMuted,
+                                ),
                               ),
                             ),
                           ],
                         ),
                         SizedBox(height: 4),
-                        FadeInUp(
-                          from: 20,
-                          duration: Duration(milliseconds: 400),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.success.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: AppText(
-                              _isAmountVisible
-                                  ? "+ ${CurrencyFormatter.formatRupee(portfolio?.deltavalue ?? 0)} (${portfolio?.deltapercentage}%)"
-                                  : '•••••',
-                              variant: AppTextVariant.bodySmall,
-                              weight: AppTextWeight.medium,
-                              colorType: AppTextColorType.success,
-                            ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.success.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: AppText(
+                            _isAmountVisible
+                                ? "+ ${CurrencyFormatter.formatRupee(portfolio?.deltavalue ?? 0)} (${portfolio?.deltapercentage}%)"
+                                : '•••••',
+                            variant: AppTextVariant.bodySmall,
+                            weight: AppTextWeight.medium,
+                            colorType: AppTextColorType.success,
                           ),
                         ),
                         SizedBox(height: 16),
@@ -355,69 +362,65 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
                           ],
                         ),
                         SizedBox(height: 8),
-                        FadeInUp(
-                          from: 30,
-                          duration: Duration(milliseconds: 500),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: AppColors.darkCardBG,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 15,
-                              vertical: 15,
-                            ),
-                            child: Column(
-                              spacing: 6,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    AppText(
-                                      "Invested",
-                                      variant: AppTextVariant.bodyMedium,
-                                      weight: AppTextWeight.medium,
-                                      colorType: AppTextColorType.primary,
+                        Container(
+                          decoration: BoxDecoration(
+                            color: AppColors.darkCardBG,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 15,
+                            vertical: 15,
+                          ),
+                          child: Column(
+                            spacing: 6,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  AppText(
+                                    "Invested",
+                                    variant: AppTextVariant.bodyMedium,
+                                    weight: AppTextWeight.medium,
+                                    colorType: AppTextColorType.primary,
+                                  ),
+                                  SizedBox(height: 3),
+                                  AnimatedAmount(
+                                    amount:  CurrencyFormatter.formatRupee(portfolio?.invested ?? 0),
+                                    isAmountVisible: _isAmountVisible,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                      color: AppColors.darkPrimary,
                                     ),
-                                    SizedBox(height: 3),
-                                    AppText(
-                                      _isAmountVisible
-                                          ? CurrencyFormatter.formatRupee(
-                                            portfolio?.invested ?? 0,
-                                          )
-                                          : '•••••',
-                                      variant: AppTextVariant.bodyMedium,
-                                      weight: AppTextWeight.medium,
-                                      colorType: AppTextColorType.primary,
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  AppText(
+                                    "Gain",
+                                    variant: AppTextVariant.bodyMedium,
+                                    weight: AppTextWeight.medium,
+                                    colorType: AppTextColorType.primary,
+                                  ),
+                                  SizedBox(height: 3),
+                                  AnimatedAmount(
+                                    amount: CurrencyFormatter.formatRupee(
+                                          portfolio?.gain ?? 0,
+                                        ),
+                                    isAmountVisible: _isAmountVisible,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                      color: AppColors.darkPrimary,
                                     ),
-                                  ],
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    AppText(
-                                      "Gain",
-                                      variant: AppTextVariant.bodyMedium,
-                                      weight: AppTextWeight.medium,
-                                      colorType: AppTextColorType.primary,
-                                    ),
-                                    SizedBox(height: 3),
-                                    AppText(
-                                      _isAmountVisible
-                                          ? CurrencyFormatter.formatRupee(
-                                            portfolio?.gain ?? 0,
-                                          )
-                                          : '•••••',
-                                      variant: AppTextVariant.bodyMedium,
-                                      weight: AppTextWeight.medium,
-                                      colorType: AppTextColorType.primary,
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
                         SizedBox(height: 8),
@@ -488,16 +491,23 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
   @override
   void initState() {
     super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
     _refreshController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     );
+    // Start the initial animation
+    _animationController.forward();
     fetchPortfolio();
   }
 
   @override
   void dispose() {
-    _refreshController.dispose();
+    _scrollController.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 

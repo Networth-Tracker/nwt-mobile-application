@@ -1,10 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/data/categories/categories.dart';
 import 'package:nwt_app/constants/data/categories/categories.types.dart';
 import 'package:nwt_app/constants/sizing.dart';
+import 'package:nwt_app/controllers/transactions/banks/transactions.dart';
 import 'package:nwt_app/screens/transactions/banks/widgets/transaction_card.dart';
+import 'package:nwt_app/screens/transactions/banks/types/transaction.dart';
 import 'package:nwt_app/widgets/common/app_input_field.dart';
 import 'package:nwt_app/widgets/common/button_widget.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
@@ -41,7 +45,6 @@ class FilterCategories extends Category {
   bool get isMainCategory => parentId == null;
 }
 
-
 class BankTransactionListScreen extends StatefulWidget {
   const BankTransactionListScreen({super.key});
 
@@ -52,6 +55,32 @@ class BankTransactionListScreen extends StatefulWidget {
 
 class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
   final TextEditingController _searchController = TextEditingController();
+  bool isTransactionsLoading = false;
+  final bankTransactionController = Get.put(BankTransactionController());
+  void getTransactions() {
+    bankTransactionController.getBankTransactions(
+      bankGUID: "B_1747388324308",
+      onLoading: (isLoading) {
+        if (mounted) {
+          setState(() {
+            isTransactionsLoading = isLoading;
+          });
+        }
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getTransactions();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   // Filter state variables
   DateTime? _startDate;
@@ -59,9 +88,8 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
   String? _selectedDateRange = '30 days';
   double _minAmount = 0;
   double _maxAmount = 10000;
-  
-  // Categories list with hierarchical structure
 
+  // Categories list with hierarchical structure
 
   final List<Bank> _banks = [
     Bank(
@@ -96,10 +124,10 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
   final List<Category> _categories = categories;
   List<Bank> get selectedBanks =>
       _banks.where((bank) => bank.isSelected).toList();
-      
+
   // Store selected categories
   final List<FilterCategories> _selectedFilterCategories = [];
-  
+
   List<FilterCategories> get selectedCategories => _selectedFilterCategories;
 
   Widget _buildBankChip(Bank bank, [StateSetter? setModalState]) {
@@ -138,8 +166,11 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
       ),
     );
   }
-  
-  Widget _buildCategoryChip(FilterCategories category, [StateSetter? setModalState]) {
+
+  Widget _buildCategoryChip(
+    FilterCategories category, [
+    StateSetter? setModalState,
+  ]) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -158,8 +189,9 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
           GestureDetector(
             onTap: () {
               setState(() {
-                // Remove the category from the selected categories list
-                _selectedFilterCategories.removeWhere((cat) => cat.id == category.id);
+                _selectedFilterCategories.removeWhere(
+                  (cat) => cat.id == category.id,
+                );
               });
               if (setModalState != null) {
                 setModalState(() {});
@@ -240,7 +272,7 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
                               colorType: AppTextColorType.secondary,
                             ),
                             trailing:
-                              bank.isSelected
+                                bank.isSelected
                                     ? Icon(
                                       Icons.check_circle,
                                       color: Colors.green,
@@ -274,14 +306,16 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
       },
     );
   }
-  
+
   void _showCategorySelectionBottomSheet(
     BuildContext context,
     StateSetter setModalState,
   ) {
     // Create a temporary list to track selections during the bottom sheet session
-    final List<FilterCategories> tempSelectedCategories = List.from(_selectedFilterCategories);
-    
+    final List<FilterCategories> tempSelectedCategories = List.from(
+      _selectedFilterCategories,
+    );
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -295,10 +329,10 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
           builder: (context, setBottomSheetState) {
             // Group categories by their parent
             final Map<String?, List<Category>> groupedCategories = {};
-            
+
             // Initialize with empty lists for each parent type
             groupedCategories[null] = [];
-            
+
             // Group categories by parent
             for (final category in _categories) {
               if (!groupedCategories.containsKey(category.parentId)) {
@@ -306,10 +340,10 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
               }
               groupedCategories[category.parentId]!.add(category);
             }
-            
+
             // Get main categories (those without a parent)
             final mainCategories = groupedCategories[null] ?? [];
-            
+
             return Container(
               padding: const EdgeInsets.all(16),
               height: MediaQuery.of(context).size.height * 0.9,
@@ -337,14 +371,17 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
                       itemCount: mainCategories.length,
                       itemBuilder: (context, index) {
                         final mainCategory = mainCategories[index];
-                        final subCategories = groupedCategories[mainCategory.id] ?? [];
-                        
+                        final subCategories =
+                            groupedCategories[mainCategory.id] ?? [];
+
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             // Main category header
                             Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 8.0,
+                              ),
                               child: AppText(
                                 mainCategory.name,
                                 variant: AppTextVariant.bodyLarge,
@@ -355,9 +392,9 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
                             ...subCategories.map((subCategory) {
                               // Check if this category is selected
                               final isSelected = tempSelectedCategories.any(
-                                (cat) => cat.id == subCategory.id
+                                (cat) => cat.id == subCategory.id,
                               );
-                              
+
                               return Container(
                                 margin: const EdgeInsets.only(bottom: 8.0),
                                 decoration: BoxDecoration(
@@ -368,22 +405,26 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
                                     subCategory.name,
                                     variant: AppTextVariant.bodyMedium,
                                   ),
-                                  trailing: isSelected
-                                    ? Icon(
-                                        Icons.check_circle,
-                                        color: Colors.green,
-                                      )
-                                    : null,
+                                  trailing:
+                                      isSelected
+                                          ? Icon(
+                                            Icons.check_circle,
+                                            color: Colors.green,
+                                          )
+                                          : null,
                                   onTap: () {
                                     setBottomSheetState(() {
                                       // Find if this category is already selected
-                                      final existingIndex = tempSelectedCategories.indexWhere(
-                                        (cat) => cat.id == subCategory.id
-                                      );
-                                      
+                                      final existingIndex =
+                                          tempSelectedCategories.indexWhere(
+                                            (cat) => cat.id == subCategory.id,
+                                          );
+
                                       if (existingIndex >= 0) {
                                         // If already selected, remove it
-                                        tempSelectedCategories.removeAt(existingIndex);
+                                        tempSelectedCategories.removeAt(
+                                          existingIndex,
+                                        );
                                       } else {
                                         // If not selected, add it
                                         tempSelectedCategories.add(
@@ -414,7 +455,9 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
                         // Update the actual selected categories list
                         setModalState(() {
                           _selectedFilterCategories.clear();
-                          _selectedFilterCategories.addAll(tempSelectedCategories);
+                          _selectedFilterCategories.addAll(
+                            tempSelectedCategories,
+                          );
                         });
                         Navigator.pop(context);
                       },
@@ -442,7 +485,7 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
       _startDate = now.subtract(const Duration(days: 90));
     }
     _endDate = now;
-    
+
     Navigator.of(context).push(
       PageRouteBuilder(
         opaque: true,
@@ -557,14 +600,22 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
                                   selectedColor: AppColors.darkButtonBorder,
                                   disabledColor: AppColors.darkButtonBorder,
                                   side: BorderSide(
-                                    color: _selectedDateRange == "30 days" ? Colors.white : AppColors.darkButtonBorder,
-                                    width: _selectedDateRange == "30 days" ? 1.5 : 1.0,
+                                    color:
+                                        _selectedDateRange == "30 days"
+                                            ? Colors.white
+                                            : AppColors.darkButtonBorder,
+                                    width:
+                                        _selectedDateRange == "30 days"
+                                            ? 1.5
+                                            : 1.0,
                                   ),
                                   onSelected: (selected) {
                                     if (selected) {
                                       final now = DateTime.now();
-                                      final startDate = now.subtract(const Duration(days: 30));
-                                      
+                                      final startDate = now.subtract(
+                                        const Duration(days: 30),
+                                      );
+
                                       setModalState(() {
                                         _startDate = startDate;
                                         _endDate = now;
@@ -586,14 +637,22 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
                                   selectedColor: AppColors.darkButtonBorder,
                                   disabledColor: AppColors.darkButtonBorder,
                                   side: BorderSide(
-                                    color: _selectedDateRange == "60 days" ? Colors.white : AppColors.darkButtonBorder,
-                                    width: _selectedDateRange == "60 days" ? 1.5 : 1.0,
+                                    color:
+                                        _selectedDateRange == "60 days"
+                                            ? Colors.white
+                                            : AppColors.darkButtonBorder,
+                                    width:
+                                        _selectedDateRange == "60 days"
+                                            ? 1.5
+                                            : 1.0,
                                   ),
                                   onSelected: (selected) {
                                     if (selected) {
                                       final now = DateTime.now();
-                                      final startDate = now.subtract(const Duration(days: 60));
-                                      
+                                      final startDate = now.subtract(
+                                        const Duration(days: 60),
+                                      );
+
                                       setModalState(() {
                                         _startDate = startDate;
                                         _endDate = now;
@@ -615,14 +674,22 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
                                   selectedColor: AppColors.darkButtonBorder,
                                   disabledColor: AppColors.darkButtonBorder,
                                   side: BorderSide(
-                                    color: _selectedDateRange == "90 days" ? Colors.white : AppColors.darkButtonBorder,
-                                    width: _selectedDateRange == "90 days" ? 1.5 : 1.0,
+                                    color:
+                                        _selectedDateRange == "90 days"
+                                            ? Colors.white
+                                            : AppColors.darkButtonBorder,
+                                    width:
+                                        _selectedDateRange == "90 days"
+                                            ? 1.5
+                                            : 1.0,
                                   ),
                                   onSelected: (selected) {
                                     if (selected) {
                                       final now = DateTime.now();
-                                      final startDate = now.subtract(const Duration(days: 90));
-                                      
+                                      final startDate = now.subtract(
+                                        const Duration(days: 90),
+                                      );
+
                                       setModalState(() {
                                         _startDate = startDate;
                                         _endDate = now;
@@ -725,10 +792,11 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
                             ),
                             const SizedBox(height: 8),
                             GestureDetector(
-                              onTap: () => _showCategorySelectionBottomSheet(
-                                context,
-                                setModalState,
-                              ),
+                              onTap:
+                                  () => _showCategorySelectionBottomSheet(
+                                    context,
+                                    setModalState,
+                                  ),
                               child: Container(
                                 width: MediaQuery.of(context).size.width,
                                 constraints: BoxConstraints(minHeight: 60),
@@ -768,10 +836,11 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
                                         children:
                                             selectedCategories
                                                 .map(
-                                                  (category) => _buildCategoryChip(
-                                                    category,
-                                                    setModalState,
-                                                  ),
+                                                  (category) =>
+                                                      _buildCategoryChip(
+                                                        category,
+                                                        setModalState,
+                                                      ),
                                                 )
                                                 .toList(),
                                       ),
@@ -857,6 +926,27 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
     );
   }
 
+
+  // Group transactions by date
+  Map<String, List<Banktransation>> _groupTransactionsByDate(List<Banktransation>? transactions) {
+    final Map<String, List<Banktransation>> grouped = {};
+    
+    if (transactions == null || transactions.isEmpty) {
+      return grouped;
+    }
+
+    // Sort transactions by date (newest first)
+    transactions.sort((a, b) => b.transactiontimestamp.compareTo(a.transactiontimestamp));
+    
+    for (var transaction in transactions) {
+      final dateKey = DateFormat('MMMM yyyy').format(transaction.transactiontimestamp);
+      final transactionsForDate = grouped[dateKey] ?? [];
+      transactionsForDate.add(transaction);
+      grouped[dateKey] = transactionsForDate;
+    }
+    
+    return grouped;
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -878,58 +968,116 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
             ),
             GestureDetector(
               onTap: openFilterBottomsheet,
-              child: Icon(Icons.tune_rounded),
+              child: const Icon(Icons.tune_rounded),
             ),
           ],
         ),
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSizing.scaffoldHorizontalPadding,
-              ),
-              child: AppInputField(
-                controller: _searchController,
-                prefix: Icon(
-                  CupertinoIcons.search,
-                  color: AppColors.darkTextMuted,
-                ),
-                hintText: "Search...",
-              ),
-            ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSizing.scaffoldHorizontalPadding,
-                ),
-                child: Column(
-                  children: [
-                    Column(
-                      spacing: 8,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            AppText(
-                              "May 2025",
-                              variant: AppTextVariant.bodyMedium,
-                              weight: AppTextWeight.semiBold,
-                              colorType: AppTextColorType.primary,
-                            ),
-                          ],
-                        ),
-                        BankTransactionCardWidget(),
-                      ],
+        child: GetBuilder<BankTransactionController>(
+          builder: (bankTransactionController) {
+            final transactions = bankTransactionController.transactionData?.banktransations ?? [];
+            final groupedTransactions = _groupTransactionsByDate(transactions);
+            final sortedMonths = groupedTransactions.keys.toList()..sort((a, b) => b.compareTo(a));
+            
+            return Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSizing.scaffoldHorizontalPadding,
+                    vertical: 8,
+                  ),
+                  child: AppInputField(
+                    controller: _searchController,
+                    prefix: Icon(
+                      CupertinoIcons.search,
+                      color: AppColors.darkTextMuted,
+                      size: 20,
                     ),
-                  ],
+                    hintText: "Search transactions...",
+                  ),
                 ),
-              ),
-            ),
-          ],
+                const SizedBox(height: 8),
+                Expanded(
+                  child: isTransactionsLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : transactions.isEmpty
+                          ? Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.receipt_long_outlined,
+                                    size: 64,
+                                    color: AppColors.darkTextMuted.withOpacity(0.5),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  AppText(
+                                    'No transactions found',
+                                    variant: AppTextVariant.bodyLarge,
+                                    weight: AppTextWeight.medium,
+                                    colorType: AppTextColorType.secondary,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  AppText(
+                                    'Your transactions will appear here',
+                                    variant: AppTextVariant.bodySmall,
+                                    colorType: AppTextColorType.muted,
+                                  ),
+                                ],
+                              ),
+                            )
+                          : ListView.builder(
+                              padding: const EdgeInsets.only(bottom: 20),
+                              physics: const BouncingScrollPhysics(),
+                              itemCount: sortedMonths.length,
+                              itemBuilder: (context, monthIndex) {
+                                final month = sortedMonths[monthIndex];
+                                final monthTransactions = groupedTransactions[month]!;
+                                
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: AppSizing.scaffoldHorizontalPadding,
+                                        vertical: 12,
+                                      ),
+                                      child: AppText(
+                                        month,
+                                        variant: AppTextVariant.bodyMedium,
+                                        weight: AppTextWeight.semiBold,
+                                        colorType: AppTextColorType.primary,
+                                      ),
+                                    ),
+                                    ListView.builder(
+                                      shrinkWrap: true,
+                                      physics: const BouncingScrollPhysics(),
+                                      itemCount: monthTransactions.length,
+                                      itemBuilder: (context, index) {
+                                        final transaction = monthTransactions[index];
+                                        return Padding(
+                                          padding: const EdgeInsets.only(
+                                            bottom: 8,
+                                            left: AppSizing.scaffoldHorizontalPadding,
+                                            right: AppSizing.scaffoldHorizontalPadding,
+                                          ),
+                                          child: BankTransactionCardWidget(
+                                            transaction: transaction,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                    if (monthIndex < sortedMonths.length - 1)
+                                      const SizedBox(height: 16),
+                                  ],
+                                );
+                              },
+                            ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );

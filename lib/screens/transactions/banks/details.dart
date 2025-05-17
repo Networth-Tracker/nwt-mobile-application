@@ -5,9 +5,12 @@ import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/widgets/common/app_input_field.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:nwt_app/screens/transactions/banks/types/transaction.dart';
 
 class TransactionDetails extends StatefulWidget {
-  const TransactionDetails({super.key});
+  const TransactionDetails({super.key, required this.transaction});
+
+  final Banktransation transaction;
 
   @override
   State<TransactionDetails> createState() => _TransactionDetailsState();

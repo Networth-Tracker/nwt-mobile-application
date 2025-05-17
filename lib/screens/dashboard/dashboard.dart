@@ -11,6 +11,7 @@ import 'package:nwt_app/screens/connections/connections.dart';
 import 'package:nwt_app/screens/notifications/notification_list.dart';
 import 'package:nwt_app/services/auth/auth_flow.dart';
 import 'package:nwt_app/utils/logger.dart';
+import 'package:nwt_app/widgets/common/animated_amount.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 import 'package:nwt_app/widgets/avatar.dart';
 import 'package:nwt_app/constants/colors.dart';
@@ -76,6 +77,7 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
       return "Good night!";
     }
   }
+  bool _isAmountVisible = true;
 
   PageController pageViewController = PageController();
   int currentPage = 0;
@@ -251,16 +253,28 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  AppText(
-                                    "₹1,00,000",
-                                    variant: AppTextVariant.display,
-                                    weight: AppTextWeight.bold,
-                                    colorType: AppTextColorType.primary,
+                                  AnimatedAmount(
+                                    amount: "₹1,00,000",
+                                    isAmountVisible: _isAmountVisible,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 36,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                  Icon(
-                                    Icons.visibility_outlined,
-                                    color:
-                                        AppColors.darkButtonPrimaryBackground,
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _isAmountVisible = !_isAmountVisible;
+                                      });
+                                    },
+                                    child: Icon(
+                                      _isAmountVisible
+                                          ? Icons.visibility_outlined
+                                          : Icons.visibility_off_outlined,
+                                      color:
+                                          AppColors.darkButtonPrimaryBackground,
+                                    ),
                                   ),
                                 ],
                               ),
