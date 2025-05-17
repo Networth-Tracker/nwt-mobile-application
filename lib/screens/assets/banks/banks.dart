@@ -1,8 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:nwt_app/utils/currency_formatter.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/sizing.dart';
+import 'package:nwt_app/controllers/assets/banks.dart';
 import 'package:nwt_app/widgets/common/app_input_field.dart';
 import 'package:nwt_app/screens/assets/banks/widgets/bank_card.dart';
 import 'package:nwt_app/widgets/common/button_widget.dart';
@@ -15,8 +18,47 @@ class AssetBankScreen extends StatefulWidget {
   State<AssetBankScreen> createState() => _AssetBankScreenState();
 }
 
-class _AssetBankScreenState extends State<AssetBankScreen> {
-  TextEditingController _searchController = TextEditingController();
+class _AssetBankScreenState extends State<AssetBankScreen> with SingleTickerProviderStateMixin {
+  final TextEditingController _searchController = TextEditingController();
+  late final AnimationController _refreshController;
+  final bankController = Get.put(BankController());
+  bool isBankSummaryLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    );
+    fetchBankSummary();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _refreshController.dispose();
+    super.dispose();
+  }
+
+  Future<void> fetchBankSummary() async {
+    bankController.getBankSummary(
+      onLoading: (isLoading) {
+        if (mounted) {
+          setState(() {
+            isBankSummaryLoading = isLoading;
+          });
+          if (isLoading) {
+            _refreshController.repeat();
+          } else {
+            _refreshController.stop();
+            _refreshController.reset();
+          }
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,70 +102,98 @@ class _AssetBankScreenState extends State<AssetBankScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                    GetBuilder<BankController>(
+                      builder: (controller) {
+                        return Column(
                           children: [
-                            AppText(
-                              "Total balance",
-                              variant: AppTextVariant.headline4,
-                              weight: AppTextWeight.bold,
-                              colorType: AppTextColorType.primary,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    AppText(
+                                      "Total balance",
+                                      variant: AppTextVariant.headline4,
+                                      weight: AppTextWeight.bold,
+                                      colorType: AppTextColorType.primary,
+                                    ),
+                                    SizedBox(height: 3),
+                                    AppText(
+                                      controller.bankSummary?.data?.lastdatafetchtime != null
+                                          ? "Last data fetched at ${controller.bankSummary!.data!.lastdatafetchtime}"
+                                          : "No data fetched yet",
+                                      variant: AppTextVariant.bodySmall,
+                                      weight: AppTextWeight.medium,
+                                      colorType: AppTextColorType.secondary,
+                                    ),
+                                  ],
+                                ),
+                                GestureDetector(
+                                  onTap: () => fetchBankSummary(),
+                                  child: RotationTransition(
+                                    turns: _refreshController,
+                                    child: Container(
+                                      padding: const EdgeInsets.all(4),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.darkButtonBorder,
+                                        borderRadius: BorderRadius.circular(15),
+                                      ),
+                                      child: const Icon(
+                                        Icons.refresh,
+                                        size: 22,
+                                        color: AppColors.darkTextMuted,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                            SizedBox(height: 3),
-                            AppText(
-                              "Last data fetched at 12:12pm",
-                              variant: AppTextVariant.bodySmall,
-                              weight: AppTextWeight.medium,
-                              colorType: AppTextColorType.secondary,
+                            SizedBox(height: 15),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                AppText(
+                                  CurrencyFormatter.formatRupee(controller.bankSummary?.data?.totalbalance ?? 0),
+                                  variant: AppTextVariant.display,
+                                  weight: AppTextWeight.bold,
+                                  colorType: AppTextColorType.primary,
+                                ),
+                                Icon(Icons.visibility_outlined),
+                              ],
                             ),
+                            SizedBox(height: 4),
+                            if (controller.bankSummary?.data?.deltavalue != null)
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 8,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: controller.bankSummary!.data!.deltavalue >= 0
+                                          ? AppColors.success.withValues(alpha: 0.1)
+                                          : AppColors.error.withValues(alpha: 0.1),
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: AppText(
+                                      "${controller.bankSummary!.data!.deltavalue >= 0 ? '+' : ''}"
+                                      "${controller.bankSummary!.data!.deltavalue} "
+                                      "(${controller.bankSummary!.data!.deltapercentage}%)",
+                                      variant: AppTextVariant.bodySmall,
+                                      weight: AppTextWeight.medium,
+                                      colorType: controller.bankSummary!.data!.deltavalue >= 0
+                                          ? AppTextColorType.success
+                                          : AppTextColorType.error,
+                                    ),
+                                  ),
+                                ],
+                              ),
                           ],
-                        ),
-                        Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: AppColors.darkButtonBorder,
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: const Icon(
-                            Icons.refresh,
-                            size: 22,
-                            color: AppColors.darkTextMuted,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 15),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        AppText(
-                          "₹62,00,320",
-                          variant: AppTextVariant.display,
-                          weight: AppTextWeight.bold,
-                          colorType: AppTextColorType.primary,
-                        ),
-                        Icon(Icons.visibility_outlined),
-                      ],
-                    ),
-                    SizedBox(height: 4),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.success.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: AppText(
-                        "+ 0.28 (0.20%)",
-                        variant: AppTextVariant.bodySmall,
-                        weight: AppTextWeight.medium,
-                        colorType: AppTextColorType.success,
-                      ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -215,72 +285,45 @@ class _AssetBankScreenState extends State<AssetBankScreen> {
                   child: Column(
                     spacing: 15,
                     children: [
-                      Banner(
-                        message: 'Primary',
-                        textStyle: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 10,
-                          fontFamily: 'Poppins',
-                        ),
-                        color: AppColors.linkColor,
-                        location: BannerLocation.topStart,
-                        child: const BankCard(
-                          icon: Icons.account_balance,
-                          bankName: "ICICI Bank",
-                          accountNumber: "XXXX XXXX XXXX 2087",
-                          balance: "₹10,500",
-                          deltaValue: "0.28%",
-                          isPositiveDelta: true,
-                        ),
-                      ),
-                      const BankCard(
-                        icon: Icons.credit_card,
-                        bankName: "HDFC Bank",
-                        accountNumber: "XXXX XXXX XXXX 4321",
-                        balance: "₹25,750",
-                        deltaValue: "0.15%",
-                        isPositiveDelta: false,
-                      ),
-                      const BankCard(
-                        icon: Icons.account_balance,
-                        bankName: "ICICI Bank",
-                        accountNumber: "XXXX XXXX XXXX 2087",
-                        balance: "₹10,500",
-                        deltaValue: "0.28%",
-                        isPositiveDelta: true,
-                      ),
-                      const BankCard(
-                        icon: Icons.account_balance,
-                        bankName: "ICICI Bank",
-                        accountNumber: "XXXX XXXX XXXX 2087",
-                        balance: "₹10,500",
-                        deltaValue: "0.28%",
-                        isPositiveDelta: true,
-                      ),
-                      const BankCard(
-                        icon: Icons.credit_card,
-                        bankName: "HDFC Bank",
-                        accountNumber: "XXXX XXXX XXXX 4321",
-                        balance: "₹25,750",
-                        deltaValue: "0.15%",
-                        isPositiveDelta: false,
-                      ),
-                      const BankCard(
-                        icon: Icons.account_balance,
-                        bankName: "ICICI Bank",
-                        accountNumber: "XXXX XXXX XXXX 2087",
-                        balance: "₹10,500",
-                        deltaValue: "0.28%",
-                        isPositiveDelta: true,
-                      ),
-                      const BankCard(
-                        icon: Icons.account_balance,
-                        bankName: "ICICI Bank",
-                        accountNumber: "XXXX XXXX XXXX 2087",
-                        balance: "₹10,500",
-                        deltaValue: "0.28%",
-                        isPositiveDelta: true,
+                      GetBuilder<BankController>(
+                        builder: (controller) {
+                          if (controller.bankSummary?.data == null) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+
+                          return Column(
+                            spacing: 15,
+                            children: controller.bankSummary!.data!.banks.map((bank) {
+                              final Widget bankCard = BankCard(
+                                icon: Icons.account_balance,
+                                bankName: bank.finame,
+                                accountNumber: bank.maskedaccnumber,
+                                balance: CurrencyFormatter.formatRupee(bank.currentbalance),
+                                deltaValue: "${bank.deltapercentage}%",
+                                isPositiveDelta: bank.deltavalue >= 0,
+                              );
+
+                              if (bank.isprimary) {
+                                return Banner(
+                                  message: 'Primary',
+                                  textStyle: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 10,
+                                    fontFamily: 'Poppins',
+                                  ),
+                                  color: AppColors.linkColor,
+                                  location: BannerLocation.topStart,
+                                  child: bankCard,
+                                );
+                              }
+
+                              return bankCard;
+                            }).toList(),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -296,7 +339,7 @@ class _AssetBankScreenState extends State<AssetBankScreen> {
                       size: AppButtonSize.large,
                       isLoading: false,
                       onPressed: () {},
-                    ),
+                    ),  
                   ),
                 ],
               ),

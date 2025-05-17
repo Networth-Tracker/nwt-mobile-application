@@ -1,38 +1,37 @@
 class BankSummaryResponse {
     int status;
     String message;
-    Data data;
-    bool get success => status == 200 || status == 201;
+    BankSummaryData? data;
 
     BankSummaryResponse({
         required this.status,
         required this.message,
-        required this.data,
+        this.data,
     });
 
     factory BankSummaryResponse.fromJson(Map<String, dynamic> json) => BankSummaryResponse(
         status: json["status"],
         message: json["message"],
-        data: Data.fromJson(json["data"]),
+        data: json["data"] != null ? BankSummaryData.fromJson(json["data"]) : null,
     );
 
     Map<String, dynamic> toJson() => {
         "status": status,
         "message": message,
-        "data": data.toJson(),
+        "data": data?.toJson(),
     };
 }
 
-class Data {
+class BankSummaryData {
     List<Bank> banks;
-    String totalbalance;
-    String totalpercentage;
+    double totalbalance;
+    double totalpercentage;
     double deltavalue;
     double deltapercentage;
     DateTime lastdatafetch;
     String lastdatafetchtime;
 
-    Data({
+    BankSummaryData({
         required this.banks,
         required this.totalbalance,
         required this.totalpercentage,
@@ -42,12 +41,12 @@ class Data {
         required this.lastdatafetchtime,
     });
 
-    factory Data.fromJson(Map<String, dynamic> json) => Data(
+    factory BankSummaryData.fromJson(Map<String, dynamic> json) => BankSummaryData(
         banks: List<Bank>.from(json["banks"].map((x) => Bank.fromJson(x))),
-        totalbalance: json["totalbalance"],
-        totalpercentage: json["totalpercentage"],
-        deltavalue: json["deltavalue"]?.toDouble(),
-        deltapercentage: json["deltapercentage"]?.toDouble(),
+        totalbalance: (json["totalbalance"] as num).toDouble(),
+        totalpercentage: (json["totalpercentage"] as num).toDouble(),
+        deltavalue: (json["deltavalue"] as num).toDouble(),
+        deltapercentage: (json["deltapercentage"] as num).toDouble(),
         lastdatafetch: DateTime.parse(json["lastdatafetch"]),
         lastdatafetchtime: json["lastdatafetchtime"],
     );
@@ -70,8 +69,7 @@ class Bank {
     String finame;
     String linkrefnumber;
     String maskedaccnumber;
-    String currentbalance;
-    dynamic accounttype;
+    double currentbalance;
     String accountsubtype;
     dynamic status;
     DateTime createdat;
@@ -80,10 +78,9 @@ class Bank {
     bool activestate;
     int id;
     bool isprimary;
-    String currentpercentage;
-    String currentamount;
-    int deltavalue;
-    int deltapercentage;
+    double currentpercentage;
+    double deltavalue;
+    double deltapercentage;
 
     Bank({
         required this.guid,
@@ -93,7 +90,6 @@ class Bank {
         required this.linkrefnumber,
         required this.maskedaccnumber,
         required this.currentbalance,
-        required this.accounttype,
         required this.accountsubtype,
         required this.status,
         required this.createdat,
@@ -103,7 +99,6 @@ class Bank {
         required this.id,
         required this.isprimary,
         required this.currentpercentage,
-        required this.currentamount,
         required this.deltavalue,
         required this.deltapercentage,
     });
@@ -115,8 +110,7 @@ class Bank {
         finame: json["finame"],
         linkrefnumber: json["linkrefnumber"],
         maskedaccnumber: json["maskedaccnumber"],
-        currentbalance: json["currentbalance"],
-        accounttype: json["accounttype"],
+        currentbalance: (json["currentbalance"] as num).toDouble(),
         accountsubtype: json["accountsubtype"],
         status: json["status"],
         createdat: DateTime.parse(json["createdat"]),
@@ -125,10 +119,9 @@ class Bank {
         activestate: json["activestate"],
         id: json["id"],
         isprimary: json["isprimary"],
-        currentpercentage: json["currentpercentage"],
-        currentamount: json["currentamount"],
-        deltavalue: json["deltavalue"],
-        deltapercentage: json["deltapercentage"],
+        currentpercentage: (json["currentpercentage"] as num).toDouble(),
+        deltavalue: (json["deltavalue"] as num).toDouble(),
+        deltapercentage: (json["deltapercentage"] as num).toDouble(),
     );
 
     Map<String, dynamic> toJson() => {
@@ -139,7 +132,6 @@ class Bank {
         "linkrefnumber": linkrefnumber,
         "maskedaccnumber": maskedaccnumber,
         "currentbalance": currentbalance,
-        "accounttype": accounttype,
         "accountsubtype": accountsubtype,
         "status": status,
         "createdat": createdat.toIso8601String(),
@@ -149,7 +141,6 @@ class Bank {
         "id": id,
         "isprimary": isprimary,
         "currentpercentage": currentpercentage,
-        "currentamount": currentamount,
         "deltavalue": deltavalue,
         "deltapercentage": deltapercentage,
     };

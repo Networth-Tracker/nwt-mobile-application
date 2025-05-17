@@ -30,6 +30,7 @@ dependencies:
   file_picker: ^10.1.9
   connectivity_plus: ^6.1.4
   animate_do: ^4.2.0
+  pull_to_refresh: ^2.0.0
 
 dev_dependencies:
   flutter_test:

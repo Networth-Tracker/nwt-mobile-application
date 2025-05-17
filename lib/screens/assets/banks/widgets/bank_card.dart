@@ -69,24 +69,34 @@ class BankCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 16),
                 Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AppText(
-                      bankName,
-                      variant: AppTextVariant.bodyLarge,
-                      weight: AppTextWeight.semiBold,
-                      colorType: AppTextColorType.primary,
-                    ),
-                    const SizedBox(height: 4),
-                    AppText(
-                      accountNumber,
-                      variant: AppTextVariant.bodyMedium,
-                      weight: AppTextWeight.regular,
-                      colorType: AppTextColorType.secondary,
-                    ),
-                  ],
-                ),
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: 180,
+                        child: AppText(
+                          bankName,
+                          variant: AppTextVariant.bodyLarge,
+                          weight: AppTextWeight.semiBold,
+                          colorType: AppTextColorType.primary,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      SizedBox(
+                        width: 180,
+                        child: AppText(
+                          accountNumber,
+                          variant: AppTextVariant.bodyMedium,
+                          weight: AppTextWeight.regular,
+                          colorType: AppTextColorType.secondary,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
               ],
             ),
             Column(
