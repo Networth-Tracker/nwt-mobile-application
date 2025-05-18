@@ -16,6 +16,7 @@ import 'package:nwt_app/widgets/common/text_widget.dart';
 import 'package:nwt_app/widgets/avatar.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/screens/dashboard/widgets/asset_card.dart';
+import 'package:nwt_app/screens/dashboard/widgets/networth_chart.dart';
 import 'package:nwt_app/utils/currency_formatter.dart';
 
 class Dashboard extends StatefulWidget {
@@ -254,7 +255,7 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   AnimatedAmount(
-                                    amount: "₹1,00,000",
+                                    amount: "₹76,171,095",
                                     isAmountVisible: _isAmountVisible,
                                     style: const TextStyle(
                                       color: Colors.white,
@@ -278,6 +279,8 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
                                   ),
                                 ],
                               ),
+                              SizedBox(height: 16),
+                              const NetworthChart(),
                             ],
                           ),
                         ),
