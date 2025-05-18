@@ -287,12 +287,12 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen>
             children: [
               Column(
                 children: [
-                  SizedBox(height: 12),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.05),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.5,
+                        width: MediaQuery.of(context).size.width * 0.45,
                         child: Lottie.asset('assets/lottie/lock.json'),
                       ),
                     ],
