@@ -13,69 +13,57 @@ on:
         default: 'Feature updates and improvements'
 
 jobs:
-  android:
-    name: Build Android
+  build:
+    name: Build Apps
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout 
         uses: actions/checkout@v3
 
-      # Setup Java with cache
       - name: Setup Java 17
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
-          cache: 'gradle'
       
-      # Accept Android SDK Licenses
       - name: Accept Android SDK Licenses
         run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
-      # Setup Flutter
       - name: Install Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.29.3'
-          cache: true
-
-      # Cache Flutter dependencies
-      - name: Cache Flutter dependencies
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.PUB_CACHE }}
-          key: ${{ runner.os }}-pub-cache-${{ hashFiles('**/pubspec.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pub-cache-
-
 
       - name: Install Dependencies
         run: flutter pub get
 
-      - name: Cache NDK
-        uses: actions/cache@v3
-        with:
-          path: /usr/local/lib/android/sdk/ndk
-          key: ${{ runner.os }}-ndk-27.0.12077973
-          restore-keys: |
-            ${{ runner.os }}-ndk-27.0.12077973
-
       - name: Build APK
         run: |
-          # Accept NDK licenses and build with suppressed warnings
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses >/dev/null 2>&1 || true
           echo '##[group]Building APK...'
           flutter build apk --split-per-abi --no-tree-shake-icons --suppress-analytics
           echo '##[endgroup]'
       
-      - name: Rename APK with Build Number
+      - name: Build Web
         run: |
+          flutter config --enable-web
+          echo '##[group]Building Web...'
+          flutter build web --release &
+          WEB_BUILD_PID=$!
+          
           mkdir -p build/renamed_apks
           cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk build/renamed_apks/nwt-app-v0.0.${{ github.run_number }}.apk
+          
+          wait $WEB_BUILD_PID
+          echo '##[endgroup]'
       
-      - name: Generate Release Notes
+      - name: Prepare Release Artifacts
         run: |
+          mkdir -p build/renamed_builds
+          cd build/web
+          zip -r ../../build/renamed_builds/nwt-web-v0.0.${{ github.run_number }}.zip .
+          cd ../..
+          
           mkdir -p build/release_notes
           cat > build/release_notes/release_notes.txt << EOL
           Version: v0.0.${{ github.run_number }}
@@ -94,7 +82,6 @@ jobs:
           file: build/renamed_apks/nwt-app-v0.0.${{ github.run_number }}.apk
           releaseNotesFile: build/release_notes/release_notes.txt
 
-      # Upload APK Artifact
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -103,206 +90,47 @@ jobs:
           retention-days: 5
           if-no-files-found: error
           
-      # Web build will be handled in the web job
-
-      - name: Verify APK Artifacts
-        run: |
-          echo "Verifying APK artifacts..."
-          ls -la build/renamed_apks/
-          if [ ! -f "build/renamed_apks/nwt-app-v0.0.${{ github.run_number }}.apk" ]; then
-            echo "APK file not found!"
-            exit 1
-          fi
-          
-      - name: Capture Firebase Distribution Output
-        id: capture_output
-        run: |
-          CONSOLE_URL="https://console.firebase.google.com/project/${{ secrets.FIREBASE_PROJECT_ID }}/appdistribution/app/${{ secrets.FIREBASE_APP_ID }}/releases"
-          TESTER_URL="https://appdistribution.firebase.google.com/testerapps/${{ secrets.FIREBASE_APP_ID }}"
-          
-          # Get the download URL for the APK
-          APK_URL="https://github.com/${{ github.repository }}/releases/download/v0.0.${{ github.run_number }}/nwt-app-v0.0.${{ github.run_number }}.apk"
-          WEB_ZIP_URL="https://github.com/${{ github.repository }}/releases/download/v0.0.${{ github.run_number }}/nwt-web-v0.0.${{ github.run_number }}.zip"
-
-          cat > firebase_output.txt << EOL
-          🚀 Build Artifacts Available for Download:
-          
-          📱 Android APK:
-          - Direct Download: $APK_URL
-          
-          🌐 Web Build (ZIP):
-          - Direct Download: $WEB_ZIP_URL
-          
-          🔗 Firebase App Distribution:
-          - Console: $CONSOLE_URL  
-          - Tester Portal (login required): $TESTER_URL  
-          
-          ℹ️ Version: v0.0.${{ github.run_number }}
-          🔄 Run Number: ${{ github.run_number }}
-          EOL
-
-          echo "FIREBASE_OUTPUT<<EOF" >> $GITHUB_ENV
-          cat firebase_output.txt >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-
-          cat firebase_output.txt
-
-  web:
-    name: Web Build
-    needs: android
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          
-      - name: Install Dependencies
-        run: flutter pub get
-        
-      - name: Build Web
-        run: |
-          flutter config --enable-web
-          echo '##[group]Building Web...'
-          flutter build web --release
-          echo '##[group]Web build complete'
-          
-      - name: Create Web Build Archive
-        run: |
-          mkdir -p build/renamed_builds
-          cd build/web
-          zip -r ../../build/renamed_builds/nwt-web-v0.0.${{ github.run_number }}.zip .
-          echo '##[group]Web build archive created'
-          ls -la ../../build/renamed_builds/
-
-      - name: Generate Web Release Notes
-        run: |
-          mkdir -p build/release_notes
-          cat > build/release_notes/web_release_notes.txt << 'EOL'
-          Version: v0.0.${{ github.run_number }}
-          Build Date: $(date +'%Y-%m-%d %H:%M:%S')
-          Commit: ${{ github.sha }}
-          Notes: ${{ github.event.inputs.release_notes || 'Feature updates and improvements' }}
-          EOL
-          
-          # Also create a copy for the main release notes if it doesn't exist
-          if [ ! -f "build/release_notes/release_notes.txt" ]; then
-            cp build/release_notes/web_release_notes.txt build/release_notes/release_notes.txt
-          fi
-          
       - name: Upload Web Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: web-build
-          path: |
-            build/renamed_builds/nwt-web-v0.0.${{ github.run_number }}.zip
-            build/release_notes/web_release_notes.txt
+          path: build/renamed_builds/nwt-web-v0.0.${{ github.run_number }}.zip
           retention-days: 5
+          if-no-files-found: error
 
-      - name: Upload to Firebase Storage
-        if: github.ref == 'refs/heads/dev'
-        env:
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
-        run: |
-          # Install Firebase CLI
-          curl -sL https://firebase.tools | bash
-          
-          # Authenticate with Firebase
-          echo "$FIREBASE_SERVICE_ACCOUNT" > firebase-service-account.json
-          firebase login:ci --no-localhost
-          
-          # Skip Firebase Hosting deployment for now
-          echo "Skipping Firebase Hosting deployment as per configuration"
-          
-          # Just list the built files for verification
-          echo "Build artifacts ready for GitHub Release:"
-          ls -la build/renamed_apks/
-          ls -la build/renamed_builds/
-
-  notify:
-    name: Notify Completion
-    needs: [android, web]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set up environment and show build results
-        run: |
-          # Show build results
-          echo "✅ Build and deployment completed successfully!"
-          echo ""
-          echo "📱 Android Build:"
-          echo "   - Version: v0.0.${{ github.run_number }}"
-          echo "   - Check the Firebase App Distribution for download links"
-          echo ""
-          echo "🌐 Web Build:"
-          echo "   - Version: v0.0.${{ github.run_number }}"
-          echo "   - Download: Available in the workflow artifacts"
-          
-          # Set default FIREBASE_PROJECT_ID if not set
-          if [ -z "${{ secrets.FIREBASE_PROJECT_ID }}" ]; then
-            echo "   - Warning: FIREBASE_PROJECT_ID secret not set"
-          else
-            echo "   - Deployed to: https://${{ secrets.FIREBASE_PROJECT_ID }}.web.app"
-          fi
-          
-          # Set release notes in environment
-          if [ -f "build/release_notes/release_notes.txt" ]; then
-            RELEASE_NOTES=$(cat build/release_notes/release_notes.txt)
-            echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
-            echo "$RELEASE_NOTES" >> $GITHUB_ENV
-            echo "EOF" >> $GITHUB_ENV
-          else
-            echo "Warning: release_notes.txt not found"
-            echo "RELEASE_NOTES=No release notes available" >> $GITHUB_ENV
-          fi
-
-      - name: Create Release Notes
-        id: create_release_notes
-        run: |
-          # Get current timestamp in a variable
-          TIMESTAMP=$(date +'%Y-%m-%d %H:%M:%S')
-          
-          # Create release notes with timestamp
-          cat > release_notes.md << EOL
-          ## Build Information
-          - **Version**: v0.0.${{ github.run_number }}
-          - **Commit**: ${{ github.sha }}
-          - **Build Date**: $TIMESTAMP
-          - **Run Number**: ${{ github.run_number }}
-          
-          ## Included Artifacts
-          - Android APK (armeabi-v7a)
-          - Web Build (ZIP)
-          
-          ## Deployment
-          - **Android**: Available in Firebase App Distribution
-          - **Web**: Deployed to https://${{ secrets.FIREBASE_PROJECT_ID }}.web.app
-          EOL
-          
-          # Set output for release body
-          RELEASE_BODY=$(cat release_notes.md)
-          echo "RELEASE_BODY<<EOF" >> $GITHUB_ENV
-          echo "$RELEASE_BODY" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-          
-          # Output for debugging
-          echo "Release notes created:"
-          cat release_notes.md
-
-      - name: Push to GitHub Releases
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           name: "NetWorth Tracker v0.0.${{ github.run_number }}"
           tag_name: v0.0.${{ github.run_number }}
-          body: ${{ env.RELEASE_BODY }}
-          draft: false
-          prerelease: false
+          body: |
+            ## Build Information
+            - **Version**: v0.0.${{ github.run_number }}
+            - **Commit**: ${{ github.sha }}
+            - **Build Date**: $(date +'%Y-%m-%d %H:%M:%S')
+            
+            ## Included Artifacts
+            - Android APK (armeabi-v7a)
+            - Web Build (ZIP)
+            
+            ## Notes
+            ${{ github.event.inputs.release_notes || 'Feature updates and improvements' }}
           files: |
             build/renamed_apks/nwt-app-v0.0.${{ github.run_number }}.apk
             build/renamed_builds/nwt-web-v0.0.${{ github.run_number }}.zip
             build/release_notes/release_notes.txt
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
-        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+
+      - name: Build Summary
+        run: |
+          echo "✅ Build and deployment completed successfully!"
+          echo ""
+          echo "📱 Android Build: v0.0.${{ github.run_number }}"
+          echo "🌐 Web Build: v0.0.${{ github.run_number }}"
+          echo ""
+          echo "📦 GitHub Release: https://github.com/${{ github.repository }}/releases/tag/v0.0.${{ github.run_number }}"
+          
+          if [ ! -z "${{ secrets.FIREBASE_PROJECT_ID }}" ]; then
+            echo "🔥 Firebase: https://console.firebase.google.com/project/${{ secrets.FIREBASE_PROJECT_ID }}/appdistribution/app/${{ secrets.FIREBASE_APP_ID }}/releases"
+          fi
