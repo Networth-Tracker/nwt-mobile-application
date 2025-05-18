@@ -2,7 +2,7 @@ name: nwt_app
 description: "A new Flutter project."
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 0.1.4+7
 
 environment:
   sdk: ^3.7.2
@@ -102,9 +102,8 @@ flutter:
 
 
 flutter_launcher_icons:
-  image_path_android: "assets/app/main_1.png"
-  image_path_ios: "assets/app/main_1.png"
+  image_path_android: "assets/app/pivot.money.png"
+  image_path_ios: "assets/app/pivot.money.png"
   android: true # can specify file name here e.g. "ic_launcher"
   ios: true # can specify file name here e.g. "My-Launcher-Icon"
   remove_alpha_ios: true
-  background_color: "#00334E"    

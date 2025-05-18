@@ -278,8 +278,10 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen>
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSizing.scaffoldHorizontalPadding,
+          padding: EdgeInsets.only(
+            left: AppSizing.scaffoldHorizontalPadding,
+            right: AppSizing.scaffoldHorizontalPadding,
+            bottom: MediaQuery.of(context).padding.bottom,
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
