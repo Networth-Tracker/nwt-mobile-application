@@ -102,7 +102,7 @@ flutter:
 
 
 flutter_launcher_icons:
-  image_path_android: "assets/app/pivot.money.png"
+  image_path_android: "assets/app/pivot.money.1024.png"
   image_path_ios: "assets/app/pivot.money.png"
   android: true # can specify file name here e.g. "ic_launcher"
   ios: true # can specify file name here e.g. "My-Launcher-Icon"

@@ -40,11 +40,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       body: GetBuilder<ThemeController>(
         builder: (themeController) {
           return SafeArea(
+            bottom: false, // Don't pad the bottom with SafeArea
             child: Padding(
-              padding: EdgeInsets.only(
-                left: AppSizing.scaffoldHorizontalPadding,
-                right: AppSizing.scaffoldHorizontalPadding,
-                bottom: MediaQuery.of(context).padding.bottom,
+              padding: EdgeInsets.symmetric(
+                horizontal: AppSizing.scaffoldHorizontalPadding,
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -102,14 +101,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ],
                   ),
 
-                  SizedBox(height: 16),
+                  Spacer(),
                   Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.only(
-                        bottom: MediaQuery.of(context).viewInsets.bottom > 0
-                            ? MediaQuery.of(context).viewInsets.bottom + 24
-                            : 24,
-                      ),
+                    width: double.infinity,
+                    margin: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).padding.bottom + 16,
+                    ),
                     child: FadeInUp(
                       curve: Curves.decelerate,
                       duration: Duration(milliseconds: 1000),
@@ -124,9 +121,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               size: AppButtonSize.large,
                               onPressed:
                                   () => Get.to(
-                                    () => const PhoneNumberInputScreen(),
-                                    transition: Transition.rightToLeft,
-                                  ),
+                                () => const PhoneNumberInputScreen(),
+                                transition: Transition.rightToLeft,
+                              ),
                             ),
                           ),
                         ],
