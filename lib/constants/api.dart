@@ -10,6 +10,6 @@ class ApiURLs {
   static const USER_DASHBOARD_ASSETS = "$baseUrl/dashboard/assets";
   static const GET_USER_INVESTMENTS = "$baseUrl/dashboard/portfolio";
   static const GET_BANK_SUMMARY = "$baseUrl/bank/summary";
-
+  static const GET_USER_HOLDINGS = "$baseUrl/dashboard/portfolio/all";
   static const GET_BANK_TRANSACTION = "$baseUrl/bank/transactions";
 }

@@ -1,20 +1,25 @@
 import 'dart:convert';
 import 'package:nwt_app/constants/api.dart';
+import 'package:nwt_app/screens/assets/investments/types/holdings.dart';
 import 'package:nwt_app/screens/assets/investments/types/portfolio.dart';
 import 'package:nwt_app/utils/logger.dart';
 import 'package:nwt_app/utils/network_api_helper.dart';
 
 class InvestmentService {
-
   Future<InvestmentPortfolioResponse?> getPortfolio({
     required Function(bool isLoading) onLoading,
   }) async {
     onLoading(true);
     try {
-      final response = await NetworkAPIHelper().get(ApiURLs.GET_USER_INVESTMENTS);
+      final response = await NetworkAPIHelper().get(
+        ApiURLs.GET_USER_INVESTMENTS,
+      );
       if (response != null) {
         final responseData = jsonDecode(response.body);
-        AppLogger.info('Get Portfolio Response: ${responseData.toString()}', tag: 'AuthService');
+        AppLogger.info(
+          'Get Portfolio Response: ${responseData.toString()}',
+          tag: 'AuthService',
+        );
 
         if (response.statusCode == 200 || response.statusCode == 201) {
           return InvestmentPortfolioResponse.fromJson(responseData);
@@ -23,6 +28,31 @@ class InvestmentService {
       return null;
     } catch (e) {
       AppLogger.error('Get Portfolio Error', error: e, tag: 'AuthService');
+      return null;
+    } finally {
+      onLoading(false);
+    }
+  }
+
+  Future<InvestmentHoldingsResponse?> getHoldings({
+    required Function(bool isLoading) onLoading,
+  }) async {
+    onLoading(true);
+    try {
+      final response = await NetworkAPIHelper().get(ApiURLs.GET_USER_HOLDINGS);
+      if (response != null) {
+        final responseData = jsonDecode(response.body);
+        AppLogger.info(
+          'Get Holdings Response: ${responseData.toString()}',
+          tag: 'AuthService',
+        );
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          return InvestmentHoldingsResponse.fromJson(responseData);
+        }
+      }
+      return null;
+    } catch (e) {
+      AppLogger.error('Get Holdings Error', error: e, tag: 'AuthService');
       return null;
     } finally {
       onLoading(false);

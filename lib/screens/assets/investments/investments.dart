@@ -1,8 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:nwt_app/screens/assets/investments/types/holdings.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/sizing.dart';
+import 'package:nwt_app/screens/mf_switch/mf_switch.dart';
+import 'package:nwt_app/widgets/common/dot_indicator.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:nwt_app/widgets/common/animated_amount.dart';
 import 'dart:async';
 import 'package:nwt_app/controllers/assets/investments.dart';
@@ -69,7 +74,9 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
     InvestmentController(),
   );
   bool isPortfolioLoading = true;
+  bool isHoldingLoading = true;
   late AnimationController _refreshController;
+  String _selectedCategory = 'All';
 
   Widget _buildAppbar() {
     return SliverAppBar(
@@ -203,7 +210,9 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
                           children: [
                             AnimatedAmount(
                               isAmountVisible: _isAmountVisible,
-                              amount: CurrencyFormatter.formatRupee(portfolio?.value ?? 0),
+                              amount: CurrencyFormatter.formatRupee(
+                                portfolio?.value ?? 0,
+                              ),
                               hiddenText: '₹••••••',
                               style: const TextStyle(
                                 color: Colors.white,
@@ -222,7 +231,10 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
                               },
                               child: AnimatedSwitcher(
                                 duration: const Duration(milliseconds: 300),
-                                transitionBuilder: (Widget child, Animation<double> animation) {
+                                transitionBuilder: (
+                                  Widget child,
+                                  Animation<double> animation,
+                                ) {
                                   return FadeTransition(
                                     opacity: animation,
                                     child: child,
@@ -249,14 +261,28 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
                             color: AppColors.success.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(6),
                           ),
-                          child: AppText(
-                            _isAmountVisible
-                                ? "+ ${CurrencyFormatter.formatRupee(portfolio?.deltavalue ?? 0)} (${portfolio?.deltapercentage}%)"
-                                : '•••••',
-                            variant: AppTextVariant.bodySmall,
-                            weight: AppTextWeight.medium,
-                            colorType: AppTextColorType.success,
-                          ),
+                          child:
+                              isPortfolioLoading
+                                  ? Shimmer.fromColors(
+                                    baseColor: AppColors.darkCardBG,
+                                    highlightColor: AppColors.darkButtonBorder,
+                                    child: Container(
+                                      width: 100,
+                                      height: 20,
+                                      decoration: BoxDecoration(
+                                        color: AppColors.darkCardBG,
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                    ),
+                                  )
+                                  : AppText(
+                                    _isAmountVisible
+                                        ? "+ ${CurrencyFormatter.formatRupee(portfolio?.deltavalue ?? 0)} (${portfolio?.deltapercentage}%)"
+                                        : '•••••',
+                                    variant: AppTextVariant.bodySmall,
+                                    weight: AppTextWeight.medium,
+                                    colorType: AppTextColorType.success,
+                                  ),
                         ),
                         SizedBox(height: 16),
                         SizedBox(
@@ -386,7 +412,9 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
                                   ),
                                   SizedBox(height: 3),
                                   AnimatedAmount(
-                                    amount:  CurrencyFormatter.formatRupee(portfolio?.invested ?? 0),
+                                    amount: CurrencyFormatter.formatRupee(
+                                      portfolio?.invested ?? 0,
+                                    ),
                                     isAmountVisible: _isAmountVisible,
                                     style: TextStyle(
                                       fontSize: 14,
@@ -409,8 +437,8 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
                                   SizedBox(height: 3),
                                   AnimatedAmount(
                                     amount: CurrencyFormatter.formatRupee(
-                                          portfolio?.gain ?? 0,
-                                        ),
+                                      portfolio?.gain ?? 0,
+                                    ),
                                     isAmountVisible: _isAmountVisible,
                                     style: TextStyle(
                                       fontSize: 14,
@@ -512,20 +540,83 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
   }
 
   Future<void> fetchPortfolio() async {
-    investmentController.getPortfolio(
-      onLoading: (isLoading) {
-        if (mounted) {
-          setState(() {
-            isPortfolioLoading = isLoading;
-          });
-          if (isLoading) {
-            _refreshController.repeat();
-          } else {
-            _refreshController.stop();
-            _refreshController.reset();
+    // Only show loading if we don't have any data yet
+    final bool shouldShowPortfolioLoading =
+        investmentController.portfolio == null;
+    final bool shouldShowHoldingsLoading =
+        investmentController.holdings == null;
+
+    if (mounted) {
+      setState(() {
+        isPortfolioLoading = shouldShowPortfolioLoading;
+        isHoldingLoading = shouldShowHoldingsLoading;
+      });
+      if (isPortfolioLoading || isHoldingLoading) {
+        _refreshController.repeat();
+      }
+    }
+
+    try {
+      await investmentController.getPortfolio(
+        onLoading: (isLoading) {
+          if (mounted) {
+            setState(() {
+              isPortfolioLoading = isLoading;
+            });
+            if (isLoading) {
+              _refreshController.repeat();
+            } else if (!isHoldingLoading) {
+              _refreshController.stop();
+              _refreshController.reset();
+            }
           }
-        }
-      },
+        },
+      );
+
+      await investmentController.getHoldings(
+        onLoading: (isLoading) {
+          if (mounted) {
+            setState(() {
+              isHoldingLoading = isLoading;
+            });
+            if (isLoading) {
+              _refreshController.repeat();
+            } else if (!isPortfolioLoading) {
+              _refreshController.stop();
+              _refreshController.reset();
+            }
+          }
+        },
+      );
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          isPortfolioLoading = false;
+          isHoldingLoading = false;
+        });
+        _refreshController.stop();
+        _refreshController.reset();
+      }
+      rethrow;
+    }
+  }
+
+  Widget _buildLoadingState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(AppColors.darkPrimary),
+          ),
+          SizedBox(height: 16),
+          AppText(
+            'Loading your investments...',
+            variant: AppTextVariant.bodyLarge,
+            colorType: AppTextColorType.primary,
+          ),
+        ],
+      ),
     );
   }
 
@@ -535,6 +626,11 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
       backgroundColor: AppColors.darkBackground,
       body: GetBuilder<InvestmentController>(
         builder: (investmentController) {
+          // Show loading state when portfolio is null and we're loading
+          if (isPortfolioLoading && investmentController.portfolio == null) {
+            return _buildLoadingState();
+          }
+
           return SafeArea(
             child: CustomScrollView(
               controller: _scrollController,
@@ -580,10 +676,7 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
                                 horizontal: AppSizing.scaffoldHorizontalPadding,
                               ),
                               itemBuilder: (context, index) {
-                                return _buildCategoryChip(
-                                  categories[index],
-                                  index == 0,
-                                );
+                                return _buildCategoryChip(categories[index]);
                               },
                               separatorBuilder: (context, index) {
                                 return const SizedBox(width: 8);
@@ -606,18 +699,126 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
                   sliver: SliverList(
                     delegate: SliverChildBuilderDelegate(
                       (context, index) {
+                        final investments = _filteredInvestments();
+
+                        // Show loading or empty state if no investments
+                        if (investments.isEmpty) {
+                          return SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.4,
+                            child: _buildNoHoldingsMessage(),
+                          );
+                        }
+
+                        // Return investment card for valid index
+                        final investment = investments[index];
+
+                        // Show red container if this is the first item and Mutual Funds is selected
+                        if (index == 0 && _selectedCategory == 'Mutual Funds') {
+                          return Column(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: AppColors.darkButtonBorder,
+                                  ),
+                                  color: AppColors.darkCardBG,
+                                ),
+                                width: double.infinity,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 12,
+                                ),
+                                child: Row(
+                                  children: [
+                                    GestureDetector(
+                                      onTap:
+                                          () => Get.to(
+                                            () => MutualFundSwitchScreen(),
+                                            transition: Transition.rightToLeft,
+                                          ),
+                                      child: SvgPicture.asset(
+                                        "assets/svgs/assets/investments/save.svg",
+                                        width: 50,
+                                        height: 50,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 20),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const SizedBox(height: 8),
+                                          AppText(
+                                            'Switch to save up to 1.4%',
+                                            variant: AppTextVariant.bodyLarge,
+                                            weight: AppTextWeight.semiBold,
+                                            colorType: AppTextColorType.success,
+                                          ),
+                                          const SizedBox(height: 8),
+                                          AppText(
+                                            "Say goodbye to high commissions. Easily switch plans in less than 5 minute for free.",
+                                            variant: AppTextVariant.bodySmall,
+                                            colorType: AppTextColorType.primary,
+                                          ),
+                                          GestureDetector(
+                                            onTap:
+                                                _showSwitchToDirectBottomSheet,
+                                            child: AppText(
+                                              'Know More',
+                                              variant: AppTextVariant.bodySmall,
+                                              weight: AppTextWeight.bold,
+                                              colorType: AppTextColorType.link,
+                                              decoration:
+                                                  TextDecoration.underline,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              HoldingCard(
+                                fundName: investment.name,
+                                navValue:
+                                    investment.nav?.toStringAsFixed(2) ?? "N/A",
+                                investedAmount:
+                                    investment.closingbalance?.toStringAsFixed(
+                                      2,
+                                    ) ??
+                                    "0.00",
+                                currentAmount: investment.currentmktvalue
+                                    .toStringAsFixed(2),
+                                gainAmount: investment.gainloss.toStringAsFixed(
+                                  2,
+                                ),
+                              ),
+                            ],
+                          );
+                        }
+
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 12),
                           child: HoldingCard(
-                            fundName: "Holding ${index + 1}",
-                            navValue: "100.00",
-                            investedAmount: "10,000",
-                            currentAmount: "12,000",
-                            gainAmount: "2,000",
+                            fundName: investment.name,
+                            navValue:
+                                investment.nav?.toStringAsFixed(2) ?? "N/A",
+                            investedAmount:
+                                investment.closingbalance?.toStringAsFixed(2) ??
+                                "0.00",
+                            currentAmount: investment.currentmktvalue
+                                .toStringAsFixed(2),
+                            gainAmount: investment.gainloss.toStringAsFixed(2),
                           ),
                         );
                       },
-                      childCount: 10, // Replace with your actual item count
+                      childCount:
+                          _filteredInvestments().isEmpty
+                              ? 1
+                              : _filteredInvestments().length,
                     ),
                   ),
                 ),
@@ -640,7 +841,301 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
     );
   }
 
-  Widget _buildCategoryChip(String label, [bool isSelected = false]) {
+  List<Investment> _filteredInvestments() {
+    if (investmentController.holdings?.investments == null) return [];
+
+    final investments = investmentController.holdings!.investments;
+
+    if (_selectedCategory == 'All') return investments;
+
+    return investments.where((investment) {
+      switch (_selectedCategory) {
+        case 'Stocks':
+          return investment.type == Type.STOCKS;
+        case 'Mutual Funds':
+          return investment.type == Type.MF;
+        case 'Commodity':
+          return investment.assettype?.toLowerCase().contains('commodity') ??
+              false;
+        case 'F&O':
+          return investment.assettype?.toLowerCase().contains('f&o') ?? false;
+        default:
+          return true;
+      }
+    }).toList();
+  }
+
+  Widget _buildStepItem(String number, String text) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AppText(
+          '$number.',
+          variant: AppTextVariant.bodyMedium,
+          weight: AppTextWeight.semiBold,
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: AppText(
+            text,
+            variant: AppTextVariant.bodyMedium,
+            colorType: AppTextColorType.secondary,
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _showSwitchToDirectBottomSheet() {
+    showModalBottomSheet(
+      showDragHandle: true,
+      useSafeArea: true,
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppColors.darkInputBackground,
+      builder:
+          (context) => Container(
+            height: MediaQuery.of(context).size.height * 0.95,
+            decoration: BoxDecoration(color: AppColors.darkInputBackground),
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(
+                horizontal: AppSizing.scaffoldHorizontalPadding,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AppText(
+                    'Mutual Fund Switch',
+                    variant: AppTextVariant.headline4,
+                    weight: AppTextWeight.bold,
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset("assets/app/switch.png", height: 200),
+                    ],
+                  ),
+                  AppText(
+                    "What is mutual fund switch ?",
+                    variant: AppTextVariant.bodyLarge,
+                    weight: AppTextWeight.bold,
+                  ),
+                  const SizedBox(height: 5),
+                  AppText(
+                    "Switching from regular to direct mutual funds means moving your investments from regular plans with distributor commissions to those without commission(direct fund plans)",
+                    variant: AppTextVariant.bodySmall,
+                  ),
+                  const SizedBox(height: 16),
+                  AppText(
+                    "Why you should switch to Direct plans?",
+                    variant: AppTextVariant.bodyLarge,
+                    weight: AppTextWeight.bold,
+                  ),
+                  const SizedBox(height: 5),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.darkInputBackground,
+                      border: Border.all(color: AppColors.darkInputBorder),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            AppText(
+                              "Lower expense ratio",
+                              variant: AppTextVariant.bodyMedium,
+                              weight: AppTextWeight.semiBold,
+                            ),
+                            AppText(
+                              "Direct plans expense ratios are usually 0.5% to 1.5% lower than regular plans.",
+                              variant: AppTextVariant.bodySmall,
+                              colorType: AppTextColorType.secondary,
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 5),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            AppText(
+                              "Higher Returns",
+                              variant: AppTextVariant.bodyMedium,
+                              weight: AppTextWeight.semiBold,
+                            ),
+                            AppText(
+                              "Direct plans offer better returns over time due to lower costs over long investment periods.",
+                              variant: AppTextVariant.bodySmall,
+                              colorType: AppTextColorType.secondary,
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 5),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            AppText(
+                              "Same fund & manager",
+                              variant: AppTextVariant.bodyMedium,
+                              weight: AppTextWeight.semiBold,
+                            ),
+                            AppText(
+                              "Direct plans offer the same fund, manager & strategy; only the cost structure varies.",
+                              variant: AppTextVariant.bodySmall,
+                              colorType: AppTextColorType.secondary,
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 5),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            AppText(
+                              "Full Transparency",
+                              variant: AppTextVariant.bodyMedium,
+                              weight: AppTextWeight.semiBold,
+                            ),
+                            AppText(
+                              "No hidden commissions or fees in direct plans.",
+                              variant: AppTextVariant.bodySmall,
+                              colorType: AppTextColorType.secondary,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  SizedBox(height: 16),
+                  AppText(
+                    "How mutual fund switch works?",
+                    variant: AppTextVariant.bodyLarge,
+                    weight: AppTextWeight.bold,
+                  ),
+                  SizedBox(height: 5),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.darkInputBackground,
+                      border: Border.all(color: AppColors.darkInputBorder),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        AppText(
+                          "Switch plans in just 3 steps!",
+                          variant: AppTextVariant.bodyMedium,
+                          weight: AppTextWeight.bold,
+                        ),
+                        SizedBox(height: 8),
+                        _buildStepItem(
+                          '1',
+                          'Review the direct plan summary showing all calculations and benefits',
+                        ),
+                        const SizedBox(height: 4),
+                        DotIndicator(
+                          dotCount: 4,
+                          direction: DotDirection.vertical,
+                          dotColor: AppColors.darkPrimary,
+                          dotRadius: 2,
+                          dotSize: 2,
+                        ),
+                        const SizedBox(height: 8),
+                        _buildStepItem(
+                          '2',
+                          'List of your regular mutual fund plans eligible for switching to direct plans will be provided',
+                        ),
+                        const SizedBox(height: 4),
+                        DotIndicator(
+                          dotCount: 4,
+                          direction: DotDirection.vertical,
+                          dotColor: AppColors.darkPrimary,
+                          dotRadius: 2,
+                          dotSize: 2,
+                        ),
+                        const SizedBox(height: 8),
+                        _buildStepItem(
+                          '3',
+                          'Click \'Continue\' to proceed with the switch',
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                ],
+              ),
+            ),
+          ),
+    );
+  }
+
+  Widget _buildNoHoldingsMessage() {
+    if (isHoldingLoading) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 48,
+              height: 48,
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  AppColors.darkPrimary,
+                ),
+                strokeWidth: 3,
+              ),
+            ),
+            const SizedBox(height: 16),
+            AppText(
+              'Fetching your investments...',
+              variant: AppTextVariant.bodyLarge,
+              colorType: AppTextColorType.primary,
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.inventory_2_outlined,
+            size: 64,
+            color: AppColors.darkTextMuted,
+          ),
+          const SizedBox(height: 16),
+          AppText(
+            'No holdings found',
+            variant: AppTextVariant.headline6,
+            weight: AppTextWeight.bold,
+            colorType: AppTextColorType.primary,
+          ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 48.0),
+            child: AppText(
+              _selectedCategory == 'All'
+                  ? 'You don\'t have any investments yet.'
+                  : 'No ${_selectedCategory.toLowerCase()} holdings found.',
+              variant: AppTextVariant.bodyMedium,
+              colorType: AppTextColorType.secondary,
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryChip(String label) {
+    final isSelected = _selectedCategory == label;
     return ChoiceChip(
       selected: isSelected,
       showCheckmark: false,
@@ -649,7 +1144,13 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
       selectedColor: AppColors.darkPrimary,
       disabledColor: AppColors.darkButtonBorder,
       side: BorderSide(color: AppColors.darkButtonBorder, width: 1.0),
-      onSelected: (selected) {},
+      onSelected: (selected) {
+        if (selected) {
+          setState(() {
+            _selectedCategory = label;
+          });
+        }
+      },
       label: AppText(
         label,
         variant: AppTextVariant.bodySmall,

@@ -103,14 +103,7 @@ jobs:
           retention-days: 5
           if-no-files-found: error
           
-      # Upload Web Build Artifact
-      - name: Upload Web Build Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: web-build
-          path: build/renamed_builds/nwt-web-v0.0.${{ github.run_number }}.zip
-          retention-days: 5
-          if-no-files-found: error
+      # Web build will be handled in the web job
 
       - name: Verify Artifacts
         run: |
