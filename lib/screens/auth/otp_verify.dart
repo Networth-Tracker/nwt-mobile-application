@@ -287,7 +287,7 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen>
             children: [
               Column(
                 children: [
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+                  SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -488,8 +488,7 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen>
                     onKeyPressed: _onKeyPressed,
                     onBackspace: _onBackspace,
                   ),
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.03),
-                  
+                  SizedBox(height: 10),
                 ],
               ),
             ],
