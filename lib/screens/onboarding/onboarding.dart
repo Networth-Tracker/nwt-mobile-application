@@ -51,7 +51,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 children: [
                   Column(
                     children: [
-                      SizedBox(height: 160),
+                      SizedBox(height: 120),
                       FadeInDown(
                         curve: Curves.decelerate,
                         duration: Duration(milliseconds: 1000),
@@ -103,26 +103,34 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
 
                   SizedBox(height: 16),
-                  FadeInUp(
-                    curve: Curves.decelerate,
-                    duration: Duration(milliseconds: 1000),
-                    delay: Duration(milliseconds: 2500),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: AppButton(
-                            text: 'Get Started',
-                            isLoading: false,
-                            variant: AppButtonVariant.primary,
-                            size: AppButtonSize.large,
-                            onPressed:
-                                () => Get.to(
-                                  () => const PhoneNumberInputScreen(),
-                                  transition: Transition.rightToLeft,
-                                ),
+                  Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).viewInsets.bottom > 0
+                            ? MediaQuery.of(context).viewInsets.bottom + 24
+                            : 24,
+                      ),
+                    child: FadeInUp(
+                      curve: Curves.decelerate,
+                      duration: Duration(milliseconds: 1000),
+                      delay: Duration(milliseconds: 2500),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: AppButton(
+                              text: 'Get Started',
+                              isLoading: false,
+                              variant: AppButtonVariant.primary,
+                              size: AppButtonSize.large,
+                              onPressed:
+                                  () => Get.to(
+                                    () => const PhoneNumberInputScreen(),
+                                    transition: Transition.rightToLeft,
+                                  ),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ],
