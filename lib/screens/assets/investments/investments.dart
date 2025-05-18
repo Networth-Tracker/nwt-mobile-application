@@ -133,7 +133,7 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
       automaticallyImplyLeading: false,
       pinned: false,
       floating: false,
-      expandedHeight: showFullHeader ? 360 : 90,
+      expandedHeight: showFullHeader ? 380 : 90,
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
           color: AppColors.darkBackground,

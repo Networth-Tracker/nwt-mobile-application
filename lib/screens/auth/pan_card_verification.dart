@@ -253,23 +253,32 @@ class _PanCardVerificationState extends State<PanCardVerification> {
                     weight: AppTextWeight.medium,
                   ),
                 ),
-              Row(
-                children: [
-                  Expanded(
-                    child: AppButton(
-                      text: 'Verify',
-                      variant: AppButtonVariant.primary,
-                      isLoading: _isLoading,
-                      size: AppButtonSize.large,
-                      isDisabled:
-                          _isLoading || _panController.text.length != 10,
-                      onPressed: _verifyPanCard,
-                    ),
-                  ),
-                ],
-              ),
+             
             ],
           ),
+        ),
+      ),
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSizing.scaffoldHorizontalPadding,
+        ),
+        margin: EdgeInsets.only(
+          bottom: MediaQuery.of(context).padding.bottom + 16,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: AppButton(
+                text: 'Verify',
+                variant: AppButtonVariant.primary,
+                isLoading: _isLoading,
+                size: AppButtonSize.large,
+                isDisabled:
+                    _isLoading || _panController.text.length != 10,
+                onPressed: _verifyPanCard,
+              ),
+            ),
+          ],
         ),
       ),
       resizeToAvoidBottomInset: false,

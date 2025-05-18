@@ -60,6 +60,7 @@ class _AssetBankScreenState extends State<AssetBankScreen>
       },
     );
   }
+  bool _isAmountVisible = true;
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +123,6 @@ class _AssetBankScreenState extends State<AssetBankScreen>
                                       colorType: AppTextColorType.primary,
                                     ),
                                     SizedBox(height: 3),
-
                                     AppText(
                                       controller
                                                   .bankSummary
@@ -162,7 +162,7 @@ class _AssetBankScreenState extends State<AssetBankScreen>
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 AnimatedAmount(
-                                  isAmountVisible: true,
+                                  isAmountVisible: _isAmountVisible,
                                   amount: CurrencyFormatter.formatRupee(
                                     controller
                                             .bankSummary
@@ -176,7 +176,18 @@ class _AssetBankScreenState extends State<AssetBankScreen>
                                     color: AppColors.darkPrimary,
                                   ),
                                 ),
-                                Icon(Icons.visibility_outlined),
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      _isAmountVisible = !_isAmountVisible;
+                                    });
+                                  },
+                                  child: Icon(Icons.visibility_outlined,
+                                      color: _isAmountVisible
+                                          ? AppColors.darkPrimary
+                                          : AppColors.darkTextMuted,
+                                      size: 22),
+                                ),
                               ],
                             ),
                             SizedBox(height: 4),
@@ -361,7 +372,9 @@ class _AssetBankScreenState extends State<AssetBankScreen>
       ),
       bottomNavigationBar: Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: AppSizing.scaffoldHorizontalPadding),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSizing.scaffoldHorizontalPadding,
+        ),
         margin: EdgeInsets.only(
           bottom: MediaQuery.of(context).padding.bottom + 16,
         ),
