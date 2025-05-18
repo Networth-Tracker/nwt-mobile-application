@@ -4,15 +4,20 @@ import 'package:get/get.dart';
 import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/controllers/theme_controller.dart';
 import 'package:nwt_app/controllers/user_controller.dart';
+import 'package:nwt_app/controllers/dashboard/dashboard_asset.dart';
 import 'package:nwt_app/screens/assets/banks/banks.dart';
 import 'package:nwt_app/screens/assets/investments/investments.dart';
+import 'package:nwt_app/screens/connections/connections.dart';
 import 'package:nwt_app/screens/notifications/notification_list.dart';
 import 'package:nwt_app/services/auth/auth_flow.dart';
 import 'package:nwt_app/utils/logger.dart';
+import 'package:nwt_app/widgets/common/animated_amount.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 import 'package:nwt_app/widgets/avatar.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/screens/dashboard/widgets/asset_card.dart';
+import 'package:nwt_app/screens/dashboard/widgets/networth_chart.dart';
+import 'package:nwt_app/utils/currency_formatter.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -21,10 +26,48 @@ class Dashboard extends StatefulWidget {
   State<Dashboard> createState() => _DashboardState();
 }
 
-class _DashboardState extends State<Dashboard> {
+class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMixin {
+  final dashboardAssetController = Get.put(DashboardAssetController());
+  late AnimationController _refreshController;
+  bool isAssetsLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    );
+    fetchDashboardAssets();
+  }
+
+  @override
+  void dispose() {
+    _refreshController.dispose();
+    super.dispose();
+  }
+
+  Future<void> fetchDashboardAssets() async {
+    dashboardAssetController.getDashboardAssets(
+      onLoading: (isLoading) {
+        if (mounted) {
+          setState(() {
+            isAssetsLoading = isLoading;
+          });
+          if (isLoading) {
+            _refreshController.repeat();
+          } else {
+            _refreshController.stop();
+            _refreshController.reset();
+          }
+        }
+      },
+    );
+  }
+
   String _getGreetingMessage() {
     final hour = DateTime.now().hour;
-    
+
     if (hour < 12) {
       return "Good morning!";
     } else if (hour < 17) {
@@ -35,10 +78,10 @@ class _DashboardState extends State<Dashboard> {
       return "Good night!";
     }
   }
+  bool _isAmountVisible = true;
+
   PageController pageViewController = PageController();
   int currentPage = 0;
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -82,11 +125,14 @@ class _DashboardState extends State<Dashboard> {
                                         ),
                                         actions: [
                                           TextButton(
-                                            onPressed: () => Navigator.pop(context),
+                                            onPressed:
+                                                () => Navigator.pop(context),
                                             child: const AppText(
                                               "Cancel",
-                                              variant: AppTextVariant.bodyMedium,
-                                              colorType: AppTextColorType.secondary,
+                                              variant:
+                                                  AppTextVariant.bodyMedium,
+                                              colorType:
+                                                  AppTextColorType.secondary,
                                             ),
                                           ),
                                           TextButton(
@@ -95,15 +141,23 @@ class _DashboardState extends State<Dashboard> {
                                               // Create AuthFlow instance and logout
                                               try {
                                                 final authFlow = AuthFlow();
-                                                AppLogger.info('Logging out user', tag: 'Dashboard');
+                                                AppLogger.info(
+                                                  'Logging out user',
+                                                  tag: 'Dashboard',
+                                                );
                                                 authFlow.logout();
                                               } catch (e) {
-                                                AppLogger.error('Error during logout', error: e, tag: 'Dashboard');
+                                                AppLogger.error(
+                                                  'Error during logout',
+                                                  error: e,
+                                                  tag: 'Dashboard',
+                                                );
                                               }
                                             },
                                             child: const AppText(
                                               "Logout",
-                                              variant: AppTextVariant.bodyMedium,
+                                              variant:
+                                                  AppTextVariant.bodyMedium,
                                               colorType: AppTextColorType.error,
                                             ),
                                           ),
@@ -142,7 +196,11 @@ class _DashboardState extends State<Dashboard> {
                         ],
                       ),
                       IconButton(
-                        onPressed: () => Get.to(() => NotificationListScreen(), transition: Transition.rightToLeft),
+                        onPressed:
+                            () => Get.to(
+                              () => NotificationListScreen(),
+                              transition: Transition.rightToLeft,
+                            ),
                         icon: const Icon(Icons.notifications_outlined),
                       ),
                     ],
@@ -167,7 +225,9 @@ class _DashboardState extends State<Dashboard> {
                           decoration: BoxDecoration(
                             color: AppColors.darkCardBG,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: AppColors.darkButtonBorder),
+                            border: Border.all(
+                              color: AppColors.darkButtonBorder,
+                            ),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -191,20 +251,36 @@ class _DashboardState extends State<Dashboard> {
                               ),
                               SizedBox(height: 12),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  AppText(
-                                    "₹1,00,000",
-                                    variant: AppTextVariant.display,
-                                    weight: AppTextWeight.bold,
-                                    colorType: AppTextColorType.primary,
+                                  AnimatedAmount(
+                                    amount: "₹76,171,095",
+                                    isAmountVisible: _isAmountVisible,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 36,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                  Icon(
-                                    Icons.visibility_outlined,
-                                    color: AppColors.darkButtonPrimaryBackground,
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _isAmountVisible = !_isAmountVisible;
+                                      });
+                                    },
+                                    child: Icon(
+                                      _isAmountVisible
+                                          ? Icons.visibility_outlined
+                                          : Icons.visibility_off_outlined,
+                                      color:
+                                          AppColors.darkButtonPrimaryBackground,
+                                    ),
                                   ),
                                 ],
                               ),
+                              SizedBox(height: 16),
+                              const NetworthChart(),
                             ],
                           ),
                         ),
@@ -224,7 +300,8 @@ class _DashboardState extends State<Dashboard> {
                                 ),
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     AppText(
                                       "Assets",
@@ -243,57 +320,69 @@ class _DashboardState extends State<Dashboard> {
                               ),
                               SizedBox(height: 12),
                               SingleChildScrollView(
+                                padding: EdgeInsets.only(
+                                  right: AppSizing.scaffoldHorizontalPadding,
+                                ),
                                 physics: const BouncingScrollPhysics(),
                                 scrollDirection: Axis.horizontal,
                                 child: Row(
                                   spacing: 15,
                                   children: [
-                                    ConstrainedBox(
-                                      constraints: BoxConstraints(
-                                        minHeight:
-                                            120, // Set a minimum height to match AssetCard
-                                      ),
-                                      child: Container(
-                                        width: 50,
-                                        decoration: BoxDecoration(
-                                          color: AppColors.darkCardBG,
-                                          borderRadius: BorderRadius.circular(12),
-                                          border: Border.all(
-                                            color: AppColors.darkButtonBorder,
-                                          ),
-                                        ),
-                                        child: Center(
-                                          child: Icon(Icons.add_rounded, size: 26),
-                                        ),
-                                      ),
-                                    ),
                                     InkWell(
                                       onTap:
                                           () => Get.to(
-                                            const AssetBankScreen(),
+                                            const ConnectionsScreen(),
                                             transition: Transition.rightToLeft,
                                           ),
-                                      child: AssetCard(
-                                        title: "Banks",
-                                        amount: "₹1,00,000",
-                                        delta: "-10%",
-                                        deltaType: DeltaType.negative,
-                                        icon: Icons.account_balance_outlined,
+                                      child: ConstrainedBox(
+                                        constraints: BoxConstraints(
+                                          minHeight:
+                                              120, // Set a minimum height to match AssetCard
+                                        ),
+                                        child: Container(
+                                          width: 50,
+                                          decoration: BoxDecoration(
+                                            color: AppColors.darkCardBG,
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                            border: Border.all(
+                                              color: AppColors.darkButtonBorder,
+                                            ),
+                                          ),
+                                          child: Center(
+                                            child: Icon(
+                                              Icons.add_rounded,
+                                              size: 26,
+                                            ),
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                    InkWell(
-                                      onTap:
-                                          () => Get.to(
-                                            const AssetInvestmentScreen(),
-                                            transition: Transition.rightToLeft,
-                                          ),
-                                      child: AssetCard(
-                                        title: "Investments",
-                                        amount: "₹1,00,000",
-                                        delta: "10%",
-                                        deltaType: DeltaType.positive,
-                                        icon: Icons.account_balance_outlined,
-                                      ),
+                                    GetBuilder<DashboardAssetController>(
+                                      builder: (controller) {
+                                        if (controller.dashboardAssets?.data != null) {
+                                          return Row(
+                                            children: controller.dashboardAssets!.data!.assetdata.map((asset) => Padding(
+                                              padding: const EdgeInsets.only(right: 15),
+                                              child: InkWell(
+                                                onTap: () => Get.to(
+                                                  asset.name == "Banks" ? const AssetBankScreen() : const AssetInvestmentScreen(),
+                                                  transition: Transition.rightToLeft,
+                                                ),
+                                                child: AssetCard(
+                                                  title: asset.name,
+                                                  amount: CurrencyFormatter.formatRupee(asset.value),
+                                                  delta: "${asset.deltapercentage}%",
+                                                  deltaType: asset.deltavalue >= 0 ? DeltaType.positive : DeltaType.negative,
+                                                  icon: Icons.account_balance_outlined,
+                                                ),
+                                              ),
+                                            )).toList(),
+                                          );
+                                        }
+                                        return const SizedBox.shrink();
+                                      },
                                     ),
                                   ],
                                 ),
@@ -326,11 +415,13 @@ class _DashboardState extends State<Dashboard> {
                           child: Column(
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Flexible(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         AppText(
                                           "Connect with Zerodha",
@@ -354,13 +445,16 @@ class _DashboardState extends State<Dashboard> {
                                             color:
                                                 AppColors
                                                     .darkButtonPrimaryBackground,
-                                            borderRadius: BorderRadius.circular(6),
+                                            borderRadius: BorderRadius.circular(
+                                              6,
+                                            ),
                                           ),
                                           child: AppText(
                                             "Connect",
                                             variant: AppTextVariant.bodySmall,
                                             weight: AppTextWeight.bold,
-                                            colorType: AppTextColorType.secondary,
+                                            colorType:
+                                                AppTextColorType.secondary,
                                           ),
                                         ),
                                       ],
@@ -399,7 +493,8 @@ class _DashboardState extends State<Dashboard> {
                                           : AppColors.lightBackground,
                                   width: MediaQuery.of(context).size.width,
                                   padding: EdgeInsets.symmetric(
-                                    horizontal: AppSizing.scaffoldHorizontalPadding,
+                                    horizontal:
+                                        AppSizing.scaffoldHorizontalPadding,
                                     vertical: 20,
                                   ),
                                   child: Row(
@@ -411,7 +506,8 @@ class _DashboardState extends State<Dashboard> {
                                           children: [
                                             AppText(
                                               "Save up to 3.2% annually",
-                                              variant: AppTextVariant.bodyMedium,
+                                              variant:
+                                                  AppTextVariant.bodyMedium,
                                               weight: AppTextWeight.semiBold,
                                             ),
                                             SizedBox(height: 6),
@@ -419,12 +515,14 @@ class _DashboardState extends State<Dashboard> {
                                               "Switching from regular to direct mutual fund can boost portfolio by saving ₹2.7L on commissions",
                                               variant: AppTextVariant.tiny,
                                               weight: AppTextWeight.semiBold,
-                                              colorType: AppTextColorType.secondary,
+                                              colorType:
+                                                  AppTextColorType.secondary,
                                             ),
                                             SizedBox(height: 18),
                                             AppText(
                                               "Switch Funds",
-                                              variant: AppTextVariant.bodyMedium,
+                                              variant:
+                                                  AppTextVariant.bodyMedium,
                                               weight: AppTextWeight.semiBold,
                                               colorType: AppTextColorType.link,
                                             ),
@@ -497,7 +595,7 @@ class _DashboardState extends State<Dashboard> {
                 ],
               ),
             );
-          }
+          },
         );
       },
     );

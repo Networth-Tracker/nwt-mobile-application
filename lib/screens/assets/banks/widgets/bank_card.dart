@@ -5,10 +5,6 @@ import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/screens/transactions/banks/list.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 
-/// A widget that displays bank account information in a card format.
-/// 
-/// This widget shows bank details including the bank name, account number,
-/// current balance, and a delta indicator showing change in value.
 class BankCard extends StatelessWidget {
   final IconData icon;
   final String bankName;
@@ -19,9 +15,10 @@ class BankCard extends StatelessWidget {
   final Color? backgroundColor;
   final Color? borderColor;
   final Color? iconBackgroundColor;
+  final String bankGUID;
 
   const BankCard({
-    Key? key,
+    super.key,
     required this.icon,
     required this.bankName,
     required this.accountNumber,
@@ -31,18 +28,18 @@ class BankCard extends StatelessWidget {
     this.backgroundColor,
     this.borderColor,
     this.iconBackgroundColor,
-  }) : super(key: key);
+    required this.bankGUID,
+  });
 
   @override
   Widget build(BuildContext context) {
-    // Format delta value to ensure it has a + sign if positive
     String formattedDeltaValue = deltaValue;
     if (isPositiveDelta && !deltaValue.startsWith('+')) {
       formattedDeltaValue = '+ $deltaValue';
     }
 
     return InkWell(
-      onTap: () => Get.to(() => const BankTransactionListScreen(), transition: Transition.rightToLeft)  ,
+      onTap: () => Get.to(() => BankTransactionListScreen(bankGUID: bankGUID), transition: Transition.rightToLeft)  ,
       child: Container(
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
@@ -69,24 +66,34 @@ class BankCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 16),
                 Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AppText(
-                      bankName,
-                      variant: AppTextVariant.bodyLarge,
-                      weight: AppTextWeight.semiBold,
-                      colorType: AppTextColorType.primary,
-                    ),
-                    const SizedBox(height: 4),
-                    AppText(
-                      accountNumber,
-                      variant: AppTextVariant.bodyMedium,
-                      weight: AppTextWeight.regular,
-                      colorType: AppTextColorType.secondary,
-                    ),
-                  ],
-                ),
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: 180,
+                        child: AppText(
+                          bankName,
+                          variant: AppTextVariant.bodyLarge,
+                          weight: AppTextWeight.semiBold,
+                          colorType: AppTextColorType.primary,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      SizedBox(
+                        width: 180,
+                        child: AppText(
+                          accountNumber,
+                          variant: AppTextVariant.bodyMedium,
+                          weight: AppTextWeight.regular,
+                          colorType: AppTextColorType.secondary,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
               ],
             ),
             Column(

@@ -9,6 +9,7 @@ import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/controllers/theme_controller.dart';
 import 'package:nwt_app/notification/firebase_messaging.dart';
 import 'package:nwt_app/screens/auth/phone_number.dart';
+import 'package:animate_do/animate_do.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -49,30 +50,44 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   Column(
                     children: [
                       SizedBox(height: 160),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          themeController.isDarkMode
-                              ? SvgPicture.asset(
-                                'assets/svgs/onboarding/onboarding_01_dark.svg',
-                              )
-                              : SvgPicture.asset(
-                                'assets/svgs/onboarding/onboarding_01.svg',
-                              ),
-                        ],
+                      FadeInDown(
+                        curve: Curves.decelerate,
+                        duration: Duration(milliseconds: 1000),
+                        delay: Duration(milliseconds: 1000),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            themeController.isDarkMode
+                                ? SvgPicture.asset(
+                                  'assets/svgs/onboarding/onboarding_01_dark.svg',
+                                )
+                                : SvgPicture.asset(
+                                  'assets/svgs/onboarding/onboarding_01.svg',
+                                ),
+                          ],
+                        ),
                       ),
                       SizedBox(height: 60),
-                      AppText(
-                        "Empowering Your Financial Growth",
-                        variant: AppTextVariant.headline2,
-                        lineHeight: 1.2,
-                        weight: AppTextWeight.semiBold,
-                        colorType: AppTextColorType.tertiary,
+                      FadeInUp(
+                        curve: Curves.decelerate,
+                        duration: Duration(milliseconds: 1000),
+                        delay: Duration(milliseconds: 1500),
+                        child: AppText(
+                          "Empowering Your Financial Growth",
+                          variant: AppTextVariant.headline2,
+                          lineHeight: 1.2,
+                          weight: AppTextWeight.semiBold,
+                          colorType: AppTextColorType.tertiary,
                         // beginOffset: Offset(0, 30),
                         // duration: Duration(milliseconds: 1000),
+                        ),
                       ),
                       SizedBox(height: 16),
-                      AppText(
+                      FadeInUp(
+                        curve: Curves.decelerate,
+                        duration: Duration(milliseconds: 1000),
+                        delay: Duration(milliseconds: 2000),
+                        child: AppText(
                         "Manage your money confidently using our intuitive tools and personalized insights.",
                         variant: AppTextVariant.bodyMedium,
                         lineHeight: 1.3,
@@ -81,26 +96,32 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         // duration: Duration(milliseconds: 1000),
                         // delay: Duration(milliseconds: 0),
                       ),
+                      ),
                     ],
                   ),
 
                   SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: AppButton(
-                          text: 'Get Started',
-                          isLoading: false,
-                          variant: AppButtonVariant.primary,
-                          size: AppButtonSize.large,
-                          onPressed:
-                              () => Get.to(
-                                () => const PhoneNumberInputScreen(),
-                                transition: Transition.rightToLeft,
-                              ),
+                  FadeInUp(
+                    curve: Curves.decelerate,
+                    duration: Duration(milliseconds: 1000),
+                    delay: Duration(milliseconds: 2500),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: AppButton(
+                            text: 'Get Started',
+                            isLoading: false,
+                            variant: AppButtonVariant.primary,
+                            size: AppButtonSize.large,
+                            onPressed:
+                                () => Get.to(
+                                  () => const PhoneNumberInputScreen(),
+                                  transition: Transition.rightToLeft,
+                                ),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ],
               ),

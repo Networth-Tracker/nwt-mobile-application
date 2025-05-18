@@ -1,16 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/screens/transactions/banks/details.dart';
+import 'package:nwt_app/screens/transactions/banks/types/transaction.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 
 class BankTransactionCardWidget extends StatelessWidget {
-  const BankTransactionCardWidget({super.key});
+  final Banktransation transaction;
+  
+  const BankTransactionCardWidget({
+    super.key,
+    required this.transaction,
+  });
+  
+  // Format amount with comma as thousand separator
+  String _formatAmount(int amount) {
+    return '₹${NumberFormat('#,##0', 'en_IN').format(amount)}';
+  }
+  
+  // Format date as "Today", "Yesterday", or the actual date
+  String _formatTransactionDate(DateTime date) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
+    final transactionDate = DateTime(date.year, date.month, date.day);
+    
+    if (transactionDate == today) {
+      return 'Today, ${DateFormat('h:mm a').format(date)}';
+    } else if (transactionDate == yesterday) {
+      return 'Yesterday, ${DateFormat('h:mm a').format(date)}';
+    } else {
+      return DateFormat('MMM d, yyyy h:mm a').format(date);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final isDebit = transaction.type.toString().toLowerCase().contains('debit');
+    final amount = _formatAmount(transaction.amount.abs());
+    final formattedDate = _formatTransactionDate(transaction.transactiontimestamp);
+    
+    // Extract merchant name from narration or use a default
+    String merchantName = transaction.narration.isNotEmpty 
+        ? transaction.narration.split(' ').take(2).join(' ') 
+        : 'Transaction';
+    
+    if (merchantName.length > 20) {
+      merchantName = '${merchantName.substring(0, 17)}...';
+    }
+    
     return InkWell(
-      onTap: () => Get.to(() => const TransactionDetails(), transition: Transition.rightToLeft),
+      onTap: () => Get.to(
+        () => TransactionDetails(transaction: transaction),
+        transition: Transition.rightToLeft,
+      ),
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.darkCardBG,
@@ -21,53 +65,65 @@ class BankTransactionCardWidget extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppColors.darkButtonBorder,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Icon(
-                    Icons.arrow_upward,
-                    size: 20,
-                    color: AppColors.error,
-                  ),
-                ),
-                SizedBox(width: 16),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AppText(
-                      "Myntra",
-                      variant: AppTextVariant.bodyLarge,
-                      weight: AppTextWeight.semiBold,
-                      colorType: AppTextColorType.primary,
+            Expanded(
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppColors.darkButtonBorder,
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                    AppText(
-                      "Today, 12:15 AM",
-                      variant: AppTextVariant.bodySmall,
-                      weight: AppTextWeight.regular,
-                      colorType: AppTextColorType.secondary,
+                    child: Icon(
+                      isDebit ? Icons.arrow_upward : Icons.arrow_downward,
+                      size: 20,
+                      color: isDebit ? AppColors.error : AppColors.success,
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        AppText(
+                          merchantName,
+                          variant: AppTextVariant.bodyLarge,
+                          weight: AppTextWeight.semiBold,
+                          colorType: AppTextColorType.primary,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 2),
+                        AppText(
+                          formattedDate,
+                          variant: AppTextVariant.bodySmall,
+                          weight: AppTextWeight.regular,
+                          colorType: AppTextColorType.secondary,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
+            const SizedBox(width: 12),
             Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 AppText(
-                  "₹10,500",
+                  '${isDebit ? '-' : '+'}$amount',
                   variant: AppTextVariant.bodyLarge,
                   weight: AppTextWeight.semiBold,
-                  colorType: AppTextColorType.primary,
+                  colorType: isDebit ? AppTextColorType.error : AppTextColorType.success,
                 ),
+                const SizedBox(height: 2),
                 AppText(
-                  "Shopping",
+                  transaction.reference.isNotEmpty ? ' ${transaction.reference}' : 'No reference',
                   variant: AppTextVariant.bodySmall,
                   weight: AppTextWeight.medium,
                   colorType: AppTextColorType.secondary,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
