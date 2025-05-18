@@ -474,7 +474,7 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
                       SizedBox(
                         width: MediaQuery.of(context).size.width,
                         child: AspectRatio(
-                          aspectRatio: 2.8,
+                          aspectRatio: 2.7,
                           child: PageView(
                             scrollDirection: Axis.horizontal,
                             physics: BouncingScrollPhysics(),

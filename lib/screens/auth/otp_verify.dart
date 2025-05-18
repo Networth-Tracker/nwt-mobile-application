@@ -281,14 +281,13 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen>
           padding: EdgeInsets.only(
             left: AppSizing.scaffoldHorizontalPadding,
             right: AppSizing.scaffoldHorizontalPadding,
-            bottom: MediaQuery.of(context).padding.bottom,
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Column(
                 children: [
-                  const SizedBox(height: 20),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.05),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -489,29 +488,39 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen>
                     onKeyPressed: _onKeyPressed,
                     onBackspace: _onBackspace,
                   ),
-                  const SizedBox(height: 20),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: AppButton(
-                          text: 'Continue',
-                          variant: AppButtonVariant.primary,
-                          size: AppButtonSize.large,
-                          isDisabled: _otpCode.length != 6 || _isLoading,
-                          onPressed: () {
-                            if (_otpCode.length == 6 && !_isLoading) {
-                              _verifyOTP();
-                            }
-                          },
-                          isLoading: _isLoading,
-                        ),
-                      ),
-                    ],
-                  ),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.03),
+                  
                 ],
               ),
             ],
           ),
+        ),
+      ),
+      bottomNavigationBar: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSizing.scaffoldHorizontalPadding,
+        ),
+        margin: EdgeInsets.only(
+          bottom: MediaQuery.of(context).padding.bottom + 16,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: AppButton(
+                text: 'Continue',
+                variant: AppButtonVariant.primary,
+                size: AppButtonSize.large,
+                isDisabled: _otpCode.length != 6 || _isLoading,
+                onPressed: () {
+                  if (_otpCode.length == 6 && !_isLoading) {
+                    _verifyOTP();
+                  }
+                },
+                isLoading: _isLoading,
+              ),
+            ),
+          ],
         ),
       ),
     );

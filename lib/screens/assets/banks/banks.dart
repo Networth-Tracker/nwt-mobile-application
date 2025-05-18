@@ -19,7 +19,8 @@ class AssetBankScreen extends StatefulWidget {
   State<AssetBankScreen> createState() => _AssetBankScreenState();
 }
 
-class _AssetBankScreenState extends State<AssetBankScreen> with SingleTickerProviderStateMixin {
+class _AssetBankScreenState extends State<AssetBankScreen>
+    with SingleTickerProviderStateMixin {
   final TextEditingController _searchController = TextEditingController();
   late final AnimationController _refreshController;
   final bankController = Get.put(BankController());
@@ -85,10 +86,9 @@ class _AssetBankScreenState extends State<AssetBankScreen> with SingleTickerProv
       ),
       body: SafeArea(
         child: Padding(
-          padding:  EdgeInsets.only(
+          padding: EdgeInsets.only(
             left: AppSizing.scaffoldHorizontalPadding,
-                right: AppSizing.scaffoldHorizontalPadding,
-                bottom: MediaQuery.of(context).padding.bottom,
+            right: AppSizing.scaffoldHorizontalPadding,
           ),
           child: Column(
             children: [
@@ -122,9 +122,13 @@ class _AssetBankScreenState extends State<AssetBankScreen> with SingleTickerProv
                                       colorType: AppTextColorType.primary,
                                     ),
                                     SizedBox(height: 3),
-                              
+
                                     AppText(
-                                      controller.bankSummary?.data?.lastdatafetchtime != null
+                                      controller
+                                                  .bankSummary
+                                                  ?.data
+                                                  ?.lastdatafetchtime !=
+                                              null
                                           ? "Last data fetched at ${controller.bankSummary!.data!.lastdatafetchtime}"
                                           : "No data fetched yet",
                                       variant: AppTextVariant.bodySmall,
@@ -159,18 +163,24 @@ class _AssetBankScreenState extends State<AssetBankScreen> with SingleTickerProv
                               children: [
                                 AnimatedAmount(
                                   isAmountVisible: true,
-                                  amount: CurrencyFormatter.formatRupee(controller.bankSummary?.data?.totalbalance ?? 0),
+                                  amount: CurrencyFormatter.formatRupee(
+                                    controller
+                                            .bankSummary
+                                            ?.data
+                                            ?.totalbalance ??
+                                        0,
+                                  ),
                                   style: TextStyle(
                                     fontSize: 36,
                                     fontWeight: FontWeight.bold,
                                   ),
-
                                 ),
                                 Icon(Icons.visibility_outlined),
                               ],
                             ),
                             SizedBox(height: 4),
-                            if (controller.bankSummary?.data?.deltavalue != null)
+                            if (controller.bankSummary?.data?.deltavalue !=
+                                null)
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
@@ -180,9 +190,18 @@ class _AssetBankScreenState extends State<AssetBankScreen> with SingleTickerProv
                                       vertical: 8,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: controller.bankSummary!.data!.deltavalue >= 0
-                                          ? AppColors.success.withValues(alpha: 0.1)
-                                          : AppColors.error.withValues(alpha: 0.1),
+                                      color:
+                                          controller
+                                                      .bankSummary!
+                                                      .data!
+                                                      .deltavalue >=
+                                                  0
+                                              ? AppColors.success.withValues(
+                                                alpha: 0.1,
+                                              )
+                                              : AppColors.error.withValues(
+                                                alpha: 0.1,
+                                              ),
                                       borderRadius: BorderRadius.circular(6),
                                     ),
                                     child: AppText(
@@ -191,9 +210,14 @@ class _AssetBankScreenState extends State<AssetBankScreen> with SingleTickerProv
                                       "(${controller.bankSummary!.data!.deltapercentage}%)",
                                       variant: AppTextVariant.bodySmall,
                                       weight: AppTextWeight.medium,
-                                      colorType: controller.bankSummary!.data!.deltavalue >= 0
-                                          ? AppTextColorType.success
-                                          : AppTextColorType.error,
+                                      colorType:
+                                          controller
+                                                      .bankSummary!
+                                                      .data!
+                                                      .deltavalue >=
+                                                  0
+                                              ? AppTextColorType.success
+                                              : AppTextColorType.error,
                                     ),
                                   ),
                                 ],
@@ -302,23 +326,26 @@ class _AssetBankScreenState extends State<AssetBankScreen> with SingleTickerProv
 
                           return Column(
                             spacing: 15,
-                            children: controller.bankSummary!.data!.banks.map((bank) {
-                              final Widget bankCard = BankCard(
-                                bankGUID: bank.guid,
-                                icon: Icons.account_balance,
-                                bankName: bank.finame,
-                                accountNumber: bank.maskedaccnumber,
-                                balance: CurrencyFormatter.formatRupee(bank.currentbalance),
-                                deltaValue: "${bank.deltapercentage}%",
-                                isPositiveDelta: bank.deltavalue >= 0,
-                              );
+                            children:
+                                controller.bankSummary!.data!.banks.map((bank) {
+                                  final Widget bankCard = BankCard(
+                                    bankGUID: bank.guid,
+                                    icon: Icons.account_balance,
+                                    bankName: bank.finame,
+                                    accountNumber: bank.maskedaccnumber,
+                                    balance: CurrencyFormatter.formatRupee(
+                                      bank.currentbalance,
+                                    ),
+                                    deltaValue: "${bank.deltapercentage}%",
+                                    isPositiveDelta: bank.deltavalue >= 0,
+                                  );
 
-                              if (bank.isprimary) {
-                                return bankCard;
-                              }
+                                  if (bank.isprimary) {
+                                    return bankCard;
+                                  }
 
-                              return bankCard;
-                            }).toList(),
+                                  return bankCard;
+                                }).toList(),
                           );
                         },
                       ),
@@ -327,21 +354,28 @@ class _AssetBankScreenState extends State<AssetBankScreen> with SingleTickerProv
                 ),
               ),
               SizedBox(height: 20),
-              Row(
-                children: [
-                  Expanded(
-                    child: AppButton(
-                      text: 'Add Banks',
-                      variant: AppButtonVariant.primary,
-                      size: AppButtonSize.large,
-                      isLoading: false,
-                      onPressed: () {},
-                    ),  
-                  ),
-                ],
-              ),
             ],
           ),
+        ),
+      ),
+      bottomNavigationBar: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: AppSizing.scaffoldHorizontalPadding),
+        margin: EdgeInsets.only(
+          bottom: MediaQuery.of(context).padding.bottom + 16,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: AppButton(
+                text: 'Add Banks',
+                variant: AppButtonVariant.primary,
+                size: AppButtonSize.large,
+                isLoading: false,
+                onPressed: () {},
+              ),
+            ),
+          ],
         ),
       ),
     );

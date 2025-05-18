@@ -827,11 +827,12 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
           );
         },
       ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.only(
-          right: AppSizing.scaffoldHorizontalPadding,
-          left: AppSizing.scaffoldHorizontalPadding,
-          bottom: MediaQuery.of(context).padding.bottom,
+      bottomNavigationBar: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSizing.scaffoldHorizontalPadding,
+        ),
+        margin: EdgeInsets.only(
+          bottom: MediaQuery.of(context).padding.bottom + 16,
         ),
         child: SizedBox(
           width: double.infinity,

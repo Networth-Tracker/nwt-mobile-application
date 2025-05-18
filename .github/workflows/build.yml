@@ -3,7 +3,7 @@ name: Build and Deploy All Platforms
 on:  
   push:
     branches:
-      - mrudul
+      - main
   
   workflow_dispatch:
     inputs:

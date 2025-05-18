@@ -42,31 +42,29 @@ class _PhoneNumberInputScreenState extends State<PhoneNumberInputScreen> {
   }
 
   Future<void> _generateOTP() async {
-      final response = await AuthService().generateOTP(
-        phoneNumber: _phoneController.text,
-        onLoading: (isLoading) {
-          setState(() {
-            _isLoading = isLoading;
-          });
-        },
+    final response = await AuthService().generateOTP(
+      phoneNumber: _phoneController.text,
+      onLoading: (isLoading) {
+        setState(() {
+          _isLoading = isLoading;
+        });
+      },
+    );
+    if (response != null) {
+      Get.to(
+        () => PhoneOTPVerifyScreen(phoneNumber: _phoneController.text),
+        transition: Transition.rightToLeft,
       );
-      if(response != null){
-        Get.to(
-          () => PhoneOTPVerifyScreen(
-            phoneNumber: _phoneController.text,
-          ),
-          transition: Transition.rightToLeft,
-        );
-      }else{
-        Get.snackbar(
-          'Error',
-          'Failed to connect to server',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.withValues(alpha: 0.1),
-          colorText: Colors.red,
-        );
-      }
+    } else {
+      Get.snackbar(
+        'Error',
+        'Failed to connect to server',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withValues(alpha: 0.1),
+        colorText: Colors.red,
+      );
     }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +81,15 @@ class _PhoneNumberInputScreenState extends State<PhoneNumberInputScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      SvgPicture.asset('assets/svgs/onboarding/stars.svg', colorFilter: ColorFilter.mode(themeController.isDarkMode ? Colors.white : Colors.black, BlendMode.srcIn)),
+                      SvgPicture.asset(
+                        'assets/svgs/onboarding/stars.svg',
+                        colorFilter: ColorFilter.mode(
+                          themeController.isDarkMode
+                              ? Colors.white
+                              : Colors.black,
+                          BlendMode.srcIn,
+                        ),
+                      ),
                     ],
                   ),
                   Column(
@@ -93,7 +99,9 @@ class _PhoneNumberInputScreenState extends State<PhoneNumberInputScreen> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const SizedBox(height: 120),
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.15,
+                          ),
                           AppText(
                             "Welcome to \nNetworth Tracker",
                             variant: AppTextVariant.headline1,
@@ -136,7 +144,8 @@ class _PhoneNumberInputScreenState extends State<PhoneNumberInputScreen> {
                                   validator: AppValidators.validatePhone,
                                   keyboardType: TextInputType.none,
                                   type: AppInputFieldType.phone,
-                                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
                                 ),
                               ),
                               const SizedBox(height: 20),
@@ -160,6 +169,12 @@ class _PhoneNumberInputScreenState extends State<PhoneNumberInputScreen> {
                               ),
                             ],
                           ),
+                          Container(
+                            margin: EdgeInsets.only(
+                              bottom:
+                                  MediaQuery.of(context).padding.bottom + 16,
+                            ),
+                          ),
                         ],
                       ),
                     ],
@@ -168,7 +183,7 @@ class _PhoneNumberInputScreenState extends State<PhoneNumberInputScreen> {
               ),
             ),
           );
-        }
+        },
       ),
     );
   }

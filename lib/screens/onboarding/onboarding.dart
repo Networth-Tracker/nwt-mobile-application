@@ -4,7 +4,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:nwt_app/widgets/common/button_widget.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
-import 'package:nwt_app/widgets/common/theme_toggle.dart';
 import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/controllers/theme_controller.dart';
 import 'package:nwt_app/notification/firebase_messaging.dart';
@@ -50,7 +49,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 children: [
                   Column(
                     children: [
-                      SizedBox(height: 120),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.15,
+                      ),
                       FadeInDown(
                         curve: Curves.decelerate,
                         duration: Duration(milliseconds: 1000),
@@ -61,9 +62,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             themeController.isDarkMode
                                 ? SvgPicture.asset(
                                   'assets/svgs/onboarding/onboarding_01_dark.svg',
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.4,
                                 )
                                 : SvgPicture.asset(
                                   'assets/svgs/onboarding/onboarding_01.svg',
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.4,
                                 ),
                           ],
                         ),
@@ -102,39 +107,40 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
 
                   Spacer(),
-                  Container(
-                    width: double.infinity,
-                    margin: EdgeInsets.only(
-                      bottom: MediaQuery.of(context).padding.bottom + 16,
-                    ),
-                    child: FadeInUp(
-                      curve: Curves.decelerate,
-                      duration: Duration(milliseconds: 1000),
-                      delay: Duration(milliseconds: 2500),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: AppButton(
-                              text: 'Get Started',
-                              isLoading: false,
-                              variant: AppButtonVariant.primary,
-                              size: AppButtonSize.large,
-                              onPressed:
-                                  () => Get.to(
-                                () => const PhoneNumberInputScreen(),
-                                transition: Transition.rightToLeft,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),
           );
         },
+      ),
+      bottomNavigationBar: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: AppSizing.scaffoldHorizontalPadding),
+        margin: EdgeInsets.only(
+          bottom: MediaQuery.of(context).padding.bottom + 16,
+        ),
+        child: FadeInUp(
+          curve: Curves.decelerate,
+          duration: Duration(milliseconds: 1000),
+          delay: Duration(milliseconds: 2500),
+          child: Row(
+            children: [
+              Expanded(
+                child: AppButton(
+                  text: 'Get Started',
+                  isLoading: false,
+                  variant: AppButtonVariant.primary,
+                  size: AppButtonSize.large,
+                  onPressed:
+                      () => Get.to(
+                        () => const PhoneNumberInputScreen(),
+                        transition: Transition.rightToLeft,
+                      ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
