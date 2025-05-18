@@ -105,11 +105,14 @@ jobs:
           
       # Web build will be handled in the web job
 
-      - name: Verify Artifacts
+      - name: Verify APK Artifacts
         run: |
-          echo "Verifying artifacts before release..."
+          echo "Verifying APK artifacts..."
           ls -la build/renamed_apks/
-          ls -la build/renamed_builds/
+          if [ ! -f "build/renamed_apks/nwt-app-v0.0.${{ github.run_number }}.apk" ]; then
+            echo "APK file not found!"
+            exit 1
+          fi
           
       - name: Capture Firebase Distribution Output
         id: capture_output
