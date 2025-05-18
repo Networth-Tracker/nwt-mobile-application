@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/controllers/assets/banks.dart';
+import 'package:nwt_app/widgets/common/animated_amount.dart';
 import 'package:nwt_app/widgets/common/app_input_field.dart';
 import 'package:nwt_app/screens/assets/banks/widgets/bank_card.dart';
 import 'package:nwt_app/widgets/common/button_widget.dart';
@@ -84,8 +85,10 @@ class _AssetBankScreenState extends State<AssetBankScreen> with SingleTickerProv
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSizing.scaffoldHorizontalPadding,
+          padding:  EdgeInsets.only(
+            left: AppSizing.scaffoldHorizontalPadding,
+                right: AppSizing.scaffoldHorizontalPadding,
+                bottom: MediaQuery.of(context).padding.bottom,
           ),
           child: Column(
             children: [
@@ -119,6 +122,7 @@ class _AssetBankScreenState extends State<AssetBankScreen> with SingleTickerProv
                                       colorType: AppTextColorType.primary,
                                     ),
                                     SizedBox(height: 3),
+                              
                                     AppText(
                                       controller.bankSummary?.data?.lastdatafetchtime != null
                                           ? "Last data fetched at ${controller.bankSummary!.data!.lastdatafetchtime}"
@@ -153,11 +157,14 @@ class _AssetBankScreenState extends State<AssetBankScreen> with SingleTickerProv
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                AppText(
-                                  CurrencyFormatter.formatRupee(controller.bankSummary?.data?.totalbalance ?? 0),
-                                  variant: AppTextVariant.display,
-                                  weight: AppTextWeight.bold,
-                                  colorType: AppTextColorType.primary,
+                                AnimatedAmount(
+                                  isAmountVisible: true,
+                                  amount: CurrencyFormatter.formatRupee(controller.bankSummary?.data?.totalbalance ?? 0),
+                                  style: TextStyle(
+                                    fontSize: 36,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+
                                 ),
                                 Icon(Icons.visibility_outlined),
                               ],
@@ -307,18 +314,7 @@ class _AssetBankScreenState extends State<AssetBankScreen> with SingleTickerProv
                               );
 
                               if (bank.isprimary) {
-                                return Banner(
-                                  message: 'Primary',
-                                  textStyle: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 10,
-                                    fontFamily: 'Poppins',
-                                  ),
-                                  color: AppColors.linkColor,
-                                  location: BannerLocation.topStart,
-                                  child: bankCard,
-                                );
+                                return bankCard;
                               }
 
                               return bankCard;

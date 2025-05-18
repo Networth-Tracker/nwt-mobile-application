@@ -36,13 +36,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Your Screen'), actions: [ThemeToggle()]),
+      // appBar: AppBar(title: Text('Your Screen'), actions: [ThemeToggle()]),
       body: GetBuilder<ThemeController>(
         builder: (themeController) {
           return SafeArea(
             child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: AppSizing.scaffoldHorizontalPadding,
+              padding: EdgeInsets.only(
+                left: AppSizing.scaffoldHorizontalPadding,
+                right: AppSizing.scaffoldHorizontalPadding,
+                bottom: MediaQuery.of(context).padding.bottom,
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -78,8 +80,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           lineHeight: 1.2,
                           weight: AppTextWeight.semiBold,
                           colorType: AppTextColorType.tertiary,
-                        // beginOffset: Offset(0, 30),
-                        // duration: Duration(milliseconds: 1000),
+                          // beginOffset: Offset(0, 30),
+                          // duration: Duration(milliseconds: 1000),
                         ),
                       ),
                       SizedBox(height: 16),
@@ -88,14 +90,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         duration: Duration(milliseconds: 1000),
                         delay: Duration(milliseconds: 2000),
                         child: AppText(
-                        "Manage your money confidently using our intuitive tools and personalized insights.",
-                        variant: AppTextVariant.bodyMedium,
-                        lineHeight: 1.3,
-                        weight: AppTextWeight.medium,
-                        colorType: AppTextColorType.secondary,
-                        // duration: Duration(milliseconds: 1000),
-                        // delay: Duration(milliseconds: 0),
-                      ),
+                          "Manage your money confidently using our intuitive tools and personalized insights.",
+                          variant: AppTextVariant.bodyMedium,
+                          lineHeight: 1.3,
+                          weight: AppTextWeight.medium,
+                          colorType: AppTextColorType.secondary,
+                          // duration: Duration(milliseconds: 1000),
+                          // delay: Duration(milliseconds: 0),
+                        ),
                       ),
                     ],
                   ),
