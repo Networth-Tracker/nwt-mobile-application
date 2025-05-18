@@ -471,73 +471,80 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
                         ),
                       ),
                       SizedBox(height: 16),
-                      SizedBox(
+                      Container(
                         width: MediaQuery.of(context).size.width,
-                        child: AspectRatio(
-                          aspectRatio: 2.7,
-                          child: PageView(
-                            scrollDirection: Axis.horizontal,
-                            physics: BouncingScrollPhysics(),
-                            controller: pageViewController,
-                            onPageChanged: (pageNo) {
-                              setState(() {
-                                currentPage = pageNo;
-                              });
-                            },
-                            children: [
-                              ...List.generate(5, (index) {
-                                return Container(
-                                  color:
-                                      themeController.isDarkMode
-                                          ? AppColors.darkCardBG
-                                          : AppColors.lightBackground,
-                                  width: MediaQuery.of(context).size.width,
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal:
-                                        AppSizing.scaffoldHorizontalPadding,
-                                    vertical: 20,
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Flexible(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            AppText(
-                                              "Save up to 3.2% annually",
-                                              variant:
-                                                  AppTextVariant.bodyMedium,
-                                              weight: AppTextWeight.semiBold,
-                                            ),
-                                            SizedBox(height: 6),
-                                            AppText(
-                                              "Switching from regular to direct mutual fund can boost portfolio by saving ₹2.7L on commissions",
-                                              variant: AppTextVariant.tiny,
-                                              weight: AppTextWeight.semiBold,
-                                              colorType:
-                                                  AppTextColorType.secondary,
-                                            ),
-                                            SizedBox(height: 18),
-                                            AppText(
-                                              "Switch Funds",
-                                              variant:
-                                                  AppTextVariant.bodyMedium,
-                                              weight: AppTextWeight.semiBold,
-                                              colorType: AppTextColorType.link,
-                                            ),
-                                          ],
-                                        ),
+                        height: MediaQuery.of(context).size.height * 0.18, // Responsive height based on screen size
+                        child: PageView(
+                          scrollDirection: Axis.horizontal,
+                          physics: BouncingScrollPhysics(),
+                          controller: pageViewController,
+                          onPageChanged: (pageNo) {
+                            setState(() {
+                              currentPage = pageNo;
+                            });
+                          },
+                          children: [
+                            ...List.generate(5, (index) {
+                              return Container(
+                                color:
+                                    themeController.isDarkMode
+                                        ? AppColors.darkCardBG
+                                        : AppColors.lightBackground,
+                                width: MediaQuery.of(context).size.width,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal:
+                                      AppSizing.scaffoldHorizontalPadding,
+                                  vertical: 16, // Slightly reduced vertical padding
+                                ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      flex: 3, // Allocate more space to text content
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          AppText(
+                                            "Save up to 3.2% annually",
+                                            variant:
+                                                AppTextVariant.bodyMedium,
+                                            weight: AppTextWeight.semiBold,
+                                          ),
+                                          SizedBox(height: 4), // Reduced spacing
+                                          AppText(
+                                            "Switching from regular to direct mutual fund can boost portfolio by saving ₹2.7L on commissions",
+                                            variant: AppTextVariant.tiny,
+                                            weight: AppTextWeight.semiBold,
+                                            colorType:
+                                                AppTextColorType.secondary,
+                                            maxLines: 3, // Limit number of lines
+                                            overflow: TextOverflow.ellipsis, // Handle text overflow
+                                          ),
+                                          SizedBox(height: 12), // Reduced spacing
+                                          AppText(
+                                            "Switch Funds",
+                                            variant:
+                                                AppTextVariant.bodyMedium,
+                                            weight: AppTextWeight.semiBold,
+                                            colorType: AppTextColorType.link,
+                                          ),
+                                        ],
                                       ),
-                                      SvgPicture.asset(
+                                    ),
+                                    SizedBox(width: 8), // Add spacing between text and image
+                                    Expanded(
+                                      flex: 1, // Allocate less space to image
+                                      child: SvgPicture.asset(
                                         "assets/svgs/dashboard/mf_banner.svg",
+                                        fit: BoxFit.contain, // Ensure image fits within its container
                                       ),
-                                    ],
-                                  ),
-                                );
-                              }),
-                            ],
-                          ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }),
+                          ],
                         ),
                       ),
                       SizedBox(height: 8),
