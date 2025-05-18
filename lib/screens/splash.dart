@@ -1,6 +1,7 @@
 import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/controllers/user_controller.dart';
 import 'package:nwt_app/services/auth/auth_flow.dart';
 import 'package:nwt_app/utils/logger.dart';
@@ -52,12 +53,12 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(1, 51, 78, 1),
+      backgroundColor: AppColors.darkBackground,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset('assets/app/main.png', height: 200),
+            Image.asset('assets/app/pivot.money.png', height: 200),
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.6,
               child: LinearProgressIndicator(

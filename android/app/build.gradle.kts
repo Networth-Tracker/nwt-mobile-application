@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
     // START: FlutterFire Configuration
@@ -6,6 +9,12 @@ plugins {
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+}
+
+val keystoreProperties = Properties()
+val keystorePropertiesFile = rootProject.file("key.properties")
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
 
 android {
@@ -18,6 +27,16 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
         // Enable core library desugaring for Java 8 features
         isCoreLibraryDesugaringEnabled = true
+    }
+    
+    signingConfigs {
+        create("release") {
+            // Direct configuration for networth_tracker.jks
+            keyAlias = "key0"
+            keyPassword = "networth_tracker"
+            storeFile = rootProject.file("networth_tracker.jks")
+            storePassword = "networth_tracker"
+        }
     }
 
     kotlinOptions {
@@ -37,9 +56,7 @@ android {
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 }

@@ -54,9 +54,9 @@ class _PanCardVerificationState extends State<PanCardVerification> {
     setState(() {
       _errorMessage = null;
     });
-    
+
     // Validate PAN number format
-    if (_panController.text.length != 10 || 
+    if (_panController.text.length != 10 ||
         !RegExp(r'^[A-Z]{5}[0-9]{4}[A-Z]$').hasMatch(_panController.text)) {
       setState(() {
         _errorMessage = "Please enter a valid PAN number";
@@ -77,24 +77,24 @@ class _PanCardVerificationState extends State<PanCardVerification> {
 
       // Check response
       if (response != null) {
-        AppLogger.info('PAN Verification completed: ${response.message}', tag: 'PanCardVerification');
-        
+        AppLogger.info(
+          'PAN Verification completed: ${response.message}',
+          tag: 'PanCardVerification',
+        );
+
         if (response.success) {
           // Show success message and navigate to dashboard
           Get.snackbar(
-            'Success', 
+            'Success',
             'PAN verification successful',
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: Colors.green,
             colorText: Colors.white,
           );
-          
+
           // Navigate to dashboard after a short delay
           Future.delayed(const Duration(seconds: 1), () {
-            Get.to(
-              () => const Dashboard(),
-              transition: Transition.rightToLeft,
-            );
+            Get.to(() => const Dashboard(), transition: Transition.rightToLeft);
           });
         } else {
           // Show error message from the server
@@ -109,7 +109,11 @@ class _PanCardVerificationState extends State<PanCardVerification> {
         });
       }
     } catch (e) {
-      AppLogger.error('PAN Verification Error', error: e, tag: 'PanCardVerification');
+      AppLogger.error(
+        'PAN Verification Error',
+        error: e,
+        tag: 'PanCardVerification',
+      );
       setState(() {
         _errorMessage = "An error occurred. Please try again.";
       });
@@ -148,8 +152,10 @@ class _PanCardVerificationState extends State<PanCardVerification> {
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSizing.scaffoldHorizontalPadding,
+          padding: EdgeInsets.only(
+            left: AppSizing.scaffoldHorizontalPadding,
+            right: AppSizing.scaffoldHorizontalPadding,
+            bottom: MediaQuery.of(context).padding.bottom,
           ),
           child: Column(
             children: [
@@ -255,8 +261,9 @@ class _PanCardVerificationState extends State<PanCardVerification> {
                       variant: AppButtonVariant.primary,
                       isLoading: _isLoading,
                       size: AppButtonSize.large,
-                      isDisabled: _isLoading || _panController.text.length != 10,
-                      onPressed: _verifyPanCard ,
+                      isDisabled:
+                          _isLoading || _panController.text.length != 10,
+                      onPressed: _verifyPanCard,
                     ),
                   ),
                 ],
