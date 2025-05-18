@@ -136,17 +136,16 @@ class _PhoneNumberInputScreenState extends State<PhoneNumberInputScreen> {
                           ),
                           Column(
                             children: [
-                              AbsorbPointer(
-                                child: AppInputField(
-                                  controller: _phoneController,
-                                  hintText: "Enter your phone number",
-                                  // labelText: "Phone Number",
-                                  validator: AppValidators.validatePhone,
-                                  keyboardType: TextInputType.none,
-                                  type: AppInputFieldType.phone,
-                                  autovalidateMode:
-                                      AutovalidateMode.onUserInteraction,
-                                ),
+                              AppInputField(
+                                readOnly: false,
+                                controller: _phoneController,
+                                hintText: "Enter your phone number",
+                                // labelText: "Phone Number",
+                                validator: AppValidators.validatePhone,
+                                keyboardType: TextInputType.none,
+                                type: AppInputFieldType.phone,
+                                autovalidateMode:
+                                    AutovalidateMode.onUserInteraction,
                               ),
                               const SizedBox(height: 20),
                               Row(

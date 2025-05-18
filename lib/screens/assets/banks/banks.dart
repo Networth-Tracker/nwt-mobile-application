@@ -173,6 +173,7 @@ class _AssetBankScreenState extends State<AssetBankScreen>
                                   style: TextStyle(
                                     fontSize: 36,
                                     fontWeight: FontWeight.bold,
+                                    color: AppColors.darkPrimary,
                                   ),
                                 ),
                                 Icon(Icons.visibility_outlined),

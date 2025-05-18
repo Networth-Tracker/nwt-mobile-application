@@ -16,6 +16,9 @@ class CurrencyFormatter {
     } else if (amount >= 100000) { // 1 Lakh
       final lakhs = amount / 100000;
       return '₹${lakhs.toStringAsFixed(lakhs.truncateToDouble() == lakhs ? 0 : 1)}L';
+    } else if (amount >= 1000) { // 1 Thousand (for 4 and 5 digit numbers)
+      final thousands = amount / 1000;
+      return '₹${thousands.toStringAsFixed(thousands.truncateToDouble() == thousands ? 0 : 1)}K';
     } else {
       final formatter = NumberFormat.currency(
         locale: 'en_IN',
@@ -48,7 +51,7 @@ class CurrencyFormatter {
     if (amount < 1000) {
       return amount.toString();
     } else if (amount < 100000) {
-      // Convert to K (thousands)
+      // Convert to K (thousands) for both 4 and 5 digit numbers
       final value = amount / 1000;
       return '${value.toStringAsFixed(value.truncateToDouble() == value ? 0 : 1)}K';
     } else if (amount < 10000000) {
