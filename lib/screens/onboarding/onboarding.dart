@@ -83,7 +83,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           variant: AppTextVariant.headline2,
                           lineHeight: 1.2,
                           weight: AppTextWeight.semiBold,
-                          colorType: AppTextColorType.tertiary,
+                          colorType: AppTextColorType.primary,
                           // beginOffset: Offset(0, 30),
                           // duration: Duration(milliseconds: 1000),
                         ),
