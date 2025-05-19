@@ -594,90 +594,214 @@ class _DashboardState extends State<Dashboard>
                           color: AppColors.darkBackground,
                           child: Column(
                             children: [
-                              SizedBox(height: 16),
+                              SizedBox(height: 24),
                               Padding(
                                 padding: EdgeInsets.symmetric(
                                   horizontal:
                                       AppSizing.scaffoldHorizontalPadding,
                                 ),
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 15,
-                                    vertical: 20,
-                                  ),
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(15),
-                                    gradient: RadialGradient(
-                                      center: Alignment.topCenter,
-                                      radius: 2,
+                                    borderRadius: BorderRadius.circular(20),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(
+                                          alpha: 0.25,
+                                        ),
+                                        blurRadius: 15,
+                                        offset: const Offset(0, 6),
+                                      ),
+                                    ],
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      stops: const [0.1, 0.9],
                                       colors: [
-                                        Color.fromRGBO(165, 108, 236, 0.8),
+                                        Color.fromRGBO(180, 120, 255, 0.95),
                                         Color.fromRGBO(41, 9, 81, 1),
                                       ],
                                     ),
                                   ),
-                                  child: Column(
+                                  child: Stack(
                                     children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Flexible(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                AppText(
-                                                  "Connect with Zerodha",
-                                                  variant:
-                                                      AppTextVariant.bodyLarge,
-                                                  weight: AppTextWeight.bold,
-                                                  colorType:
-                                                      AppTextColorType.primary,
-                                                ),
-                                                AppText(
-                                                  "Log in to Kite to link out all your investments and keep a track on them!",
-                                                  variant:
-                                                      AppTextVariant.bodySmall,
-                                                  weight: AppTextWeight.medium,
-                                                  colorType:
-                                                      AppTextColorType.primary,
-                                                ),
-                                                SizedBox(height: 18),
-                                                Container(
-                                                  padding:
-                                                      const EdgeInsets.symmetric(
-                                                        horizontal: 12,
-                                                        vertical: 8,
+                                      // Background decorative elements
+                                      Positioned(
+                                        right: -30,
+                                        top: -30,
+                                        child: Container(
+                                          height: 120,
+                                          width: 120,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Colors.white.withValues(
+                                              alpha: 0.08,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        left: 20,
+                                        bottom: -40,
+                                        child: Container(
+                                          height: 100,
+                                          width: 100,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Colors.white.withValues(
+                                              alpha: 0.08,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      // Additional decorative elements
+                                      Positioned(
+                                        right: 60,
+                                        top: 40,
+                                        child: Container(
+                                          height: 8,
+                                          width: 8,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Colors.white.withValues(
+                                              alpha: 0.3,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        left: 80,
+                                        bottom: 30,
+                                        child: Container(
+                                          height: 6,
+                                          width: 6,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Colors.white.withValues(
+                                              alpha: 0.3,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      // Main content
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 15,
+                                          vertical: 15,
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Expanded(
+                                              flex: 3,
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      AppText(
+                                                        "Connect with Zerodha",
+                                                        variant:
+                                                            AppTextVariant
+                                                                .bodyLarge,
+                                                        weight:
+                                                            AppTextWeight.bold,
+                                                        colorType:
+                                                            AppTextColorType
+                                                                .primary,
                                                       ),
-                                                  decoration: BoxDecoration(
-                                                    color:
-                                                        AppColors
-                                                            .darkButtonPrimaryBackground,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          6,
-                                                        ),
+                                                    ],
                                                   ),
-                                                  child: AppText(
-                                                    "Connect",
+                                                  const SizedBox(height: 5),
+                                                  AppText(
+                                                    "Log in to Kite to link all your investments and keep track of your portfolio in one place!",
                                                     variant:
                                                         AppTextVariant
                                                             .bodySmall,
-                                                    weight: AppTextWeight.bold,
+                                                    weight:
+                                                        AppTextWeight.medium,
                                                     colorType:
                                                         AppTextColorType
-                                                            .secondary,
+                                                            .primary,
+                                                    maxLines: 3,
+                                                    lineHeight: 1.4,
                                                   ),
-                                                ),
-                                              ],
+                                                  const SizedBox(height: 8),
+                                                  InkWell(
+                                                    onTap: () {
+                                                      // Add action for connect button
+                                                    },
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          8,
+                                                        ),
+                                                    child: Container(
+                                                      padding:
+                                                          const EdgeInsets.symmetric(
+                                                            horizontal: 8,
+                                                            vertical: 8,
+                                                          ),
+                                                      decoration: BoxDecoration(
+                                                        color:
+                                                            AppColors
+                                                                .darkButtonPrimaryBackground,
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              8,
+                                                            ),
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                            color: Colors.black
+                                                                .withValues(
+                                                                  alpha: 0.25,
+                                                                ),
+                                                            blurRadius: 8,
+                                                            offset:
+                                                                const Offset(
+                                                                  0,
+                                                                  4,
+                                                                ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      child: Row(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        children: [
+                                                          AppText(
+                                                            "Connect Now",
+                                                            variant:
+                                                                AppTextVariant
+                                                                    .tiny,
+                                                            weight:
+                                                                AppTextWeight
+                                                                    .semiBold,
+                                                            colorType:
+                                                                AppTextColorType
+                                                                    .tertiary,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+
+                                                  // const SizedBox(height: 24),
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                          const SizedBox(width: 10),
-                                          SvgPicture.asset(
-                                            "assets/svgs/dashboard/zerodha_banner.svg",
-                                          ),
-                                        ],
+                                            // const SizedBox(width: 20),
+                                            // Expanded(
+                                            //   flex: 2,
+                                            //   child: SvgPicture.asset(
+                                            //     "assets/svgs/dashboard/zerodha_banner.svg",
+                                            //     fit: BoxFit.contain,
+                                            //   ),
+                                            // ),
+                                          ],
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -693,6 +817,26 @@ class _DashboardState extends State<Dashboard>
                           child: Column(
                             children: [
                               SizedBox(height: 16),
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  left: AppSizing.scaffoldHorizontalPadding,
+                                  right: AppSizing.scaffoldHorizontalPadding,
+                                ),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    AppText(
+                                      "Recommendations",
+                                      variant: AppTextVariant.headline5,
+                                      weight: AppTextWeight.bold,
+                                      colorType: AppTextColorType.primary,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(height: 8),
                               SizedBox(
                                 width: MediaQuery.of(context).size.width,
                                 height:
