@@ -495,7 +495,7 @@ class _DashboardState extends State<Dashboard>
                                   physics: const BouncingScrollPhysics(),
                                   scrollDirection: Axis.horizontal,
                                   child: Row(
-                                    spacing: 15,
+                                    spacing: 12,
                                     children: [
                                       InkWell(
                                         onTap:
@@ -507,7 +507,7 @@ class _DashboardState extends State<Dashboard>
                                         child: ConstrainedBox(
                                           constraints: BoxConstraints(
                                             minHeight:
-                                                120, // Set a minimum height to match AssetCard
+                                                105, // Set a minimum height to match AssetCard
                                           ),
                                           child: Container(
                                             width: 50,
@@ -536,47 +536,42 @@ class _DashboardState extends State<Dashboard>
                                                   ?.data !=
                                               null) {
                                             return Row(
+                                              spacing: 12,
                                               children:
                                                   controller
                                                       .dashboardAssets!
                                                       .data!
                                                       .assetdata
                                                       .map(
-                                                        (asset) => Padding(
-                                                          padding:
-                                                              const EdgeInsets.only(
-                                                                right: 15,
+                                                        (asset) => InkWell(
+                                                          onTap:
+                                                              () => Get.to(
+                                                                asset.name ==
+                                                                        "Banks"
+                                                                    ? const AssetBankScreen()
+                                                                    : const AssetInvestmentScreen(),
+                                                                transition:
+                                                                    Transition
+                                                                        .rightToLeft,
                                                               ),
-                                                          child: InkWell(
-                                                            onTap:
-                                                                () => Get.to(
-                                                                  asset.name ==
-                                                                          "Banks"
-                                                                      ? const AssetBankScreen()
-                                                                      : const AssetInvestmentScreen(),
-                                                                  transition:
-                                                                      Transition
-                                                                          .rightToLeft,
+                                                          child: AssetCard(
+                                                            title: asset.name,
+                                                            amount:
+                                                                CurrencyFormatter.formatRupeeWithCommas(
+                                                                  asset.value,
                                                                 ),
-                                                            child: AssetCard(
-                                                              title: asset.name,
-                                                              amount:
-                                                                  CurrencyFormatter.formatRupee(
-                                                                    asset.value,
-                                                                  ),
-                                                              delta:
-                                                                  "${asset.deltapercentage}%",
-                                                              deltaType:
-                                                                  asset.deltavalue >=
-                                                                          0
-                                                                      ? DeltaType
-                                                                          .positive
-                                                                      : DeltaType
-                                                                          .negative,
-                                                              icon:
-                                                                  Icons
-                                                                      .account_balance_outlined,
-                                                            ),
+                                                            delta:
+                                                                "${asset.deltapercentage}%",
+                                                            deltaType:
+                                                                asset.deltavalue >=
+                                                                        0
+                                                                    ? DeltaType
+                                                                        .positive
+                                                                    : DeltaType
+                                                                        .negative,
+                                                            icon:
+                                                                Icons
+                                                                    .account_balance_outlined,
                                                           ),
                                                         ),
                                                       )
@@ -607,7 +602,7 @@ class _DashboardState extends State<Dashboard>
                                 ),
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
+                                    horizontal: 15,
                                     vertical: 20,
                                   ),
                                   decoration: BoxDecoration(
@@ -635,7 +630,7 @@ class _DashboardState extends State<Dashboard>
                                                 AppText(
                                                   "Connect with Zerodha",
                                                   variant:
-                                                      AppTextVariant.headline4,
+                                                      AppTextVariant.bodyLarge,
                                                   weight: AppTextWeight.bold,
                                                   colorType:
                                                       AppTextColorType.primary,
@@ -644,7 +639,7 @@ class _DashboardState extends State<Dashboard>
                                                   "Log in to Kite to link out all your investments and keep a track on them!",
                                                   variant:
                                                       AppTextVariant.bodySmall,
-                                                  weight: AppTextWeight.regular,
+                                                  weight: AppTextWeight.medium,
                                                   colorType:
                                                       AppTextColorType.primary,
                                                 ),

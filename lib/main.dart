@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
-
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:nwt_app/constants/theme.dart';
@@ -14,7 +14,6 @@ import 'package:nwt_app/services/global_storage.dart';
 import 'package:nwt_app/services/network/connectivity_service.dart';
 import 'package:nwt_app/utils/logger.dart';
 import 'package:nwt_app/widgets/network/network_sensitive.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 // Initialize the local notifications plugin at the top level
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -23,7 +22,10 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  AppLogger.info("Handling background message: ${message.notification?.title}", tag: 'FirebaseMessaging');
+  AppLogger.info(
+    "Handling background message: ${message.notification?.title}",
+    tag: 'FirebaseMessaging',
+  );
 }
 
 void main() async {
@@ -41,17 +43,17 @@ void main() async {
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  
+
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  
+
   final messagingAPI = FirebaseMessagingAPI();
   await messagingAPI.initPushNotifications();
-  
+
   // Initialize controllers and services
   await Get.putAsync(() => ConnectivityService().init());
   Get.put(ThemeController());
   Get.put(UserController());
-  
+
   runApp(const MyApp());
 }
 // Future<void> setupRemoteConfig() async {
@@ -87,10 +89,7 @@ class MyApp extends StatelessWidget {
         builder: (context, child) {
           // Wrap the entire app with network status banner
           return Column(
-            children: [
-              const NetworkStatusBanner(),
-              Expanded(child: child!),
-            ],
+            children: [const NetworkStatusBanner(), Expanded(child: child!)],
           );
         },
         // Initialize GetX for navigation
