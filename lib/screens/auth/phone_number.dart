@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:nwt_app/widgets/common/app_input_field.dart';
-import 'package:nwt_app/widgets/common/button_widget.dart';
-import 'package:nwt_app/widgets/common/key_pad.dart';
-import 'package:nwt_app/widgets/common/text_widget.dart';
 import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/controllers/theme_controller.dart';
 import 'package:nwt_app/screens/auth/otp_verify.dart';
 import 'package:nwt_app/services/auth/auth.dart';
 import 'package:nwt_app/utils/validators.dart';
+import 'package:nwt_app/widgets/common/app_input_field.dart';
+import 'package:nwt_app/widgets/common/button_widget.dart';
+import 'package:nwt_app/widgets/common/key_pad.dart';
+import 'package:nwt_app/widgets/common/text_widget.dart';
 
 class PhoneNumberInputScreen extends StatefulWidget {
   const PhoneNumberInputScreen({super.key});
@@ -107,7 +107,7 @@ class _PhoneNumberInputScreenState extends State<PhoneNumberInputScreen> {
                             variant: AppTextVariant.headline1,
                             lineHeight: 1.3,
                             weight: AppTextWeight.bold,
-                            colorType: AppTextColorType.tertiary,
+                            colorType: AppTextColorType.primary,
                           ),
                           const SizedBox(height: 6),
                           AppText(
