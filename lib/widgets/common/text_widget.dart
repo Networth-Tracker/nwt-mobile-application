@@ -97,46 +97,46 @@ TextStyle _getTextStyle(BuildContext context, AppTextVariant variant, AppTextWei
   TextStyle style;
   switch (variant) {
     case AppTextVariant.display:
-      style = TextStyle(fontSize: 36, fontWeight: fontWeight, fontFamily: "Poppins");
+      style = TextStyle(fontSize: 36, fontWeight: fontWeight, fontFamily: "Montserrat");
       break;
     case AppTextVariant.headline1:
-      style = TextStyle(fontSize: 28, fontWeight: fontWeight, fontFamily: "Poppins");
+      style = TextStyle(fontSize: 28, fontWeight: fontWeight, fontFamily: "Montserrat");
       break;
     case AppTextVariant.headline2:
-      style = TextStyle(fontSize: 24, fontWeight: fontWeight, fontFamily: "Poppins");
+      style = TextStyle(fontSize: 24, fontWeight: fontWeight, fontFamily: "Montserrat");
       break;
     case AppTextVariant.headline3:
-      style = TextStyle(fontSize: 20, fontWeight: fontWeight, fontFamily: "Poppins");
+      style = TextStyle(fontSize: 20, fontWeight: fontWeight, fontFamily: "Montserrat");
       break;
     case AppTextVariant.headline4:
-      style = TextStyle(fontSize: 18, fontWeight: fontWeight, fontFamily: "Poppins");
+      style = TextStyle(fontSize: 18, fontWeight: fontWeight, fontFamily: "Montserrat");
       break;
     case AppTextVariant.headline5:
-      style = TextStyle(fontSize: 16, fontWeight: fontWeight, fontFamily: "Poppins");
+      style = TextStyle(fontSize: 16, fontWeight: fontWeight, fontFamily: "Montserrat");
       break;
     case AppTextVariant.headline6:
-      style = TextStyle(fontSize: 14, fontWeight: fontWeight, fontFamily: "Poppins");
+      style = TextStyle(fontSize: 14, fontWeight: fontWeight, fontFamily: "Montserrat");
       break;
     case AppTextVariant.bodyLarge:
-      style = TextStyle(fontSize: 16, fontWeight: fontWeight, fontFamily: "Poppins");
+      style = TextStyle(fontSize: 16, fontWeight: fontWeight, fontFamily: "Montserrat");
       break;
     case AppTextVariant.bodyMedium:
-      style = TextStyle(fontSize: 14, fontWeight: fontWeight, fontFamily: "Poppins");
+      style = TextStyle(fontSize: 14, fontWeight: fontWeight, fontFamily: "Montserrat");
       break;
     case AppTextVariant.bodySmall:
-      style = TextStyle(fontSize: 12, fontWeight: fontWeight, fontFamily: "Poppins");
+      style = TextStyle(fontSize: 12, fontWeight: fontWeight, fontFamily: "Montserrat");
       break;
     case AppTextVariant.tiny:
-      style = TextStyle(fontSize: 10, fontWeight: fontWeight, fontFamily: "Poppins");
+      style = TextStyle(fontSize: 10, fontWeight: fontWeight, fontFamily: "Montserrat");
       break;
     case AppTextVariant.caption:
-      style = TextStyle(fontSize: 12, fontWeight: fontWeight, fontFamily: "Poppins");
+      style = TextStyle(fontSize: 12, fontWeight: fontWeight, fontFamily: "Montserrat");
       break;
     case AppTextVariant.button:
-      style = TextStyle(fontSize: 14, fontWeight: fontWeight, fontFamily: "Poppins");
+      style = TextStyle(fontSize: 14, fontWeight: fontWeight, fontFamily: "Montserrat");
       break;
     case AppTextVariant.label:
-      style = TextStyle(fontSize: 12, fontWeight: fontWeight, fontFamily: "Poppins");
+      style = TextStyle(fontSize: 12, fontWeight: fontWeight, fontFamily: "Montserrat");
       break;
   }
 
@@ -365,7 +365,7 @@ class BasicText extends StatelessWidget {
         fontWeight: fontWeight,
         color: _resolveBasicTextColor(context, color),
         height: lineHeight,
-        fontFamily: "Poppins",
+        fontFamily: "Montserrat",
         decorationColor: _resolveBasicTextColor(context, color),
       ),
     );

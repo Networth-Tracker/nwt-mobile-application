@@ -292,7 +292,7 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen>
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.5,
+                        width: MediaQuery.of(context).size.width * 0.45,
                         child: Lottie.asset('assets/lottie/lock.json'),
                       ),
                     ],
@@ -488,8 +488,7 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen>
                     onKeyPressed: _onKeyPressed,
                     onBackspace: _onBackspace,
                   ),
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.03),
-                  
+                  SizedBox(height: 10),
                 ],
               ),
             ],

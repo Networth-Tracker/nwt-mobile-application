@@ -90,4 +90,20 @@ class CurrencyFormatter {
     );
     return formatter.format(amount);
   }
+  
+  /// Formats a number as Indian Rupee with the ₹ symbol and commas only
+  /// Does not use any suffixes like K, L, or Cr
+  /// 
+  /// Examples:
+  /// - 1000 becomes ₹1,000
+  /// - 100000 becomes ₹1,00,000
+  /// - 10000000 becomes ₹1,00,00,000
+  static String formatRupeeWithCommas(num amount) {
+    final formatter = NumberFormat.currency(
+      locale: 'en_IN',
+      symbol: '₹',
+      decimalDigits: 0,
+    );
+    return formatter.format(amount);
+  }
 }

@@ -269,7 +269,7 @@ class _AssetBankScreenState extends State<AssetBankScreen>
                                     color: Colors.white,
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
-                                    fontFamily: 'Poppins',
+                                    fontFamily: 'Montserrat',
                                   ),
                                 ),
                                 TextSpan(
@@ -278,7 +278,7 @@ class _AssetBankScreenState extends State<AssetBankScreen>
                                     color: AppColors.info,
                                     fontSize: 14,
                                     fontWeight: FontWeight.w700,
-                                    fontFamily: 'Poppins',
+                                    fontFamily: 'Montserrat',
                                   ),
                                 ),
                                 TextSpan(
@@ -287,7 +287,7 @@ class _AssetBankScreenState extends State<AssetBankScreen>
                                     color: Colors.white,
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
-                                    fontFamily: 'Poppins',
+                                    fontFamily: 'Montserrat',
                                   ),
                                 ),
                               ],

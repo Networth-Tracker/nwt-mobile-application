@@ -716,68 +716,67 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
                         if (index == 0 && _selectedCategory == 'Mutual Funds') {
                           return Column(
                             children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: AppColors.darkButtonBorder,
+                              InkWell(
+                                onTap: () => Get.to(
+                                  () => MutualFundSwitchScreen(),
+                                  transition: Transition.rightToLeft,
+                                ),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: AppColors.darkButtonBorder,
+                                    ),
+                                    color: AppColors.darkCardBG,
                                   ),
-                                  color: AppColors.darkCardBG,
-                                ),
-                                width: double.infinity,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 12,
-                                ),
-                                child: Row(
-                                  children: [
-                                    GestureDetector(
-                                      onTap:
-                                          () => Get.to(
-                                            () => MutualFundSwitchScreen(),
-                                            transition: Transition.rightToLeft,
-                                          ),
-                                      child: SvgPicture.asset(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      SvgPicture.asset(
                                         "assets/svgs/assets/investments/save.svg",
                                         width: 50,
                                         height: 50,
                                       ),
-                                    ),
-                                    const SizedBox(width: 20),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          const SizedBox(height: 8),
-                                          AppText(
-                                            'Switch to save up to 1.4%',
-                                            variant: AppTextVariant.bodyLarge,
-                                            weight: AppTextWeight.semiBold,
-                                            colorType: AppTextColorType.success,
-                                          ),
-                                          const SizedBox(height: 8),
-                                          AppText(
-                                            "Say goodbye to high commissions. Easily switch plans in less than 5 minute for free.",
-                                            variant: AppTextVariant.bodySmall,
-                                            colorType: AppTextColorType.primary,
-                                          ),
-                                          GestureDetector(
-                                            onTap:
-                                                _showSwitchToDirectBottomSheet,
-                                            child: AppText(
-                                              'Know More',
-                                              variant: AppTextVariant.bodySmall,
-                                              weight: AppTextWeight.bold,
-                                              colorType: AppTextColorType.link,
-                                              decoration:
-                                                  TextDecoration.underline,
+                                      const SizedBox(width: 20),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const SizedBox(height: 8),
+                                            AppText(
+                                              'Switch to save up to 1.4%',
+                                              variant: AppTextVariant.bodyLarge,
+                                              weight: AppTextWeight.semiBold,
+                                              colorType: AppTextColorType.success,
                                             ),
-                                          ),
-                                        ],
+                                            const SizedBox(height: 8),
+                                            AppText(
+                                              "Say goodbye to high commissions. Easily switch plans in less than 5 minute for free.",
+                                              variant: AppTextVariant.bodySmall,
+                                              colorType: AppTextColorType.primary,
+                                            ),
+                                            GestureDetector(
+                                              onTap:
+                                                  _showSwitchToDirectBottomSheet,
+                                              child: AppText(
+                                                'Know More',
+                                                variant: AppTextVariant.bodySmall,
+                                                weight: AppTextWeight.bold,
+                                                colorType: AppTextColorType.link,
+                                                decoration:
+                                                    TextDecoration.underline,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
                               const SizedBox(height: 12),

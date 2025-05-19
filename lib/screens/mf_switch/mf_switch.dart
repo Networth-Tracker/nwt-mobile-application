@@ -187,11 +187,11 @@ class _MutualFundSwitchScreenState extends State<MutualFundSwitchScreen> {
                       ),
                       const SizedBox(height: 12),
                       SwitchFundCard(
-                        fundName: "Kotak Emerging Equity Scheme",
+                        fundName: "SBI Emerging Equity Scheme",
                         fundType: "Regular Fund",
                         commission: "0.45% commission",
                         gainAmount: 102000,
-                        targetFundName: "Kotak Emerging Fund Direct Growth",
+                        targetFundName: "SBI Emerging Fund Direct Growth",
                         targetFundType: "Direct Fund",
                         targetCommission: "No commission",
                         fundIconUrl: "https://s3-symbol-logo.tradingview.com/kotak-mahindra-bank--big.svg",

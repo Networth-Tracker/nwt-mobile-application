@@ -42,30 +42,30 @@ class DataResponse {
 class User {
     int id;
     String phonenumber;
-    String guid;
-    String firstname;
-    String lastname;
+    String? guid;
+    String? firstname;
+    String? lastname;
     String? email;
     dynamic createdat;
     bool isverified;
-    DateTime dob;
+    DateTime? dob;
     bool isonboardingcompleted;
     bool ispanverified;
-    String gender;
+    String? gender;
 
     User({
         required this.id,
         required this.phonenumber,
-        required this.guid,
-        required this.firstname,
-        required this.lastname,
+        this.guid,
+        this.firstname,
+        this.lastname,
         this.email,
         required this.createdat,
         required this.isverified,
-        required this.dob,
+        this.dob,
         required this.isonboardingcompleted,
         required this.ispanverified,
-        required this.gender,
+        this.gender,
     });
 
     factory User.fromJson(Map<String, dynamic> json) => User(
@@ -77,7 +77,7 @@ class User {
         email: json["email"],
         createdat: json["createdat"],
         isverified: json["isverified"],
-        dob: DateTime.parse(json["dob"]),
+        dob: json["dob"] != null ? DateTime.parse(json["dob"]) : null,
         isonboardingcompleted: json["isonboardingcompleted"],
         ispanverified: json["ispanverified"],
         gender: json["gender"],
@@ -92,7 +92,7 @@ class User {
         "email": email,
         "createdat": createdat,
         "isverified": isverified,
-        "dob": "${dob.year.toString().padLeft(4, '0')}-${dob.month.toString().padLeft(2, '0')}-${dob.day.toString().padLeft(2, '0')}",
+        "dob": dob != null ? "${dob!.year.toString().padLeft(4, '0')}-${dob!.month.toString().padLeft(2, '0')}-${dob!.day.toString().padLeft(2, '0')}" : null,
         "isonboardingcompleted": isonboardingcompleted,
         "ispanverified": ispanverified,
         "gender": gender,

@@ -89,7 +89,7 @@ class KeyPadButton extends StatelessWidget {
       child: GestureDetector(
         onTap: isBlank ? null : onPressed,
         child: Container(
-          height: 65,
+          height: 50,
           margin: const EdgeInsets.symmetric(horizontal: 4),
           decoration: BoxDecoration(
             color: isBlank 
