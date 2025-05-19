@@ -12,4 +12,5 @@ class ApiURLs {
   static const GET_BANK_SUMMARY = "$baseUrl/bank/summary";
   static const GET_USER_HOLDINGS = "$baseUrl/dashboard/portfolio/all";
   static const GET_BANK_TRANSACTION = "$baseUrl/bank/transactions";
+  static const GET_ZERODHA_CONNECTION = "$baseUrl/zerodha/login-url";
 }
