@@ -1,7 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:nwt_app/constants/theme.dart';
 import 'package:nwt_app/controllers/theme_controller.dart';
@@ -31,6 +33,10 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await StorageService.init();
+  debugPaintSizeEnabled = false;
+  debugPaintBaselinesEnabled = false;
+  debugPaintPointersEnabled = false;
+  debugPaintLayerBordersEnabled = false;
 
   const AndroidInitializationSettings initializationSettingsAndroid =
       AndroidInitializationSettings('@drawable/ic_notification');
@@ -53,8 +59,12 @@ void main() async {
   await Get.putAsync(() => ConnectivityService().init());
   Get.put(ThemeController());
   Get.put(UserController());
-
-  runApp(const MyApp());
+  runApp(
+    ScreenUtilInit(
+      designSize: const Size(432.0, 960.0),
+      child: const MainEntry(),
+    ),
+  );
 }
 // Future<void> setupRemoteConfig() async {
 //   final remoteConfig = FirebaseRemoteConfig.instance;
@@ -72,8 +82,8 @@ void main() async {
 //   await remoteConfig.fetchAndActivate();
 // }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MainEntry extends StatelessWidget {
+  const MainEntry({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -1,14 +1,15 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:nwt_app/widgets/common/button_widget.dart';
-import 'package:nwt_app/widgets/common/text_widget.dart';
 import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/controllers/theme_controller.dart';
 import 'package:nwt_app/notification/firebase_messaging.dart';
 import 'package:nwt_app/screens/auth/phone_number.dart';
-import 'package:animate_do/animate_do.dart';
+import 'package:nwt_app/utils/logger.dart';
+import 'package:nwt_app/widgets/common/button_widget.dart';
+import 'package:nwt_app/widgets/common/text_widget.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -24,12 +25,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     super.initState();
     initNotifications();
     String message = remoteConfig.getString('welcome_message');
-    print("message: $message");
+    AppLogger.info("message: $message");
   }
 
   Future<void> initNotifications() async {
     String? fcmtoken = await FirebaseMessagingAPI().initNotifications();
-    print("fcmtoken: $fcmtoken");
+    AppLogger.info("fcmtoken: $fcmtoken", tag: "FCM");
   }
 
   @override
@@ -115,7 +116,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       ),
       bottomNavigationBar: Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: AppSizing.scaffoldHorizontalPadding),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSizing.scaffoldHorizontalPadding,
+        ),
         margin: EdgeInsets.only(
           bottom: MediaQuery.of(context).padding.bottom + 16,
         ),

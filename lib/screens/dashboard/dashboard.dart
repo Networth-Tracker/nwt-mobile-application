@@ -320,8 +320,8 @@ class _DashboardState extends State<Dashboard>
                       ),
                       SliverAppBar(
                         backgroundColor: AppColors.darkCardBG,
-                        expandedHeight: 300,
-                        toolbarHeight: 80,
+                        expandedHeight: 302,
+                        toolbarHeight: 82,
                         pinned: true,
                         centerTitle: false,
                         floating: false,
@@ -388,23 +388,28 @@ class _DashboardState extends State<Dashboard>
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
-                                                GestureDetector(
-                                                  onTap: () {
-                                                    setState(() {
-                                                      _isAmountVisible =
-                                                          !_isAmountVisible;
-                                                    });
-                                                  },
-                                                  child: Icon(
-                                                    _isAmountVisible
-                                                        ? Icons
-                                                            .visibility_outlined
-                                                        : Icons
-                                                            .visibility_off_outlined,
-                                                    color:
-                                                        AppColors
-                                                            .darkButtonPrimaryBackground,
-                                                  ),
+                                                Row(
+                                                  children: [
+                                                    GestureDetector(
+                                                      onTap: () {
+                                                        setState(() {
+                                                          _isAmountVisible =
+                                                              !_isAmountVisible;
+                                                        });
+                                                      },
+                                                      child: Icon(
+                                                        _isAmountVisible
+                                                            ? Icons
+                                                                .visibility_outlined
+                                                            : Icons
+                                                                .visibility_off_outlined,
+                                                        color:
+                                                            AppColors
+                                                                .darkButtonPrimaryBackground,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 12),
+                                                  ],
                                                 ),
                                               ],
                                             ),
@@ -427,91 +432,108 @@ class _DashboardState extends State<Dashboard>
                                   left: 0,
                                   right: 0,
                                   bottom: 8,
-                                  child: Opacity(
-                                    opacity: t,
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal:
-                                            AppSizing.scaffoldHorizontalPadding,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          color: AppColors.darkButtonBorder,
+                                          width: 1.0,
+                                        ),
                                       ),
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              AppText(
-                                                "Your Networth",
-                                                variant:
-                                                    AppTextVariant.bodySmall,
-                                                weight: AppTextWeight.bold,
-                                                colorType:
-                                                    AppTextColorType.secondary,
-                                              ),
-                                              Row(
-                                                children: [
-                                                  GestureDetector(
-                                                    onTap: fetchDashboardAssets,
-                                                    child: RotationTransition(
-                                                      turns: _refreshController,
+                                    ),
+                                    child: Opacity(
+                                      opacity: t,
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal:
+                                              AppSizing
+                                                  .scaffoldHorizontalPadding,
+                                        ),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                AppText(
+                                                  "Your Networth",
+                                                  variant:
+                                                      AppTextVariant.bodySmall,
+                                                  weight: AppTextWeight.bold,
+                                                  colorType:
+                                                      AppTextColorType
+                                                          .secondary,
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    GestureDetector(
+                                                      onTap:
+                                                          fetchDashboardAssets,
+                                                      child: RotationTransition(
+                                                        turns:
+                                                            _refreshController,
+                                                        child: Icon(
+                                                          Icons.refresh_rounded,
+                                                          size: 20,
+                                                          color:
+                                                              AppColors
+                                                                  .darkButtonPrimaryBackground,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 12),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                AnimatedAmount(
+                                                  amount: "₹76,171,095",
+                                                  isAmountVisible:
+                                                      _isAmountVisible,
+                                                  style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 28,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    GestureDetector(
+                                                      onTap: () {
+                                                        setState(() {
+                                                          _isAmountVisible =
+                                                              !_isAmountVisible;
+                                                        });
+                                                      },
                                                       child: Icon(
-                                                        Icons.refresh_rounded,
+                                                        _isAmountVisible
+                                                            ? Icons
+                                                                .visibility_outlined
+                                                            : Icons
+                                                                .visibility_off_outlined,
                                                         size: 20,
                                                         color:
                                                             AppColors
                                                                 .darkButtonPrimaryBackground,
                                                       ),
                                                     ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              AnimatedAmount(
-                                                amount: "₹76,171,095",
-                                                isAmountVisible:
-                                                    _isAmountVisible,
-                                                style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 28,
-                                                  fontWeight: FontWeight.bold,
+                                                    const SizedBox(width: 12),
+                                                  ],
                                                 ),
-                                              ),
-                                              Row(
-                                                children: [
-                                                  GestureDetector(
-                                                    onTap: () {
-                                                      setState(() {
-                                                        _isAmountVisible =
-                                                            !_isAmountVisible;
-                                                      });
-                                                    },
-                                                    child: Icon(
-                                                      _isAmountVisible
-                                                          ? Icons
-                                                              .visibility_outlined
-                                                          : Icons
-                                                              .visibility_off_outlined,
-                                                      size: 20,
-                                                      color:
-                                                          AppColors
-                                                              .darkButtonPrimaryBackground,
-                                                    ),
-                                                  ),
-                                                  const SizedBox(width: 12),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ],
+                                              ],
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
