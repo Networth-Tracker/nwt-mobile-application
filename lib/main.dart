@@ -98,8 +98,13 @@ class MainEntry extends StatelessWidget {
         home: const SplashScreen(),
         builder: (context, child) {
           // Wrap the entire app with network status banner
-          return Column(
-            children: [const NetworkStatusBanner(), Expanded(child: child!)],
+          return MediaQuery(
+            data: MediaQuery.of(
+              context,
+            ).copyWith(textScaler: TextScaler.linear(1.0)),
+            child: Column(
+              children: [const NetworkStatusBanner(), Expanded(child: child!)],
+            ),
           );
         },
         // Initialize GetX for navigation
