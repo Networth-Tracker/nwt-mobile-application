@@ -11,9 +11,11 @@ import 'package:nwt_app/screens/assets/investments/investments.dart';
 import 'package:nwt_app/screens/connections/connections.dart';
 import 'package:nwt_app/screens/dashboard/widgets/asset_card.dart';
 import 'package:nwt_app/screens/dashboard/widgets/networth_chart.dart';
+import 'package:nwt_app/screens/dashboard/zerodha_webview.dart';
 import 'package:nwt_app/screens/mf_switch/mf_switch.dart';
 import 'package:nwt_app/screens/notifications/notification_list.dart';
 import 'package:nwt_app/services/auth/auth_flow.dart';
+import 'package:nwt_app/services/zerodha/zerodha.dart';
 import 'package:nwt_app/utils/currency_formatter.dart';
 import 'package:nwt_app/utils/logger.dart';
 import 'package:nwt_app/widgets/avatar.dart';
@@ -30,8 +32,10 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard>
     with SingleTickerProviderStateMixin {
   final dashboardAssetController = Get.put(DashboardAssetController());
+  final _zerodhaService = ZerodhaService();
   late AnimationController _refreshController;
   bool isAssetsLoading = false;
+  bool isZerodhaLoading = false;
 
   @override
   void initState() {
@@ -65,6 +69,65 @@ class _DashboardState extends State<Dashboard>
         }
       },
     );
+  }
+
+  /// Connects to Zerodha by fetching the login URL and opening it in a WebView
+  Future<void> connectToZerodha() async {
+    // Show loading indicator
+    Get.dialog(
+      const Center(child: CircularProgressIndicator()),
+      barrierDismissible: false,
+    );
+
+    setState(() {
+      isZerodhaLoading = true;
+    });
+
+    // Get Zerodha login URL directly from service
+    final response = await _zerodhaService.getZerodhaLoginUrl(
+      onLoading: (loading) {
+        setState(() {
+          isZerodhaLoading = loading;
+        });
+      },
+    );
+
+    // Close loading dialog
+    Get.back();
+
+    if (response == null) {
+      Get.snackbar(
+        'Error',
+        'Failed to get Zerodha login URL. Please try again.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withValues(alpha: 0.1),
+        colorText: Colors.red,
+      );
+      return;
+    }
+
+    if (response.success && response.data?.loginurl != null) {
+      // Open WebView with Zerodha login URL without any modifications
+      String decodeUrl(String encodedUrl) {
+        return Uri.decodeFull(encodedUrl);
+      }
+
+      Get.to(
+        () => ZerodhaWebView(
+          url: decodeUrl(response.data!.loginurl),
+          title: 'Zerodha Login',
+        ),
+        transition: Transition.rightToLeft,
+      );
+    } else {
+      Get.snackbar(
+        'Error',
+        'Invalid Zerodha login URL received. Please try again.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withValues(alpha: 0.1),
+        colorText: Colors.red,
+      );
+    }
   }
 
   String _getGreetingMessage() {
@@ -774,17 +837,21 @@ class _DashboardState extends State<Dashboard>
                                                         mainAxisSize:
                                                             MainAxisSize.min,
                                                         children: [
-                                                          AppText(
-                                                            "Connect Now",
-                                                            variant:
-                                                                AppTextVariant
-                                                                    .tiny,
-                                                            weight:
-                                                                AppTextWeight
-                                                                    .semiBold,
-                                                            colorType:
-                                                                AppTextColorType
-                                                                    .tertiary,
+                                                          InkWell(
+                                                            onTap:
+                                                                connectToZerodha,
+                                                            child: AppText(
+                                                              "Connect Now",
+                                                              variant:
+                                                                  AppTextVariant
+                                                                      .tiny,
+                                                              weight:
+                                                                  AppTextWeight
+                                                                      .semiBold,
+                                                              colorType:
+                                                                  AppTextColorType
+                                                                      .tertiary,
+                                                            ),
                                                           ),
                                                         ],
                                                       ),
