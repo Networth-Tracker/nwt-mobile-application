@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:nwt_app/constants/colors.dart';
@@ -104,10 +105,7 @@ class _AssetBankScreenState extends State<AssetBankScreen>
                   border: Border.all(color: AppColors.darkButtonBorder),
                   borderRadius: BorderRadius.circular(15),
                 ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 20,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -142,7 +140,7 @@ class _AssetBankScreenState extends State<AssetBankScreen>
                                                     0,
                                               ),
                                           style: TextStyle(
-                                            fontSize: 36,
+                                            fontSize: 36.sp,
                                             fontWeight: FontWeight.bold,
                                             color: AppColors.darkPrimary,
                                           ),
@@ -175,7 +173,7 @@ class _AssetBankScreenState extends State<AssetBankScreen>
                                         _isAmountVisible
                                             ? AppColors.darkPrimary
                                             : AppColors.darkTextMuted,
-                                    size: 22,
+                                    size: 22.sp,
                                   ),
                                 ),
                                 // GestureDetector(
@@ -206,9 +204,9 @@ class _AssetBankScreenState extends State<AssetBankScreen>
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 4,
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 10.w,
+                                      vertical: 4.h,
                                     ),
                                     decoration: BoxDecoration(
                                       color:
@@ -250,7 +248,7 @@ class _AssetBankScreenState extends State<AssetBankScreen>
                   ],
                 ),
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 16.h),
               Container(
                 decoration: BoxDecoration(
                   color: AppColors.darkCardBG,
@@ -258,13 +256,13 @@ class _AssetBankScreenState extends State<AssetBankScreen>
                   border: Border.all(color: AppColors.darkButtonBorder),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(15),
+                  padding: EdgeInsets.all(15.w),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Row(
-                        spacing: 16,
+                        spacing: 16.w,
                         children: [
                           SvgPicture.asset(
                             'assets/svgs/assets/banks/money-transfer.svg',
@@ -276,7 +274,7 @@ class _AssetBankScreenState extends State<AssetBankScreen>
                                   text: "Track your complete\n",
                                   style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 14,
+                                    fontSize: 14.sp,
                                     fontWeight: FontWeight.w500,
                                     fontFamily: 'Montserrat',
                                   ),
@@ -285,7 +283,7 @@ class _AssetBankScreenState extends State<AssetBankScreen>
                                   text: "Transactions ",
                                   style: TextStyle(
                                     color: AppColors.info,
-                                    fontSize: 14,
+                                    fontSize: 14.sp,
                                     fontWeight: FontWeight.w700,
                                     fontFamily: 'Montserrat',
                                   ),
@@ -294,7 +292,7 @@ class _AssetBankScreenState extends State<AssetBankScreen>
                                   text: "timeline!",
                                   style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 14,
+                                    fontSize: 14.sp,
                                     fontWeight: FontWeight.w500,
                                     fontFamily: 'Montserrat',
                                   ),
@@ -311,9 +309,9 @@ class _AssetBankScreenState extends State<AssetBankScreen>
                           color: AppColors.darkButtonBorder,
                           borderRadius: BorderRadius.circular(15),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.arrow_forward,
-                          size: 16,
+                          size: 16.sp,
                           color: AppColors.darkTextMuted,
                         ),
                       ),
@@ -321,7 +319,7 @@ class _AssetBankScreenState extends State<AssetBankScreen>
                   ),
                 ),
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 16.h),
               AppInputField(
                 controller: _searchController,
                 prefix: Icon(
@@ -330,7 +328,7 @@ class _AssetBankScreenState extends State<AssetBankScreen>
                 ),
                 hintText: "Search...",
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 16.h),
               Expanded(
                 child: SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
@@ -374,7 +372,7 @@ class _AssetBankScreenState extends State<AssetBankScreen>
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 20.h),
             ],
           ),
         ),
