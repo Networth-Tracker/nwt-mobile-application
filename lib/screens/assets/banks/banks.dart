@@ -1,14 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:nwt_app/utils/currency_formatter.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/controllers/assets/banks.dart';
+import 'package:nwt_app/screens/assets/banks/widgets/bank_card.dart';
+import 'package:nwt_app/utils/currency_formatter.dart';
 import 'package:nwt_app/widgets/common/animated_amount.dart';
 import 'package:nwt_app/widgets/common/app_input_field.dart';
-import 'package:nwt_app/screens/assets/banks/widgets/bank_card.dart';
 import 'package:nwt_app/widgets/common/button_widget.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 
@@ -60,6 +60,7 @@ class _AssetBankScreenState extends State<AssetBankScreen>
       },
     );
   }
+
   bool _isAmountVisible = true;
 
   @override
@@ -95,8 +96,12 @@ class _AssetBankScreenState extends State<AssetBankScreen>
             children: [
               Container(
                 decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [AppColors.darkCardBG, Color(0xFF727272)],
+                    end: Alignment.topLeft,
+                    begin: Alignment.bottomRight,
+                  ).withOpacity(0.3),
                   border: Border.all(color: AppColors.darkButtonBorder),
-                  color: AppColors.darkCardBG,
                   borderRadius: BorderRadius.circular(15),
                 ),
                 padding: const EdgeInsets.symmetric(
@@ -118,11 +123,32 @@ class _AssetBankScreenState extends State<AssetBankScreen>
                                   children: [
                                     AppText(
                                       "Total balance",
-                                      variant: AppTextVariant.headline4,
+                                      variant: AppTextVariant.bodyMedium,
                                       weight: AppTextWeight.bold,
-                                      colorType: AppTextColorType.primary,
+                                      colorType: AppTextColorType.secondary,
                                     ),
-                                    SizedBox(height: 3),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        AnimatedAmount(
+                                          isAmountVisible: _isAmountVisible,
+                                          amount:
+                                              CurrencyFormatter.formatRupeeWithCommas(
+                                                controller
+                                                        .bankSummary
+                                                        ?.data
+                                                        ?.totalbalance ??
+                                                    0,
+                                              ),
+                                          style: TextStyle(
+                                            fontSize: 36,
+                                            fontWeight: FontWeight.bold,
+                                            color: AppColors.darkPrimary,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                     AppText(
                                       controller
                                                   .bankSummary
@@ -131,50 +157,11 @@ class _AssetBankScreenState extends State<AssetBankScreen>
                                               null
                                           ? "Last data fetched at ${controller.bankSummary!.data!.lastdatafetchtime}"
                                           : "No data fetched yet",
-                                      variant: AppTextVariant.bodySmall,
-                                      weight: AppTextWeight.medium,
+                                      variant: AppTextVariant.tiny,
+                                      weight: AppTextWeight.semiBold,
                                       colorType: AppTextColorType.secondary,
                                     ),
                                   ],
-                                ),
-                                GestureDetector(
-                                  onTap: () => fetchBankSummary(),
-                                  child: RotationTransition(
-                                    turns: _refreshController,
-                                    child: Container(
-                                      padding: const EdgeInsets.all(4),
-                                      decoration: BoxDecoration(
-                                        color: AppColors.darkButtonBorder,
-                                        borderRadius: BorderRadius.circular(15),
-                                      ),
-                                      child: const Icon(
-                                        Icons.refresh,
-                                        size: 22,
-                                        color: AppColors.darkTextMuted,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 15),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                AnimatedAmount(
-                                  isAmountVisible: _isAmountVisible,
-                                  amount: CurrencyFormatter.formatRupee(
-                                    controller
-                                            .bankSummary
-                                            ?.data
-                                            ?.totalbalance ??
-                                        0,
-                                  ),
-                                  style: TextStyle(
-                                    fontSize: 36,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.darkPrimary,
-                                  ),
                                 ),
                                 GestureDetector(
                                   onTap: () {
@@ -182,15 +169,37 @@ class _AssetBankScreenState extends State<AssetBankScreen>
                                       _isAmountVisible = !_isAmountVisible;
                                     });
                                   },
-                                  child: Icon(Icons.visibility_outlined,
-                                      color: _isAmountVisible
-                                          ? AppColors.darkPrimary
-                                          : AppColors.darkTextMuted,
-                                      size: 22),
+                                  child: Icon(
+                                    Icons.visibility_outlined,
+                                    color:
+                                        _isAmountVisible
+                                            ? AppColors.darkPrimary
+                                            : AppColors.darkTextMuted,
+                                    size: 22,
+                                  ),
                                 ),
+                                // GestureDetector(
+                                //   onTap: () => fetchBankSummary(),
+                                //   child: RotationTransition(
+                                //     turns: _refreshController,
+                                //     child: Container(
+                                //       padding: const EdgeInsets.all(4),
+                                //       decoration: BoxDecoration(
+                                //         color: AppColors.darkButtonBorder,
+                                //         borderRadius: BorderRadius.circular(15),
+                                //       ),
+                                //       child: const Icon(
+                                //         Icons.refresh,
+                                //         size: 22,
+                                //         color: AppColors.darkTextMuted,
+                                //       ),
+                                //     ),
+                                //   ),
+                                // ),
                               ],
                             ),
-                            SizedBox(height: 4),
+
+                            SizedBox(height: 8),
                             if (controller.bankSummary?.data?.deltavalue !=
                                 null)
                               Row(
@@ -199,7 +208,7 @@ class _AssetBankScreenState extends State<AssetBankScreen>
                                   Container(
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 10,
-                                      vertical: 8,
+                                      vertical: 4,
                                     ),
                                     decoration: BoxDecoration(
                                       color:
@@ -221,7 +230,7 @@ class _AssetBankScreenState extends State<AssetBankScreen>
                                       "${controller.bankSummary!.data!.deltavalue} "
                                       "(${controller.bankSummary!.data!.deltapercentage}%)",
                                       variant: AppTextVariant.bodySmall,
-                                      weight: AppTextWeight.medium,
+                                      weight: AppTextWeight.semiBold,
                                       colorType:
                                           controller
                                                       .bankSummary!
@@ -241,7 +250,7 @@ class _AssetBankScreenState extends State<AssetBankScreen>
                   ],
                 ),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 16),
               Container(
                 decoration: BoxDecoration(
                   color: AppColors.darkCardBG,
@@ -312,7 +321,7 @@ class _AssetBankScreenState extends State<AssetBankScreen>
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 16),
               AppInputField(
                 controller: _searchController,
                 prefix: Icon(
@@ -321,7 +330,7 @@ class _AssetBankScreenState extends State<AssetBankScreen>
                 ),
                 hintText: "Search...",
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 16),
               Expanded(
                 child: SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
@@ -337,7 +346,7 @@ class _AssetBankScreenState extends State<AssetBankScreen>
                           }
 
                           return Column(
-                            spacing: 15,
+                            spacing: 12,
                             children:
                                 controller.bankSummary!.data!.banks.map((bank) {
                                   final Widget bankCard = BankCard(

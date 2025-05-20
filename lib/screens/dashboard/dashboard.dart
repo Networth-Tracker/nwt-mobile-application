@@ -270,7 +270,6 @@ class _DashboardState extends State<Dashboard>
                             BuildContext context,
                             BoxConstraints constraints,
                           ) {
-                            // Calculate the percentage of collapse
                             final FlexibleSpaceBarSettings settings =
                                 context
                                     .dependOnInheritedWidgetOfExactType<
@@ -286,9 +285,8 @@ class _DashboardState extends State<Dashboard>
 
                             return Stack(
                               children: [
-                                // Background content - only visible when expanded
                                 Opacity(
-                                  opacity: 1.0 - t, // Hide when collapsed
+                                  opacity: 1.0 - t,
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(
                                       horizontal:
@@ -361,15 +359,13 @@ class _DashboardState extends State<Dashboard>
                                     ),
                                   ),
                                 ),
-
-                                // Title that appears only when scrolling/collapsed
                                 Positioned(
                                   top: 8,
                                   left: 0,
                                   right: 0,
-                                  bottom: 8, // Add bottom spacing
+                                  bottom: 8,
                                   child: Opacity(
-                                    opacity: t, // Show based on scroll position
+                                    opacity: t,
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(
                                         horizontal:
@@ -394,7 +390,6 @@ class _DashboardState extends State<Dashboard>
                                               ),
                                               Row(
                                                 children: [
-                                                  // Reload button
                                                   GestureDetector(
                                                     onTap: fetchDashboardAssets,
                                                     child: RotationTransition(
@@ -408,8 +403,27 @@ class _DashboardState extends State<Dashboard>
                                                       ),
                                                     ),
                                                   ),
-                                                  const SizedBox(width: 12),
-                                                  // Eye button
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              AnimatedAmount(
+                                                amount: "₹76,171,095",
+                                                isAmountVisible:
+                                                    _isAmountVisible,
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 28,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              Row(
+                                                children: [
                                                   GestureDetector(
                                                     onTap: () {
                                                       setState(() {
@@ -429,19 +443,10 @@ class _DashboardState extends State<Dashboard>
                                                               .darkButtonPrimaryBackground,
                                                     ),
                                                   ),
+                                                  const SizedBox(width: 12),
                                                 ],
                                               ),
                                             ],
-                                          ),
-                                          const SizedBox(height: 4),
-                                          AnimatedAmount(
-                                            amount: "₹76,171,095",
-                                            isAmountVisible: _isAmountVisible,
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 28,
-                                              fontWeight: FontWeight.bold,
-                                            ),
                                           ),
                                         ],
                                       ),
@@ -653,7 +658,6 @@ class _DashboardState extends State<Dashboard>
                                           ),
                                         ),
                                       ),
-                                      // Additional decorative elements
                                       Positioned(
                                         right: 60,
                                         top: 40,
@@ -682,7 +686,6 @@ class _DashboardState extends State<Dashboard>
                                           ),
                                         ),
                                       ),
-                                      // Main content
                                       Padding(
                                         padding: const EdgeInsets.symmetric(
                                           horizontal: 15,
