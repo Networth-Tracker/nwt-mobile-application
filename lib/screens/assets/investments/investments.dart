@@ -1,24 +1,25 @@
+import 'dart:async';
+import 'dart:math' as math;
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:nwt_app/screens/assets/investments/types/holdings.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/sizing.dart';
-import 'package:nwt_app/screens/mf_switch/mf_switch.dart';
-import 'package:nwt_app/widgets/common/dot_indicator.dart';
-import 'package:shimmer/shimmer.dart';
-import 'package:nwt_app/widgets/common/animated_amount.dart';
-import 'dart:async';
 import 'package:nwt_app/controllers/assets/investments.dart';
+import 'package:nwt_app/screens/assets/investments/types/holdings.dart';
 import 'package:nwt_app/screens/assets/investments/types/portfolio.dart';
 import 'package:nwt_app/screens/assets/investments/widgets/holding_card.dart';
+import 'package:nwt_app/screens/mf_switch/mf_switch.dart';
 import 'package:nwt_app/utils/currency_formatter.dart';
+import 'package:nwt_app/widgets/common/animated_amount.dart';
 import 'package:nwt_app/widgets/common/app_input_field.dart';
 import 'package:nwt_app/widgets/common/button_widget.dart';
+import 'package:nwt_app/widgets/common/dot_indicator.dart';
 import 'package:nwt_app/widgets/common/graph_legend.dart';
-import 'dart:math' as math;
 import 'package:nwt_app/widgets/common/text_widget.dart';
+import 'package:shimmer/shimmer.dart';
 
 class AssetInvestmentScreen extends StatefulWidget {
   const AssetInvestmentScreen({super.key});
@@ -100,22 +101,15 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Icon(
-                        Icons.arrow_back,
-                        color: Colors.white,
-                        size: 24,
-                      ),
+                      onTap: () => Navigator.pop(context),
+                      child: const Icon(Icons.chevron_left),
                     ),
                     AppText(
                       "Investments",
-                      variant: AppTextVariant.bodyLarge,
-                      weight: AppTextWeight.bold,
-                      colorType: AppTextColorType.primary,
+                      variant: AppTextVariant.headline6,
+                      weight: AppTextWeight.semiBold,
                     ),
-                    const SizedBox(width: 24),
+                    const Opacity(opacity: 0, child: Icon(Icons.chevron_left)),
                   ],
                 ),
               ),
@@ -717,10 +711,11 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
                           return Column(
                             children: [
                               InkWell(
-                                onTap: () => Get.to(
-                                  () => MutualFundSwitchScreen(),
-                                  transition: Transition.rightToLeft,
-                                ),
+                                onTap:
+                                    () => Get.to(
+                                      () => MutualFundSwitchScreen(),
+                                      transition: Transition.rightToLeft,
+                                    ),
                                 child: Container(
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(12),
@@ -752,22 +747,26 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
                                               'Switch to save up to 1.4%',
                                               variant: AppTextVariant.bodyLarge,
                                               weight: AppTextWeight.semiBold,
-                                              colorType: AppTextColorType.success,
+                                              colorType:
+                                                  AppTextColorType.success,
                                             ),
                                             const SizedBox(height: 8),
                                             AppText(
                                               "Say goodbye to high commissions. Easily switch plans in less than 5 minute for free.",
                                               variant: AppTextVariant.bodySmall,
-                                              colorType: AppTextColorType.primary,
+                                              colorType:
+                                                  AppTextColorType.primary,
                                             ),
                                             GestureDetector(
                                               onTap:
                                                   _showSwitchToDirectBottomSheet,
                                               child: AppText(
                                                 'Know More',
-                                                variant: AppTextVariant.bodySmall,
+                                                variant:
+                                                    AppTextVariant.bodySmall,
                                                 weight: AppTextWeight.bold,
-                                                colorType: AppTextColorType.link,
+                                                colorType:
+                                                    AppTextColorType.link,
                                                 decoration:
                                                     TextDecoration.underline,
                                               ),

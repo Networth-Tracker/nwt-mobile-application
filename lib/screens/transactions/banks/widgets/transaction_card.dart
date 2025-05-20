@@ -8,24 +8,21 @@ import 'package:nwt_app/widgets/common/text_widget.dart';
 
 class BankTransactionCardWidget extends StatelessWidget {
   final Banktransation transaction;
-  
-  const BankTransactionCardWidget({
-    super.key,
-    required this.transaction,
-  });
-  
+
+  const BankTransactionCardWidget({super.key, required this.transaction});
+
   // Format amount with comma as thousand separator
   String _formatAmount(int amount) {
     return '₹${NumberFormat('#,##0', 'en_IN').format(amount)}';
   }
-  
+
   // Format date as "Today", "Yesterday", or the actual date
   String _formatTransactionDate(DateTime date) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final yesterday = today.subtract(const Duration(days: 1));
     final transactionDate = DateTime(date.year, date.month, date.day);
-    
+
     if (transactionDate == today) {
       return 'Today, ${DateFormat('h:mm a').format(date)}';
     } else if (transactionDate == yesterday) {
@@ -39,22 +36,26 @@ class BankTransactionCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDebit = transaction.type.toString().toLowerCase().contains('debit');
     final amount = _formatAmount(transaction.amount.abs());
-    final formattedDate = _formatTransactionDate(transaction.transactiontimestamp);
-    
+    final formattedDate = _formatTransactionDate(
+      transaction.transactiontimestamp,
+    );
+
     // Extract merchant name from narration or use a default
-    String merchantName = transaction.narration.isNotEmpty 
-        ? transaction.narration.split(' ').take(2).join(' ') 
-        : 'Transaction';
-    
+    String merchantName =
+        transaction.narration.isNotEmpty
+            ? transaction.narration.split(' ').take(2).join(' ')
+            : 'Transaction';
+
     if (merchantName.length > 20) {
       merchantName = '${merchantName.substring(0, 17)}...';
     }
-    
+
     return InkWell(
-      onTap: () => Get.to(
-        () => TransactionDetails(transaction: transaction),
-        transition: Transition.rightToLeft,
-      ),
+      onTap:
+          () => Get.to(
+            () => TransactionDetails(transaction: transaction),
+            transition: Transition.rightToLeft,
+          ),
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.darkCardBG,
@@ -114,11 +115,16 @@ class BankTransactionCardWidget extends StatelessWidget {
                   '${isDebit ? '-' : '+'}$amount',
                   variant: AppTextVariant.bodyLarge,
                   weight: AppTextWeight.semiBold,
-                  colorType: isDebit ? AppTextColorType.error : AppTextColorType.success,
+                  colorType:
+                      isDebit
+                          ? AppTextColorType.error
+                          : AppTextColorType.success,
                 ),
                 const SizedBox(height: 2),
                 AppText(
-                  transaction.reference.isNotEmpty ? ' ${transaction.reference}' : 'No reference',
+                  transaction.reference.isNotEmpty
+                      ? ' ${transaction.reference}'
+                      : 'No reference',
                   variant: AppTextVariant.bodySmall,
                   weight: AppTextWeight.medium,
                   colorType: AppTextColorType.secondary,
