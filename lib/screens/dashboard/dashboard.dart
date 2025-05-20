@@ -13,6 +13,7 @@ import 'package:nwt_app/screens/dashboard/widgets/asset_card.dart';
 import 'package:nwt_app/screens/dashboard/widgets/networth_chart.dart';
 import 'package:nwt_app/screens/mf_switch/mf_switch.dart';
 import 'package:nwt_app/screens/notifications/notification_list.dart';
+import 'package:nwt_app/screens/profile/userProfile.dart';
 import 'package:nwt_app/services/auth/auth_flow.dart';
 import 'package:nwt_app/utils/currency_formatter.dart';
 import 'package:nwt_app/utils/logger.dart';
@@ -134,79 +135,8 @@ class _DashboardState extends State<Dashboard>
                                       children: [
                                         GestureDetector(
                                           onTap: () {
-                                            showDialog(
-                                              context: context,
-                                              builder: (BuildContext context) {
-                                                return AlertDialog(
-                                                  title: const AppText(
-                                                    "Logout",
-                                                    variant:
-                                                        AppTextVariant
-                                                            .headline4,
-                                                    weight:
-                                                        AppTextWeight.semiBold,
-                                                  ),
-                                                  content: const AppText(
-                                                    "Are you sure you want to logout?",
-                                                    variant:
-                                                        AppTextVariant
-                                                            .bodyMedium,
-                                                    colorType:
-                                                        AppTextColorType
-                                                            .tertiary,
-                                                  ),
-                                                  actions: [
-                                                    TextButton(
-                                                      onPressed:
-                                                          () => Navigator.pop(
-                                                            context,
-                                                          ),
-                                                      child: const AppText(
-                                                        "Cancel",
-                                                        variant:
-                                                            AppTextVariant
-                                                                .bodyMedium,
-                                                        colorType:
-                                                            AppTextColorType
-                                                                .secondary,
-                                                      ),
-                                                    ),
-                                                    TextButton(
-                                                      onPressed: () {
-                                                        Navigator.pop(context);
-                                                        // Create AuthFlow instance and logout
-                                                        try {
-                                                          final authFlow =
-                                                              AuthFlow();
-                                                          AppLogger.info(
-                                                            'Logging out user',
-                                                            tag: 'Dashboard',
-                                                          );
-                                                          authFlow.logout();
-                                                        } catch (e) {
-                                                          AppLogger.error(
-                                                            'Error during logout',
-                                                            error: e,
-                                                            tag: 'Dashboard',
-                                                          );
-                                                        }
-                                                      },
-                                                      child: const AppText(
-                                                        "Logout",
-                                                        variant:
-                                                            AppTextVariant
-                                                                .bodyMedium,
-                                                        colorType:
-                                                            AppTextColorType
-                                                                .error,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                );
-                                              },
-                                            );
-                                          },
-                                          child: const Avatar(
+                                            Get.to(() => const UserProfile());
+                                            },                                          child: const Avatar(
                                             path:
                                                 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by-1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
                                             width: 40,
