@@ -49,7 +49,7 @@ flutter:
     - assets/svgs/assets/mutual_funds/
     - assets/svgs/connections/
     - assets/svgs/assets/investments/
-    
+    - assets/svgs/mf_switch/
     
   uses-material-design: true
   fonts:
