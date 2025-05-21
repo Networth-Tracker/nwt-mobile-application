@@ -1,6 +1,10 @@
 // profile/userProfile.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:nwt_app/screens/profile/editprofile.dart';
+import 'package:nwt_app/screens/profile/setPin.dart';
+
+
 
 class UserProfile extends StatefulWidget {
   const UserProfile({super.key});
@@ -18,14 +22,14 @@ class _UserProfileState extends State<UserProfile> {
       backgroundColor: Colors.black,
       appBar: AppBar(
         title: const Text('User Profile',
-        style: TextStyle(fontFamily: 'Poppins',fontWeight: FontWeight.w600,fontSize: 16,height: 32 / 16,letterSpacing: 0,),
+        style: TextStyle(fontFamily: 'Poppins',fontWeight: FontWeight.w600,fontSize: 16,height: 24 / 16,letterSpacing: 0,),
       ),
 
         centerTitle: true,
         backgroundColor: Colors.black,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
           onPressed: () => Get.back(),
         ),
       ),
@@ -79,14 +83,15 @@ class _UserProfileState extends State<UserProfile> {
                         ],
                       ),
                     ),
-                    const Icon(Icons.edit, color: Colors.white),
-//                     IconButton(
-//   icon: const Icon(Icons.edit, color: Colors.white),
-//   onPressed: () {
-//     Get.to(() => EditProfileScreen()); // Replace with your screen
-//   },
-// ),
-
+                    IconButton(
+                      icon: const Icon(Icons.edit, color: Colors.white),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const EditProfile()),
+                        );
+                      },
+                    )
                   ],
                 ),
               ),
@@ -95,7 +100,13 @@ class _UserProfileState extends State<UserProfile> {
 
             // Menu items
             _buildMenuItem('Active Connections', () {}),
-            _buildMenuItem('Set Pin', () {}),
+            _buildMenuItem('Set Pin', () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SetPin()),
+              );
+            }),
+
             _buildMenuItem('Help & FAQ', () {}),
             _buildMenuItem('Data Protection', () {}),
             _buildMenuItem('Privacy Policy', () {}),
@@ -131,7 +142,7 @@ class _UserProfileState extends State<UserProfile> {
                         isBiometricEnabled = value;
                       });
                     },
-                    activeColor: Colors.green,
+                    activeColor: const Color.fromARGB(255, 82, 88, 82),
                   ),
                 ],
               ),
