@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -61,26 +62,28 @@ void main() async {
   Get.put(UserController());
   runApp(
     ScreenUtilInit(
+      minTextAdapt: true,
       designSize: const Size(432.0, 960.0),
       child: const MainEntry(),
     ),
   );
 }
-// Future<void> setupRemoteConfig() async {
-//   final remoteConfig = FirebaseRemoteConfig.instance;
 
-//   await remoteConfig.setConfigSettings(
-//     RemoteConfigSettings(
-//       fetchTimeout: const Duration(seconds: 10),
-//       minimumFetchInterval: const Duration(seconds: 10),
-//     ),
-//   );
+Future<void> setupRemoteConfig() async {
+  final remoteConfig = FirebaseRemoteConfig.instance;
 
-//   await remoteConfig.setDefaults(<String, dynamic>{
-//     'welcome_message': 'Hello from default!',
-//   });
-//   await remoteConfig.fetchAndActivate();
-// }
+  await remoteConfig.setConfigSettings(
+    RemoteConfigSettings(
+      fetchTimeout: const Duration(seconds: 10),
+      minimumFetchInterval: const Duration(seconds: 10),
+    ),
+  );
+
+  // await remoteConfig.setDefaults(<String, dynamic>{
+  //   'welcome_message': 'Hello from default!',
+  // });
+  // await remoteConfig.fetchAndActivate();
+}
 
 class MainEntry extends StatelessWidget {
   const MainEntry({super.key});

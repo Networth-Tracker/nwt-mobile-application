@@ -3,7 +3,7 @@ name: Build and Deploy All Platforms
 on:  
   push:
     branches:
-      - main
+      - dev
   
   workflow_dispatch:
     inputs:
@@ -103,6 +103,7 @@ jobs:
         with:
           name: "NetWorth Tracker v0.0.${{ github.run_number }}"
           tag_name: v0.0.${{ github.run_number }}
+          prerelease: true
           body: |
             ## Build Information
             - **Version**: v0.0.${{ github.run_number }}
