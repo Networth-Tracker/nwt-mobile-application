@@ -53,6 +53,7 @@ class _DashboardState extends State<Dashboard>
     );
     fetchDashboardAssets();
     fetchTotalNetworth();
+
   }
 
   @override
