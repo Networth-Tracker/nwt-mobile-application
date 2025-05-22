@@ -131,14 +131,13 @@ class _AssetBankScreenState extends State<AssetBankScreen>
                                       children: [
                                         AnimatedAmount(
                                           isAmountVisible: _isAmountVisible,
-                                          amount:
-                                              CurrencyFormatter.formatRupeeWithCommas(
-                                                controller
-                                                        .bankSummary
-                                                        ?.data
-                                                        ?.totalbalance ??
-                                                    0,
-                                              ),
+                                          amount: CurrencyFormatter.formatRupee(
+                                            controller
+                                                    .bankSummary
+                                                    ?.data
+                                                    ?.totalbalance ??
+                                                0,
+                                          ),
                                           style: TextStyle(
                                             fontSize: 36.sp,
                                             fontWeight: FontWeight.bold,

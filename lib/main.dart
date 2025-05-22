@@ -102,7 +102,7 @@ class MainEntry extends StatelessWidget {
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: themeController.themeMode,
-        home: const SplashScreen(),
+        home: SplashScreen(),
         builder: (context, child) {
           return MediaQuery(
             data: MediaQuery.of(

@@ -4,19 +4,22 @@ import 'package:intl/intl.dart';
 /// with appropriate suffixes (K, L, Cr) based on the value.
 class CurrencyFormatter {
   /// Formats a number as Indian Rupee with the ₹ symbol and appropriate suffix
-  /// 
+  ///
   /// Examples:
   /// - 1000 becomes ₹1,000
   /// - 100000 becomes ₹1L
   /// - 10000000 becomes ₹1Cr
   static String formatRupee(num amount) {
-    if (amount >= 10000000) { // 1 Crore
+    if (amount >= 10000000) {
+      // 1 Crore
       final crores = amount / 10000000;
       return '₹${crores.toStringAsFixed(crores.truncateToDouble() == crores ? 0 : 1)}Cr';
-    } else if (amount >= 100000) { // 1 Lakh
+    } else if (amount >= 100000) {
+      // 1 Lakh
       final lakhs = amount / 100000;
       return '₹${lakhs.toStringAsFixed(lakhs.truncateToDouble() == lakhs ? 0 : 1)}L';
-    } else if (amount >= 1000) { // 1 Thousand (for 4 and 5 digit numbers)
+    } else if (amount >= 1000) {
+      // 1 Thousand (for 4 and 5 digit numbers)
       final thousands = amount / 1000;
       return '₹${thousands.toStringAsFixed(thousands.truncateToDouble() == thousands ? 0 : 1)}K';
     } else {
@@ -30,7 +33,7 @@ class CurrencyFormatter {
   }
 
   /// Formats a number as Indian Rupee with the ₹ symbol and 2 decimal places
-  /// 
+  ///
   /// Example: 1000.50 becomes ₹1,000.50
   static String formatRupeeWithDecimals(num amount) {
     final formatter = NumberFormat.currency(
@@ -42,7 +45,7 @@ class CurrencyFormatter {
   }
 
   /// Formats a number with appropriate Indian suffixes (L, Cr)
-  /// 
+  ///
   /// Examples:
   /// - 1000 becomes 1K
   /// - 100000 becomes 1L
@@ -66,7 +69,7 @@ class CurrencyFormatter {
   }
 
   /// Formats a number as Indian Rupee with the ₹ symbol and appropriate suffixes (K, L, Cr)
-  /// 
+  ///
   /// Examples:
   /// - 1000 becomes ₹1K
   /// - 100000 becomes ₹1L
@@ -77,7 +80,7 @@ class CurrencyFormatter {
 
   /// Formats a number as Indian Rupee with the ₹ symbol and compact notation
   /// This is useful for displaying large numbers in a compact form
-  /// 
+  ///
   /// Examples:
   /// - 1000 becomes ₹1K
   /// - 1500 becomes ₹1.5K
@@ -90,10 +93,10 @@ class CurrencyFormatter {
     );
     return formatter.format(amount);
   }
-  
+
   /// Formats a number as Indian Rupee with the ₹ symbol and commas only
   /// Does not use any suffixes like K, L, or Cr
-  /// 
+  ///
   /// Examples:
   /// - 1000 becomes ₹1,000
   /// - 100000 becomes ₹1,00,000

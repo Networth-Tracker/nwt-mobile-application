@@ -2,10 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
-import 'package:nwt_app/widgets/common/button_widget.dart';
-import 'package:nwt_app/screens/mf_switch/widgets/mf_accordion.dart';
-import 'package:nwt_app/screens/mf_switch/widgets/plan_summary_card.dart';
-import 'package:nwt_app/screens/mf_switch/widgets/switch_fund_card.dart';
 
 class MutualFundSwitchScreen extends StatefulWidget {
   const MutualFundSwitchScreen({super.key});
@@ -15,7 +11,6 @@ class MutualFundSwitchScreen extends StatefulWidget {
 }
 
 class _MutualFundSwitchScreenState extends State<MutualFundSwitchScreen> {
-  bool _isLoading = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -166,8 +161,7 @@ class _MutualFundSwitchScreenState extends State<MutualFundSwitchScreen> {
                                   "₹11,500",
                                   variant: AppTextVariant.bodyMedium,
                                   weight: AppTextWeight.bold,
-                                  colorType: AppTextColorType.error
-                                  ,
+                                  colorType: AppTextColorType.error,
                                 ),
                               ],
                             ),
@@ -178,7 +172,7 @@ class _MutualFundSwitchScreenState extends State<MutualFundSwitchScreen> {
                   ),
                 ),
                 Container(
-                     width: double.infinity,
+                  width: double.infinity,
                   decoration: BoxDecoration(
                     color: AppColors.darkCardBG,
                     borderRadius: BorderRadius.circular(12),
@@ -199,7 +193,7 @@ class _MutualFundSwitchScreenState extends State<MutualFundSwitchScreen> {
                       const SizedBox(height: 12),
                     ],
                   ),
-                )
+                ),
               ],
             ),
           ),

@@ -2,10 +2,13 @@ import 'dart:async';
 
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/constants/theme.dart';
+import 'package:nwt_app/screens/dashboard/dashboard.dart';
+import 'package:nwt_app/screens/fetch-holdings/layouts/loading_layout.dart';
 import 'package:nwt_app/screens/fetch-holdings/types/mf_fetching.dart';
 import 'package:nwt_app/widgets/common/button_widget.dart';
 import 'package:nwt_app/widgets/common/key_pad.dart';
@@ -61,7 +64,7 @@ class _OtpVerificationLayoutState extends State<OtpVerificationLayout>
   );
 
   final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
-  final bool _isLoading = false;
+  bool _isLoading = false;
   int _activeFieldIndex = 0;
 
   late List<AnimationController> _animationControllers;
@@ -107,31 +110,39 @@ class _OtpVerificationLayoutState extends State<OtpVerificationLayout>
   }
 
   void _startResendTimer() {
-    setState(() {
-      _canResendOTP = false;
-      _timeLeft = 60;
-    });
+    if (mounted) {
+      setState(() {
+        _canResendOTP = false;
+        _timeLeft = 60;
+      });
+    }
     _resendTimer?.cancel();
     _resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        if (_timeLeft > 0) {
-          _timeLeft--;
-        } else {
-          _canResendOTP = true;
-          timer.cancel();
-        }
-      });
+      if (mounted) {
+        setState(() {
+          if (_timeLeft > 0) {
+            _timeLeft--;
+          } else {
+            _canResendOTP = true;
+            timer.cancel();
+          }
+        });
+      } else {
+        timer.cancel();
+      }
     });
   }
 
   void _onKeyPressed(int digit) {
-    if (_activeFieldIndex >= 0 && _activeFieldIndex < 6) {
+    if (_activeFieldIndex >= 0 && _activeFieldIndex < 6 && mounted) {
       setState(() {
         _controllers[_activeFieldIndex].text = digit.toString();
         _fieldFilled[_activeFieldIndex] = true;
 
         _animationControllers[_activeFieldIndex].forward().then((_) {
-          _animationControllers[_activeFieldIndex].reverse();
+          if (mounted) {
+            _animationControllers[_activeFieldIndex].reverse();
+          }
         });
 
         if (_activeFieldIndex < 5) {
@@ -141,11 +152,15 @@ class _OtpVerificationLayoutState extends State<OtpVerificationLayout>
         if (_controllers.every((controller) => controller.text.isNotEmpty)) {
           for (var controller in _animationControllers) {
             controller.forward().then((_) {
-              controller.reverse();
+              if (mounted) {
+                controller.reverse();
+              }
             });
           }
           Future.delayed(const Duration(milliseconds: 300), () {
-            widget.onVerifyOTP(_otpCode);
+            if (mounted) {
+              _verifyAndNavigate(_otpCode);
+            }
           });
         }
       });
@@ -153,7 +168,7 @@ class _OtpVerificationLayoutState extends State<OtpVerificationLayout>
   }
 
   void _onBackspace() {
-    if (_activeFieldIndex >= 0 && _activeFieldIndex < 6) {
+    if (_activeFieldIndex >= 0 && _activeFieldIndex < 6 && mounted) {
       setState(() {
         if (_controllers[_activeFieldIndex].text.isNotEmpty) {
           _controllers[_activeFieldIndex].text = '';
@@ -169,7 +184,7 @@ class _OtpVerificationLayoutState extends State<OtpVerificationLayout>
 
   @override
   void codeUpdated() {
-    if (code != null && code!.length == 6) {
+    if (code != null && code!.length == 6 && mounted) {
       setState(() {
         for (int i = 0; i < 6; i++) {
           if (i < code!.length) {
@@ -181,16 +196,46 @@ class _OtpVerificationLayoutState extends State<OtpVerificationLayout>
         // Animate all fields
         for (var controller in _animationControllers) {
           controller.forward().then((_) {
-            controller.reverse();
+            if (mounted) {
+              controller.reverse();
+            }
           });
         }
+      });
 
-        // Auto verify after a short delay
-        Future.delayed(const Duration(milliseconds: 300), () {
-          widget.onVerifyOTP(code!);
-        });
+      // Auto verify after a short delay
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (mounted) {
+          _verifyAndNavigate(code!);
+        }
       });
     }
+  }
+
+  // Handle verification and navigation
+  void _verifyAndNavigate(String otpCode) {
+    if (_isLoading) return; // Prevent multiple calls
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    // Call the verification function
+    widget.onVerifyOTP(otpCode);
+
+    // Navigate to loading layout
+    Future.delayed(const Duration(milliseconds: 500), () {
+      // Navigate to loading layout
+      Get.to(
+        () => Scaffold(body: LoadingLayout(onPrevious: () => Get.back())),
+        transition: Transition.rightToLeft,
+      );
+
+      // After 7 seconds, navigate to dashboard
+      Future.delayed(const Duration(seconds: 7), () {
+        Get.offAll(() => const Dashboard(), transition: Transition.rightToLeft);
+      });
+    });
   }
 
   @override
@@ -253,7 +298,7 @@ class _OtpVerificationLayoutState extends State<OtpVerificationLayout>
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         AppText(
-                          "Enter 6 digit verification code \nsent to",
+                          "Enter 6 digit verification code \nsent to phone number",
                           variant: AppTextVariant.headline4,
                           lineHeight: 1.3,
                           colorType: AppTextColorType.secondary,
@@ -463,7 +508,7 @@ class _OtpVerificationLayoutState extends State<OtpVerificationLayout>
                 isDisabled: _otpCode.length != 6 || _isLoading,
                 onPressed: () {
                   if (_otpCode.length == 6 && !_isLoading) {
-                    widget.onVerifyOTP(_otpCode);
+                    _verifyAndNavigate(_otpCode);
                   }
                 },
                 isLoading: _isLoading,

@@ -2,10 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nwt_app/controllers/user_controller.dart';
 import 'package:nwt_app/screens/fetch-holdings/layouts/layouts.dart';
 import 'package:nwt_app/screens/fetch-holdings/types/mf_fetching.dart';
-import 'package:nwt_app/services/auth/auth_flow.dart';
 import 'package:nwt_app/services/mf_onboarding/mf_onboarding_service.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 
@@ -22,8 +20,6 @@ class _MutualFundHoldingsJourneyScreenState
     with CodeAutoFill, TickerProviderStateMixin {
   // Services
   final MFOnboardingService _mfOnboardingService = MFOnboardingService();
-  final UserController _userController = Get.find<UserController>();
-  final AuthFlow _authFlow = AuthFlow();
 
   // CAS details from API response
   DecryptedCASDetails? _casDetails;
@@ -130,24 +126,31 @@ class _MutualFundHoldingsJourneyScreenState
 
       for (int i = 0; i < 6; i++) {
         Future.delayed(Duration(milliseconds: 200 * i), () {
-          setState(() {
-            _controllers[i].text = otp[i];
-            _fieldFilled[i] = true;
-            _activeFieldIndex = i;
+          if (mounted) {
+            setState(() {
+              _controllers[i].text = otp[i];
+              _fieldFilled[i] = true;
+              _activeFieldIndex = i;
 
-            _animationControllers[i].forward().then((_) {
-              _animationControllers[i].reverse();
+              _animationControllers[i].forward().then((_) {
+                if (mounted) {
+                  _animationControllers[i].reverse();
+                }
+              });
             });
-          });
+          }
 
           if (i == 5) {
             Future.delayed(const Duration(milliseconds: 300), () {
-              for (var controller in _animationControllers) {
-                controller.forward().then((_) {
-                  controller.reverse();
-                });
+              if (mounted) {
+                for (var controller in _animationControllers) {
+                  controller.forward().then((_) {
+                    if (mounted) {
+                      controller.reverse();
+                    }
+                  });
+                }
               }
-
               // Removed auto-verification
               // User must click the verify button manually
             });
@@ -159,73 +162,96 @@ class _MutualFundHoldingsJourneyScreenState
 
   // Start resend timer for OTP
   void _startResendTimer() {
-    setState(() {
-      _canResendOTP = false;
-      _timeLeft = 60;
-    });
-    _resendTimer?.cancel();
-    _resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    if (mounted) {
       setState(() {
-        if (_timeLeft > 0) {
-          _timeLeft--;
+        _canResendOTP = false;
+        _timeLeft = 60;
+      });
+    }
+    _resendTimer?.cancel();
+    if (mounted) {
+      _resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        if (mounted) {
+          setState(() {
+            if (_timeLeft > 0) {
+              _timeLeft--;
+            } else {
+              _canResendOTP = true;
+              timer.cancel();
+            }
+          });
         } else {
-          _canResendOTP = true;
           timer.cancel();
         }
       });
-    });
+    }
   }
 
   // Method to receive CAS details from StartingJourneyLayout
   void setCasDetails(DecryptedCASDetails? details, String token) {
-    setState(() {
-      _casDetails = details;
-      _token = token;
-    });
+    if (mounted) {
+      setState(() {
+        _casDetails = details;
+        _token = token;
+      });
 
-    if (details != null) {
-      // CAS details received, move to OTP verification step
-      // _goToNextStep();
-      // _setupSmsListener();
-      // _startResendTimer();
+      if (details != null) {
+        if (mounted) {
+          Future.delayed(const Duration(milliseconds: 5000), () {
+            if (mounted) {
+              _goToNextStep();
+            }
+          });
+        }
+      }
     }
   }
 
   // Handle OTP verification
   Future<void> _verifyOTP(String otp) async {
-    if (otp.length != 6) {
-      Get.snackbar(
-        'Error',
-        'Please enter a valid 6-digit OTP',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.8),
-        colorText: Colors.white,
-      );
-      return;
+    if (_isLoading || _casDetails == null) return;
+
+    // Set loading state to true for the Continue button
+    if (mounted) {
+      setState(() {
+        _isLoading = true;
+      });
     }
 
-    final result = await _mfOnboardingService.verifyOTP(
+    // Verify OTP
+    final success = await _mfOnboardingService.verifyOTP(
       token: _token,
-      otp: otp,
       casDetails: _casDetails!,
+      otp: otp,
       onLoading: (isLoading) {
-        setState(() {
-          _isLoading = isLoading;
-        });
+        // Keep the loading state true during the entire verification process
+        // We'll only update it when explicitly needed
       },
       onError: (message) {
-        Get.snackbar(
-          'Error',
-          message,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.withValues(alpha: 0.8),
-          colorText: Colors.white,
-        );
+        if (mounted) {
+          Get.snackbar(
+            'Error',
+            message,
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red.withValues(alpha: 0.8),
+            colorText: Colors.white,
+          );
+        }
       },
     );
 
-    if (result) {
-      // OTP verified successfully, update user status and move to loading step
+    // If verification failed, reset loading state and return
+    if (!success) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+      return;
+    }
+
+    if (mounted) {
+      // Show success message
       Get.snackbar(
         'Success',
         'OTP verified successfully',
@@ -233,81 +259,76 @@ class _MutualFundHoldingsJourneyScreenState
         backgroundColor: Colors.green.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
-      
-      // Update user's mutual fund verification status
-      await _updateMutualFundVerificationStatus();
-      
-      // Move to loading step
-      _goToNextStep();
-    }
-  }
 
-  // Update mutual fund verification status in user profile
-  Future<void> _updateMutualFundVerificationStatus() async {
-    try {
-      // Update user profile to mark mutual fund verification as complete
-      await _userController.fetchUserProfile(
-        onLoading: (isLoading) {
-          setState(() {
-            _isLoading = isLoading;
-          });
-        },
-      );
-      
-      // Simulate a delay to ensure the user profile is updated
-      await Future.delayed(const Duration(seconds: 2));
-      
-      // Check if we need to redirect to dashboard
-      if (_userController.userData?.ismfverified == true) {
-        // Navigate to dashboard using the AuthFlow
-        await _authFlow.handlePostOtpVerification();
-      }
-    } catch (e) {
-      debugPrint('Error updating mutual fund verification status: $e');
+      // Update user's mutual fund verification status
+      // await _updateMutualFundVerificationStatus();
+
+      // Move to loading layout (step 2)
+      // We keep the loading state true during the transition
+      _goToNextStep();
+
+      // Wait for exactly 4 seconds and then navigate to dashboard
+      // Future.delayed(const Duration(seconds: 4), () {
+      //   if (mounted) {
+      //     // Navigate to dashboard using Get.offAll
+      //     Get.offAll(() => const Dashboard());
+      //   }
+      // });
     }
   }
 
   // Resend OTP
   void _resendOTP() {
-    if (_canResendOTP && !_isLoading) {
+    if (_canResendOTP && !_isLoading && mounted) {
       setState(() {
         _isLoading = true;
       });
 
       // Simulate OTP resend
       Future.delayed(const Duration(seconds: 1), () {
-        setState(() {
-          _isLoading = false;
-          // Reset OTP fields
-          for (int i = 0; i < 6; i++) {
-            _controllers[i].clear();
-            _fieldFilled[i] = false;
-          }
-          _activeFieldIndex = 0;
-        });
-        _startResendTimer();
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+            // Reset OTP fields
+            for (int i = 0; i < 6; i++) {
+              _controllers[i].clear();
+              _fieldFilled[i] = false;
+            }
+            _activeFieldIndex = 0;
+          });
+          _startResendTimer();
+        }
       });
     }
   }
 
   // Navigate to a specific step with animation
   void _navigateToStep(int step) {
-    if (_isAnimating || step == _currentStep || step < 0 || step > 2) return;
+    if (_isAnimating ||
+        step == _currentStep ||
+        step < 0 ||
+        step > 2 ||
+        !mounted)
+      return;
 
-    setState(() {
-      _isAnimating = true;
-    });
+    if (mounted) {
+      setState(() {
+        _isAnimating = true;
+      });
+    }
 
     Future.delayed(const Duration(milliseconds: 500), () {
-      setState(() {
-        _currentStep = step;
-        _isAnimating = false;
-      });
+      if (mounted) {
+        setState(() {
+          _currentStep = step;
+          _isAnimating = false;
+        });
 
-      // If we're now on the OTP step, set up the SMS listener
-      if (_currentStep == 1) {
-        _setupSmsListener();
-        _startResendTimer();
+        // If we're now on the OTP step, set up the SMS listener
+        if (_currentStep == 1) {
+          _setupSmsListener();
+          _startResendTimer();
+        }
       }
     });
   }

@@ -36,41 +36,51 @@ class _StartingJourneyLayoutState extends State<StartingJourneyLayout> {
   }
 
   Future<void> _sendOTP() async {
-    setState(() {
-      _isLoading = true;
-    });
+    if (mounted) {
+      setState(() {
+        _isLoading = true;
+      });
+    }
 
     final result = await _mfOnboardingService.sendOTP(
       onLoading: (isLoading) {
-        setState(() {
-          _isLoading = isLoading;
-        });
+        if (mounted) {
+          setState(() {
+            _isLoading = isLoading;
+          });
+        }
       },
       onError: (message) {
-        Get.snackbar(
-          'Error',
-          message,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.withValues(alpha: 0.8),
-          colorText: Colors.white,
-        );
+        if (mounted) {
+          Get.snackbar(
+            'Error',
+            message,
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red.withValues(alpha: 0.8),
+            colorText: Colors.white,
+          );
+        }
       },
     );
 
-    setState(() {
-      _casDetails = result?.data.decryptedcasdetails;
-    });
+    if (mounted) {
+      setState(() {
+        _casDetails = result?.data.decryptedcasdetails;
+      });
+    }
 
     // Automatically proceed to next step when CAS details are received
     if (_casDetails != null) {
       // Pass the CAS details to the parent if callback exists
-      if (widget.onCasDetailsReceived != null) {
+      if (widget.onCasDetailsReceived != null && mounted) {
         widget.onCasDetailsReceived!(_casDetails, result?.data.token ?? '');
       }
 
       // Move to the next step
       Future.delayed(const Duration(milliseconds: 5000), () {
-        widget.onNext();
+        if (mounted) {
+          widget.onNext();
+        }
       });
     }
   }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/controllers/theme_controller.dart';
+import 'package:nwt_app/utils/currency_formatter.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 
 class NetworthChart extends StatelessWidget {
@@ -54,7 +55,7 @@ class NetworthChart extends StatelessWidget {
                           ),
                           const SizedBox(width: 4),
                           AppText(
-                            projectedNetworth.toString(),
+                            CurrencyFormatter.formatRupee(projectedNetworth),
                             variant: AppTextVariant.bodySmall,
                             weight: AppTextWeight.semiBold,
                             colorType: AppTextColorType.success,
@@ -94,7 +95,9 @@ class NetworthChart extends StatelessWidget {
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.darkPrimary.withValues(alpha: 0.4),
+                                color: AppColors.darkPrimary.withValues(
+                                  alpha: 0.4,
+                                ),
                                 blurRadius: 6,
                                 offset: const Offset(0, 2),
                               ),
@@ -152,34 +155,34 @@ class NetworthChart extends StatelessWidget {
     );
   }
 
-  
   // Calculate the position of the "Today" indicator based on the current date
   double _getTodayPosition(BuildContext context) {
     // Get current date
     final now = DateTime.now();
-    
+
     // Define start and end dates (from Mar 2024 to May 2026)
     final startDate = DateTime(2024, 3, 1);
     final endDate = DateTime(2026, 5, 31);
-    
+
     // Calculate total duration in days
     final totalDuration = endDate.difference(startDate).inDays;
-    
+
     // Calculate days elapsed since start date
     final daysElapsed = now.difference(startDate).inDays;
-    
+
     // Calculate position as a percentage of the total duration
     final percentage = daysElapsed / totalDuration;
-    
+
     // Calculate the chart width (accounting for padding)
-    final chartWidth = MediaQuery.of(context).size.width - 40; // Subtract horizontal padding
-    
+    final chartWidth =
+        MediaQuery.of(context).size.width - 40; // Subtract horizontal padding
+
     // Calculate the position from right
     // The chart area is drawn from left to right, but we position from right
     // We need to convert the X position (0-10 scale) to screen coordinates
     final xPosition = percentage * 10; // Same calculation as in mainData()
     final rightPosition = chartWidth * (0.9 - (xPosition / 11));
-    
+
     return rightPosition;
   }
 
@@ -192,17 +195,19 @@ class NetworthChart extends StatelessWidget {
     final totalDuration = endDate.difference(startDate).inDays;
     final daysElapsed = now.difference(startDate).inDays;
     final percentage = daysElapsed / totalDuration;
-    
+
     // Map percentage to X-axis position (0-10 scale)
     // This must match the calculation used for the Today marker position
     final currentValueX = percentage * 10;
     final currentValueY = 76.17;
-    
+
     // Generate actual data points up to current date
     final List<FlSpot> actualSpots = [];
-    
+
     // Add points up to current date with a smooth curve
-    final pointCount = (currentValueX / 10 * 6).round() + 1; // Number of points up to current date
+    final pointCount =
+        (currentValueX / 10 * 6).round() +
+        1; // Number of points up to current date
     for (int i = 0; i < pointCount; i++) {
       final x = i * (currentValueX / (pointCount - 1));
       // Create a realistic curve with some fluctuations
@@ -213,19 +218,17 @@ class NetworthChart extends StatelessWidget {
       final y = baseValue + growth + fluctuation;
       actualSpots.add(FlSpot(x, y));
     }
-    
+
     // Make sure the last point is exactly at current position
     if (actualSpots.isNotEmpty) {
       actualSpots.last = FlSpot(currentValueX, currentValueY);
     } else {
       actualSpots.add(FlSpot(currentValueX, currentValueY));
     }
-    
+
     // Projection data points from current date to end
-    final List<FlSpot> projectionSpots = [
-      FlSpot(currentValueX, currentValueY),
-    ];
-    
+    final List<FlSpot> projectionSpots = [FlSpot(currentValueX, currentValueY)];
+
     // Add projection points after current date
     final remainingPoints = 5; // Number of projection points
     final remainingXRange = 10 - currentValueX;
@@ -233,7 +236,7 @@ class NetworthChart extends StatelessWidget {
       final x = currentValueX + (i * (remainingXRange / remainingPoints));
       final growth = i * ((81.9 - currentValueY) / remainingPoints);
       projectionSpots.add(FlSpot(x, currentValueY + growth));
-    };
+    }
 
     return LineChartData(
       gridData: FlGridData(show: false),

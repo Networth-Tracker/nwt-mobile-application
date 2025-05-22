@@ -53,7 +53,9 @@ class _DashboardState extends State<Dashboard>
     );
     fetchDashboardAssets();
     fetchTotalNetworth();
-
+    Future.delayed(const Duration(milliseconds: 1900), () {
+      _showBottomSheet();
+    });
   }
 
   @override
@@ -224,7 +226,7 @@ class _DashboardState extends State<Dashboard>
     } else if (hour < 21) {
       return "Good evening!";
     } else {
-      return "Good night!";
+      return "Good evening!";
     }
   }
 
@@ -357,11 +359,16 @@ class _DashboardState extends State<Dashboard>
                                             },
                                           );
                                         },
-                                        child: const Avatar(
+                                        child: Avatar(
                                           path:
-                                              'https://images.unsplash.com/photo-1633332755192-727a05c4013d?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by-1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                                              userController.userData?.gender
+                                                          ?.toLowerCase() ==
+                                                      'female'
+                                                  ? 'assets/svgs/dashboard/female.png'
+                                                  : 'assets/svgs/dashboard/male.png',
                                           width: 40,
                                           height: 40,
+                                          isNetworkImage: false,
                                         ),
                                       ),
                                       const SizedBox(width: 16),
@@ -372,17 +379,17 @@ class _DashboardState extends State<Dashboard>
                                             MainAxisAlignment.center,
                                         children: [
                                           AppText(
+                                            "Hi, ${userController.userData?.firstname != null ? userController.userData!.firstname : 'User'}",
+                                            variant: AppTextVariant.headline4,
+                                            weight: AppTextWeight.bold,
+                                            colorType: AppTextColorType.primary,
+                                          ),
+                                          AppText(
                                             _getGreetingMessage(),
                                             variant: AppTextVariant.bodySmall,
                                             weight: AppTextWeight.medium,
                                             colorType:
                                                 AppTextColorType.secondary,
-                                          ),
-                                          AppText(
-                                            "Hi, ${userController.userData?.firstname != null ? userController.userData!.firstname : 'User'}",
-                                            variant: AppTextVariant.headline4,
-                                            weight: AppTextWeight.bold,
-                                            colorType: AppTextColorType.primary,
                                           ),
                                         ],
                                       ),
@@ -433,10 +440,9 @@ class _DashboardState extends State<Dashboard>
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       AnimatedAmount(
-                                        amount:
-                                            CurrencyFormatter.formatRupeeWithCommas(
-                                              _networthAmount,
-                                            ),
+                                        amount: CurrencyFormatter.formatRupee(
+                                          _networthAmount,
+                                        ),
                                         isAmountVisible: _isAmountVisible,
                                         style: const TextStyle(
                                           color: Colors.white,
@@ -741,7 +747,7 @@ class _DashboardState extends State<Dashboard>
                                                           child: AssetCard(
                                                             title: asset.name,
                                                             amount:
-                                                                CurrencyFormatter.formatRupeeWithCommas(
+                                                                CurrencyFormatter.formatRupee(
                                                                   asset.value,
                                                                 ),
                                                             delta:
