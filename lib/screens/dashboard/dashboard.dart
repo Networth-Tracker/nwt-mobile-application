@@ -13,11 +13,10 @@ import 'package:nwt_app/screens/dashboard/widgets/asset_card.dart';
 import 'package:nwt_app/screens/dashboard/widgets/mutual_fund_bottom_sheet.dart';
 import 'package:nwt_app/screens/dashboard/widgets/networth_chart.dart';
 import 'package:nwt_app/screens/dashboard/zerodha_webview.dart';
-import 'package:nwt_app/screens/dashboard/types/dashboard_networth.dart';
-import 'package:nwt_app/services/dashboard/total_networth.dart';
 import 'package:nwt_app/screens/mf_switch/mf_switch.dart';
 import 'package:nwt_app/screens/notifications/notification_list.dart';
 import 'package:nwt_app/services/auth/auth_flow.dart';
+import 'package:nwt_app/services/dashboard/total_networth.dart';
 import 'package:nwt_app/services/zerodha/zerodha.dart';
 import 'package:nwt_app/utils/currency_formatter.dart';
 import 'package:nwt_app/utils/logger.dart';
@@ -40,7 +39,7 @@ class _DashboardState extends State<Dashboard>
   late AnimationController _refreshController;
   bool isAssetsLoading = false;
   bool isZerodhaLoading = false;
-  
+
   // Networth data
   double _networthAmount = 0.0;
   String _lastFetchedTime = "";
@@ -79,43 +78,47 @@ class _DashboardState extends State<Dashboard>
       },
     );
   }
-  
+
   /// Fetches the total networth data from the API
   Future<void> fetchTotalNetworth() async {
-    _totalNetworthService.getTotalNetworth(
-      onLoading: (isLoading) {
-        if (mounted) {
-          setState(() {
-            isAssetsLoading = isLoading;
-          });
-          if (isLoading) {
-            _refreshController.repeat();
-          } else {
-            _refreshController.stop();
-            _refreshController.reset();
+    _totalNetworthService
+        .getTotalNetworth(
+          onLoading: (isLoading) {
+            if (mounted) {
+              setState(() {
+                isAssetsLoading = isLoading;
+              });
+              if (isLoading) {
+                _refreshController.repeat();
+              } else {
+                _refreshController.stop();
+                _refreshController.reset();
+              }
+            }
+          },
+        )
+        .then((response) {
+          if (response != null && response.data != null) {
+            if (mounted) {
+              setState(() {
+                // Format the networth amount with rupee symbol
+                _networthAmount = response.data!.totalcurrentmarketvalue;
+                // Format the timestamp
+                _lastFetchedTime = _formatDateTime(
+                  response.data!.currentdatetime,
+                );
+              });
+            }
           }
-        }
-      },
-    ).then((response) {
-      if (response != null && response.data != null) {
-        if (mounted) {
-          setState(() {
-            // Format the networth amount with rupee symbol
-            _networthAmount =response.data!.totalcurrentmarketvalue;
-            // Format the timestamp
-            _lastFetchedTime = _formatDateTime(response.data!.currentdatetime);
-          });
-        }
-      }
-    });
+        });
   }
-  
+
   /// Formats the networth value with commas
   // String _formatNetworth(int value) {
   //   String valueStr = value.toString();
   //   String result = '';
   //   int count = 0;
-    
+
   //   // Add commas for Indian number format (e.g., 1,00,000)
   //   for (int i = valueStr.length - 1; i >= 0; i--) {
   //     result = valueStr[i] + result;
@@ -128,15 +131,15 @@ class _DashboardState extends State<Dashboard>
   //       count = 0;
   //     }
   //   }
-    
+
   //   return result;
   // }
-  
+
   /// Formats the datetime to a readable time string (e.g., "Last data fetched at 11:00pm")
   String _formatDateTime(DateTime dateTime) {
     int hour = dateTime.hour;
     String period = 'am';
-    
+
     if (hour >= 12) {
       period = 'pm';
       if (hour > 12) {
@@ -146,7 +149,7 @@ class _DashboardState extends State<Dashboard>
     if (hour == 0) {
       hour = 12;
     }
-    
+
     String minute = dateTime.minute.toString().padLeft(2, '0');
     return "Last data fetched at $hour:$minute$period";
   }
@@ -269,373 +272,370 @@ class _DashboardState extends State<Dashboard>
                       parent: ClampingScrollPhysics(),
                     ),
                     slivers: [
-                      SliverAppBar(
-                        floating: false,
-                        backgroundColor: AppColors.darkCardBG,
-                        flexibleSpace: FlexibleSpaceBar(
-                          background: Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: AppSizing.scaffoldHorizontalPadding,
-                            ),
-                            width: MediaQuery.of(context).size.width,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        GestureDetector(
-                                          onTap: () {
-                                            showDialog(
-                                              context: context,
-                                              builder: (BuildContext context) {
-                                                return AlertDialog(
-                                                  title: const AppText(
-                                                    "Logout",
-                                                    variant:
-                                                        AppTextVariant
-                                                            .headline4,
-                                                    weight:
-                                                        AppTextWeight.semiBold,
-                                                  ),
-                                                  content: const AppText(
-                                                    "Are you sure you want to logout?",
-                                                    variant:
-                                                        AppTextVariant
-                                                            .bodyMedium,
-                                                    colorType:
-                                                        AppTextColorType
-                                                            .tertiary,
-                                                  ),
-                                                  actions: [
-                                                    TextButton(
-                                                      onPressed:
-                                                          () => Navigator.pop(
-                                                            context,
-                                                          ),
-                                                      child: const AppText(
-                                                        "Cancel",
-                                                        variant:
-                                                            AppTextVariant
-                                                                .bodyMedium,
-                                                        colorType:
-                                                            AppTextColorType
-                                                                .secondary,
-                                                      ),
+                      SliverToBoxAdapter(
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: AppSizing.scaffoldHorizontalPadding,
+                          ),
+                          width: MediaQuery.of(context).size.width,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Row(
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                title: const AppText(
+                                                  "Logout",
+                                                  variant:
+                                                      AppTextVariant.headline4,
+                                                  weight:
+                                                      AppTextWeight.semiBold,
+                                                ),
+                                                content: const AppText(
+                                                  "Are you sure you want to logout?",
+                                                  variant:
+                                                      AppTextVariant.bodyMedium,
+                                                  colorType:
+                                                      AppTextColorType.tertiary,
+                                                ),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed:
+                                                        () => Navigator.pop(
+                                                          context,
+                                                        ),
+                                                    child: const AppText(
+                                                      "Cancel",
+                                                      variant:
+                                                          AppTextVariant
+                                                              .bodyMedium,
+                                                      colorType:
+                                                          AppTextColorType
+                                                              .secondary,
                                                     ),
-                                                    TextButton(
-                                                      onPressed: () {
-                                                        Navigator.pop(context);
-                                                        // Create AuthFlow instance and logout
-                                                        try {
-                                                          final authFlow =
-                                                              AuthFlow();
-                                                          AppLogger.info(
-                                                            'Logging out user',
-                                                            tag: 'Dashboard',
-                                                          );
-                                                          authFlow.logout();
-                                                        } catch (e) {
-                                                          AppLogger.error(
-                                                            'Error during logout',
-                                                            error: e,
-                                                            tag: 'Dashboard',
-                                                          );
-                                                        }
-                                                      },
-                                                      child: const AppText(
-                                                        "Logout",
-                                                        variant:
-                                                            AppTextVariant
-                                                                .bodyMedium,
-                                                        colorType:
-                                                            AppTextColorType
-                                                                .error,
-                                                      ),
+                                                  ),
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                      // Create AuthFlow instance and logout
+                                                      try {
+                                                        final authFlow =
+                                                            AuthFlow();
+                                                        AppLogger.info(
+                                                          'Logging out user',
+                                                          tag: 'Dashboard',
+                                                        );
+                                                        authFlow.logout();
+                                                      } catch (e) {
+                                                        AppLogger.error(
+                                                          'Error during logout',
+                                                          error: e,
+                                                          tag: 'Dashboard',
+                                                        );
+                                                      }
+                                                    },
+                                                    child: const AppText(
+                                                      "Logout",
+                                                      variant:
+                                                          AppTextVariant
+                                                              .bodyMedium,
+                                                      colorType:
+                                                          AppTextColorType
+                                                              .error,
                                                     ),
-                                                  ],
-                                                );
-                                              },
-                                            );
-                                          },
-                                          child: const Avatar(
-                                            path:
-                                                'https://images.unsplash.com/photo-1633332755192-727a05c4013d?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by-1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                                            width: 40,
-                                            height: 40,
-                                          ),
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        },
+                                        child: const Avatar(
+                                          path:
+                                              'https://images.unsplash.com/photo-1633332755192-727a05c4013d?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by-1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                                          width: 40,
+                                          height: 40,
                                         ),
-                                        const SizedBox(width: 16),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            AppText(
-                                              _getGreetingMessage(),
-                                              variant: AppTextVariant.bodySmall,
-                                              weight: AppTextWeight.medium,
-                                              colorType:
-                                                  AppTextColorType.secondary,
-                                            ),
-                                            AppText(
-                                              "Hi, ${userController.userData?.firstname != null ? userController.userData!.firstname : 'User'}",
-                                              variant: AppTextVariant.headline4,
-                                              weight: AppTextWeight.bold,
-                                              colorType:
-                                                  AppTextColorType.primary,
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                IconButton(
-                                  onPressed:
-                                      () => Get.to(
-                                        () => NotificationListScreen(),
-                                        transition: Transition.rightToLeft,
                                       ),
-                                  icon: const Icon(
-                                    Icons.notifications_outlined,
+                                      const SizedBox(width: 16),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          AppText(
+                                            _getGreetingMessage(),
+                                            variant: AppTextVariant.bodySmall,
+                                            weight: AppTextWeight.medium,
+                                            colorType:
+                                                AppTextColorType.secondary,
+                                          ),
+                                          AppText(
+                                            "Hi, ${userController.userData?.firstname != null ? userController.userData!.firstname : 'User'}",
+                                            variant: AppTextVariant.headline4,
+                                            weight: AppTextWeight.bold,
+                                            colorType: AppTextColorType.primary,
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              ],
-                            ),
+                                ],
+                              ),
+                              IconButton(
+                                onPressed:
+                                    () => Get.to(
+                                      () => NotificationListScreen(),
+                                      transition: Transition.rightToLeft,
+                                    ),
+                                icon: const Icon(Icons.notifications_outlined),
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                      SliverAppBar(
-                        backgroundColor: AppColors.darkCardBG,
-                        expandedHeight: 302,
-                        toolbarHeight: 82,
-                        pinned: true,
-                        centerTitle: false,
-                        floating: false,
-                        // Faster animations
-                        stretch: true,
-                        stretchTriggerOffset: 50,
-                        flexibleSpace: LayoutBuilder(
-                          builder: (
-                            BuildContext context,
-                            BoxConstraints constraints,
-                          ) {
-                            final FlexibleSpaceBarSettings settings =
-                                context
-                                    .dependOnInheritedWidgetOfExactType<
-                                      FlexibleSpaceBarSettings
-                                    >()!;
-                            final double deltaExtent =
-                                settings.maxExtent - settings.minExtent;
-                            final double t = (1.0 -
-                                    (settings.currentExtent -
-                                            settings.minExtent) /
-                                        deltaExtent)
-                                .clamp(0.0, 1.0);
 
-                            return Stack(
-                              children: [
-                                Opacity(
-                                  opacity: 1.0 - t,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal:
-                                          AppSizing.scaffoldHorizontalPadding,
-                                    ),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            AppText(
-                                              "Your Networth",
-                                              variant:
-                                                  AppTextVariant.bodyMedium,
-                                              weight: AppTextWeight.bold,
-                                              colorType:
-                                                  AppTextColorType.secondary,
-                                            ),
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                AnimatedAmount(
-                                                  amount: CurrencyFormatter.formatRupeeWithCommas(_networthAmount),
-                                                  isAmountVisible:
-                                                      _isAmountVisible,
-                                                  style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 36,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    GestureDetector(
-                                                      onTap: () {
-                                                        setState(() {
-                                                          _isAmountVisible =
-                                                              !_isAmountVisible;
-                                                        });
-                                                      },
-                                                      child: Icon(
-                                                        _isAmountVisible
-                                                            ? Icons
-                                                                .visibility_outlined
-                                                            : Icons
-                                                                .visibility_off_outlined,
-                                                        color:
-                                                            AppColors
-                                                                .darkButtonPrimaryBackground,
-                                                      ),
-                                                    ),
-                                                    const SizedBox(width: 12),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                            AppText(
-                                              _lastFetchedTime.isNotEmpty ? _lastFetchedTime : "Last data fetched at 11:00pm",
-                                              variant: AppTextVariant.tiny,
-                                              weight: AppTextWeight.semiBold,
-                                              colorType:
-                                                  AppTextColorType.secondary,
-                                            ),
-                                            NetworthChart(
-                                              currentNetworth: _networthAmount,
-                                              projectedNetworth: _networthAmount,
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
+                      // SliverAppBar(
+                      //   floating: false,
+                      //   backgroundColor: AppColors.darkCardBG,
+                      //   flexibleSpace: FlexibleSpaceBar(
+                      //     background:  ),
+                      // ),
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSizing.scaffoldHorizontalPadding,
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 24),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  AppText(
+                                    "Your Networth",
+                                    variant: AppTextVariant.bodyMedium,
+                                    weight: AppTextWeight.bold,
+                                    colorType: AppTextColorType.secondary,
                                   ),
-                                ),
-                                // Positioned(
-                                //   top: 8,
-                                //   left: 0,
-                                //   right: 0,
-                                //   bottom: 8,
-                                //   child: Container(
-                                //     decoration: BoxDecoration(
-                                //       border: Border(
-                                //         bottom: BorderSide(
-                                //           color: AppColors.darkButtonBorder,
-                                //           width: 1.0,
-                                //         ),
-                                //       ),
-                                //     ),
-                                //     child: Opacity(
-                                //       opacity: t,
-                                //       child: Padding(
-                                //         padding: const EdgeInsets.symmetric(
-                                //           horizontal:
-                                //               AppSizing
-                                //                   .scaffoldHorizontalPadding,
-                                //         ),
-                                //         child: Column(
-                                //           mainAxisSize: MainAxisSize.min,
-                                //           crossAxisAlignment:
-                                //               CrossAxisAlignment.start,
-                                //           children: [
-                                //             Row(
-                                //               mainAxisAlignment:
-                                //                   MainAxisAlignment
-                                //                       .spaceBetween,
-                                //               children: [
-                                //                 AppText(
-                                //                   "Your Networth",
-                                //                   variant:
-                                //                       AppTextVariant.bodySmall,
-                                //                   weight: AppTextWeight.bold,
-                                //                   colorType:
-                                //                       AppTextColorType
-                                //                           .secondary,
-                                //                 ),
-                                //                 Row(
-                                //                   children: [
-                                //                     GestureDetector(
-                                //                       onTap:
-                                //                           fetchDashboardAssets,
-                                //                       child: RotationTransition(
-                                //                         turns:
-                                //                             _refreshController,
-                                //                         child: Icon(
-                                //                           Icons.refresh_rounded,
-                                //                           size: 20,
-                                //                           color:
-                                //                               AppColors
-                                //                                   .darkButtonPrimaryBackground,
-                                //                         ),
-                                //                       ),
-                                //                     ),
-                                //                     const SizedBox(width: 12),
-                                //                   ],
-                                //                 ),
-                                //               ],
-                                //             ),
-                                //             const SizedBox(height: 4),
-                                //             Row(
-                                //               mainAxisAlignment:
-                                //                   MainAxisAlignment
-                                //                       .spaceBetween,
-                                //               children: [
-                                //                 AnimatedAmount(
-                                //                   amount: CurrencyFormatter.formatRupeeWithCommas(_networthAmount),
-                                //                   isAmountVisible:
-                                //                       _isAmountVisible,
-                                //                   style: const TextStyle(
-                                //                     color: Colors.white,
-                                //                     fontSize: 28,
-                                //                     fontWeight: FontWeight.bold,
-                                //                   ),
-                                //                 ),
-                                //                 Row(
-                                //                   children: [
-                                //                     GestureDetector(
-                                //                       onTap: () {
-                                //                         setState(() {
-                                //                           _isAmountVisible =
-                                //                               !_isAmountVisible;
-                                //                         });
-                                //                       },
-                                //                       child: Icon(
-                                //                         _isAmountVisible
-                                //                             ? Icons
-                                //                                 .visibility_outlined
-                                //                             : Icons
-                                //                                 .visibility_off_outlined,
-                                //                         size: 20,
-                                //                         color:
-                                //                             AppColors
-                                //                                 .darkButtonPrimaryBackground,
-                                //                       ),
-                                //                     ),
-                                //                     const SizedBox(width: 12),
-                                //                   ],
-                                //                 ),
-                                //               ],
-                                //             ),
-                                //           ],
-                                //         ),
-                                //       ),
-                                //     ),
-                                //   ),
-                                // ),
-                              ],
-                            );
-                          },
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      AnimatedAmount(
+                                        amount:
+                                            CurrencyFormatter.formatRupeeWithCommas(
+                                              _networthAmount,
+                                            ),
+                                        isAmountVisible: _isAmountVisible,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 36,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Row(
+                                        children: [
+                                          GestureDetector(
+                                            onTap: () {
+                                              setState(() {
+                                                _isAmountVisible =
+                                                    !_isAmountVisible;
+                                              });
+                                            },
+                                            child: Icon(
+                                              _isAmountVisible
+                                                  ? Icons.visibility_outlined
+                                                  : Icons
+                                                      .visibility_off_outlined,
+                                              color:
+                                                  AppColors
+                                                      .darkButtonPrimaryBackground,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 12),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  AppText(
+                                    _lastFetchedTime.isNotEmpty
+                                        ? _lastFetchedTime
+                                        : "Last data fetched at 11:00pm",
+                                    variant: AppTextVariant.tiny,
+                                    weight: AppTextWeight.semiBold,
+                                    colorType: AppTextColorType.secondary,
+                                  ),
+                                  NetworthChart(
+                                    currentNetworth: _networthAmount,
+                                    projectedNetworth: _networthAmount,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
+
+                      // SliverAppBar(
+                      //   backgroundColor: AppColors.darkCardBG,
+                      //   expandedHeight: 302,
+                      //   toolbarHeight: 82,
+                      //   pinned: false,
+                      //   centerTitle: false,
+                      //   floating: false,
+                      //   // Faster animations
+                      //   stretch: true,
+                      //   stretchTriggerOffset: 50,
+                      //   flexibleSpace: LayoutBuilder(
+                      //     builder: (
+                      //       BuildContext context,
+                      //       BoxConstraints constraints,
+                      //     ) {
+                      //       final FlexibleSpaceBarSettings settings =
+                      //           context
+                      //               .dependOnInheritedWidgetOfExactType<
+                      //                 FlexibleSpaceBarSettings
+                      //               >()!;
+                      //       final double deltaExtent =
+                      //           settings.maxExtent - settings.minExtent;
+                      //       final double t = (1.0 -
+                      //               (settings.currentExtent -
+                      //                       settings.minExtent) /
+                      //                   deltaExtent)
+                      //           .clamp(0.0, 1.0);
+
+                      //       return Stack(
+                      //         children: [
+                      //           Opacity(
+                      //             opacity: 1.0 - t,
+                      //             child:
+                      //           ),
+                      //           // Positioned(
+                      //           //   top: 8,
+                      //           //   left: 0,
+                      //           //   right: 0,
+                      //           //   bottom: 8,
+                      //           //   child: Container(
+                      //           //     decoration: BoxDecoration(
+                      //           //       border: Border(
+                      //           //         bottom: BorderSide(
+                      //           //           color: AppColors.darkButtonBorder,
+                      //           //           width: 1.0,
+                      //           //         ),
+                      //           //       ),
+                      //           //     ),
+                      //           //     child: Opacity(
+                      //           //       opacity: t,
+                      //           //       child: Padding(
+                      //           //         padding: const EdgeInsets.symmetric(
+                      //           //           horizontal:
+                      //           //               AppSizing
+                      //           //                   .scaffoldHorizontalPadding,
+                      //           //         ),
+                      //           //         child: Column(
+                      //           //           mainAxisSize: MainAxisSize.min,
+                      //           //           crossAxisAlignment:
+                      //           //               CrossAxisAlignment.start,
+                      //           //           children: [
+                      //           //             Row(
+                      //           //               mainAxisAlignment:
+                      //           //                   MainAxisAlignment
+                      //           //                       .spaceBetween,
+                      //           //               children: [
+                      //           //                 AppText(
+                      //           //                   "Your Networth",
+                      //           //                   variant:
+                      //           //                       AppTextVariant.bodySmall,
+                      //           //                   weight: AppTextWeight.bold,
+                      //           //                   colorType:
+                      //           //                       AppTextColorType
+                      //           //                           .secondary,
+                      //           //                 ),
+                      //           //                 Row(
+                      //           //                   children: [
+                      //           //                     GestureDetector(
+                      //           //                       onTap:
+                      //           //                           fetchDashboardAssets,
+                      //           //                       child: RotationTransition(
+                      //           //                         turns:
+                      //           //                             _refreshController,
+                      //           //                         child: Icon(
+                      //           //                           Icons.refresh_rounded,
+                      //           //                           size: 20,
+                      //           //                           color:
+                      //           //                               AppColors
+                      //           //                                   .darkButtonPrimaryBackground,
+                      //           //                         ),
+                      //           //                       ),
+                      //           //                     ),
+                      //           //                     const SizedBox(width: 12),
+                      //           //                   ],
+                      //           //                 ),
+                      //           //               ],
+                      //           //             ),
+                      //           //             const SizedBox(height: 4),
+                      //           //             Row(
+                      //           //               mainAxisAlignment:
+                      //           //                   MainAxisAlignment
+                      //           //                       .spaceBetween,
+                      //           //               children: [
+                      //           //                 AnimatedAmount(
+                      //           //                   amount: CurrencyFormatter.formatRupeeWithCommas(_networthAmount),
+                      //           //                   isAmountVisible:
+                      //           //                       _isAmountVisible,
+                      //           //                   style: const TextStyle(
+                      //           //                     color: Colors.white,
+                      //           //                     fontSize: 28,
+                      //           //                     fontWeight: FontWeight.bold,
+                      //           //                   ),
+                      //           //                 ),
+                      //           //                 Row(
+                      //           //                   children: [
+                      //           //                     GestureDetector(
+                      //           //                       onTap: () {
+                      //           //                         setState(() {
+                      //           //                           _isAmountVisible =
+                      //           //                               !_isAmountVisible;
+                      //           //                         });
+                      //           //                       },
+                      //           //                       child: Icon(
+                      //           //                         _isAmountVisible
+                      //           //                             ? Icons
+                      //           //                                 .visibility_outlined
+                      //           //                             : Icons
+                      //           //                                 .visibility_off_outlined,
+                      //           //                         size: 20,
+                      //           //                         color:
+                      //           //                             AppColors
+                      //           //                                 .darkButtonPrimaryBackground,
+                      //           //                       ),
+                      //           //                     ),
+                      //           //                     const SizedBox(width: 12),
+                      //           //                   ],
+                      //           //                 ),
+                      //           //               ],
+                      //           //             ),
+                      //           //           ],
+                      //           //         ),
+                      //           //       ),
+                      //           //     ),
+                      //           //   ),
+                      //           // ),
+                      //         ],
+                      //       );
+                      //     },
+                      //   ),
+                      // ),
                       SliverToBoxAdapter(
                         child: Container(
                           color: AppColors.darkBackground,
@@ -772,7 +772,7 @@ class _DashboardState extends State<Dashboard>
                           ),
                         ),
                       ),
-                      
+
                       // SliverToBoxAdapter(
                       //   child: Material(
                       //     color: AppColors.darkBackground,
@@ -1152,8 +1152,8 @@ class _DashboardState extends State<Dashboard>
                                                     ? AppColors.darkPrimary
                                                     : AppColors.lightPrimary
                                                 : themeController.isDarkMode
-                                                    ? AppColors.darkButtonBorder
-                                                    : AppColors.lightButtonBorder,
+                                                ? AppColors.darkButtonBorder
+                                                : AppColors.lightButtonBorder,
                                       ),
                                     );
                                   }),
