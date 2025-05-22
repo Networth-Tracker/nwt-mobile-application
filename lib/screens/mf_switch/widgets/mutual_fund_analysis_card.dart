@@ -27,8 +27,8 @@ class MutualFundAnalysisCard extends StatelessWidget {
         border: Border.all(color: AppColors.darkButtonBorder),
       ),
       padding: const EdgeInsets.symmetric(
-        horizontal: 20,
-        vertical: 20,
+        horizontal: 14,
+        vertical: 14,
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
