@@ -13,23 +13,23 @@ import 'package:nwt_app/utils/logger.dart';
 class AuthFlow {
   final AuthService _authService = AuthService();
   final UserController _userController = Get.find<UserController>();
-  
+
   /// Handles the flow after successful OTP verification
   /// Fetches the latest user profile and redirects based on verification status
   Future<void> handlePostOtpVerification() async {
     AppLogger.info('Handling post-OTP verification flow', tag: 'AuthFlow');
-    
+
     // Fetch the latest user profile
     await _userController.fetchUserProfile(
       onLoading: (loading) {
         // Handle loading silently
       },
     );
-    
+
     // Check if user data is available
     if (_userController.userData != null) {
       final user = _userController.userData!;
-      
+
       // Check all verification statuses at once
       if (user.isverified && user.ispanverified) {
         // All verifications are complete, go directly to dashboard
@@ -69,17 +69,13 @@ class AuthFlow {
         // Handle loading silently for initial fetch
       },
     );
-    AppLogger.info(userData?.message ?? "", tag: 'AuthFlow===================');
-    // Check if user data is available in the controller
     if (userData != null) {
-      print("adasdasdasda======================");
       AppLogger.info(
         'User data found, handling verification status',
         tag: 'AuthFlow',
       );
       _handleUserVerificationStatus(userData.data.user);
     } else {
-      print("adasdasdasda=====================1312312312t361278656387126378126783612873687123687=");
       AppLogger.info(
         'Failed to fetch user data, redirecting to onboarding',
         tag: 'AuthFlow',

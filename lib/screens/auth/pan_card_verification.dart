@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
-import 'package:nwt_app/screens/dashboard/dashboard.dart';
+import 'package:nwt_app/constants/sizing.dart';
+import 'package:nwt_app/screens/fetch-holdings/mf_fetching.dart';
 import 'package:nwt_app/services/auth/auth.dart';
 import 'package:nwt_app/utils/logger.dart';
+import 'package:nwt_app/utils/validators.dart';
 import 'package:nwt_app/widgets/common/button_widget.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
-import 'package:nwt_app/constants/sizing.dart';
-import 'package:nwt_app/utils/validators.dart';
 
 class PanCardVerification extends StatefulWidget {
   const PanCardVerification({super.key});
@@ -94,7 +94,10 @@ class _PanCardVerificationState extends State<PanCardVerification> {
 
           // Navigate to dashboard after a short delay
           Future.delayed(const Duration(seconds: 1), () {
-            Get.to(() => const Dashboard(), transition: Transition.rightToLeft);
+            Get.to(
+              () => const MutualFundHoldingsJourneyScreen(),
+              transition: Transition.rightToLeft,
+            );
           });
         } else {
           // Show error message from the server
@@ -253,7 +256,6 @@ class _PanCardVerificationState extends State<PanCardVerification> {
                     weight: AppTextWeight.medium,
                   ),
                 ),
-             
             ],
           ),
         ),
@@ -273,8 +275,7 @@ class _PanCardVerificationState extends State<PanCardVerification> {
                 variant: AppButtonVariant.primary,
                 isLoading: _isLoading,
                 size: AppButtonSize.large,
-                isDisabled:
-                    _isLoading || _panController.text.length != 10,
+                isDisabled: _isLoading || _panController.text.length != 10,
                 onPressed: _verifyPanCard,
               ),
             ),

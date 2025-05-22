@@ -1,38 +1,67 @@
 import 'dart:async';
 
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/constants/theme.dart';
-import 'package:nwt_app/services/auth/auth.dart';
-import 'package:nwt_app/services/auth/auth_flow.dart';
-import 'package:nwt_app/utils/logger.dart';
+import 'package:nwt_app/screens/fetch-holdings/types/mf_fetching.dart';
 import 'package:nwt_app/widgets/common/button_widget.dart';
 import 'package:nwt_app/widgets/common/key_pad.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 
-class PhoneOTPVerifyScreen extends StatefulWidget {
-  final String phoneNumber;
+class OtpVerificationLayout extends StatefulWidget {
+  final bool isAnimating;
+  final bool isLoading;
+  final bool canResendOTP;
+  final int timeLeft;
+  final int activeFieldIndex;
+  final List<bool> fieldFilled;
+  final List<TextEditingController> controllers;
+  final List<FocusNode> focusNodes;
+  final List<Animation<double>> scaleAnimations;
+  final String otpCode;
+  final Function(String) onVerifyOTP;
+  final VoidCallback onResendOTP;
+  final VoidCallback onPrevious;
+  final VoidCallback onNext;
+  final DecryptedCASDetails? casDetails;
 
-  const PhoneOTPVerifyScreen({super.key, required this.phoneNumber});
+  const OtpVerificationLayout({
+    super.key,
+    required this.isAnimating,
+    required this.isLoading,
+    required this.canResendOTP,
+    required this.timeLeft,
+    required this.activeFieldIndex,
+    required this.fieldFilled,
+    required this.controllers,
+    required this.focusNodes,
+    required this.scaleAnimations,
+    required this.otpCode,
+    required this.onVerifyOTP,
+    required this.onResendOTP,
+    required this.onPrevious,
+    required this.onNext,
+    this.casDetails,
+  });
 
   @override
-  State<PhoneOTPVerifyScreen> createState() => _PhoneOTPVerifyScreenState();
+  State<OtpVerificationLayout> createState() => _OtpVerificationLayoutState();
 }
 
-class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen>
-    with CodeAutoFill, TickerProviderStateMixin {
+class _OtpVerificationLayoutState extends State<OtpVerificationLayout>
+    with TickerProviderStateMixin, CodeAutoFill {
+  // Method to handle focus changes between OTP fields
   final List<TextEditingController> _controllers = List.generate(
     6,
     (index) => TextEditingController(),
   );
 
   final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
-  final AuthService _authService = AuthService();
-  bool _isLoading = false;
+  final bool _isLoading = false;
   int _activeFieldIndex = 0;
 
   late List<AnimationController> _animationControllers;
@@ -68,80 +97,13 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen>
         }).toList();
 
     _startResendTimer();
-    _setupSmsListener();
-  }
 
-  void _setupSmsListener() async {
-    try {
-      await SmsAutoFill().getAppSignature;
-      listenForCode();
-    } catch (e) {
-      AppLogger.error(
-        'Error setting up SMS listener',
-        error: e,
-        tag: 'OTPVerifyScreen',
-      );
-    }
-  }
+    // Initialize SMS listener for OTP auto-fill
+    listenForCode();
 
-  @override
-  void codeUpdated() {
-    if (code != null && code!.length == 6) {
-      _autoFillOtp(code!);
-    }
-  }
-
-  void _autoFillOtp(String otp) {
-    if (otp.length == 6) {
-      for (int i = 0; i < 6; i++) {
-        _controllers[i].clear();
-        _fieldFilled[i] = false;
-      }
-
-      for (int i = 0; i < 6; i++) {
-        Future.delayed(Duration(milliseconds: 200 * i), () {
-          setState(() {
-            _controllers[i].text = otp[i];
-            _fieldFilled[i] = true;
-            _activeFieldIndex = i;
-
-            _animationControllers[i].forward().then((_) {
-              _animationControllers[i].reverse();
-            });
-          });
-
-          if (i == 5) {
-            Future.delayed(const Duration(milliseconds: 300), () {
-              for (var controller in _animationControllers) {
-                controller.forward().then((_) {
-                  controller.reverse();
-                });
-              }
-
-              Future.delayed(const Duration(milliseconds: 1000), () {
-                _verifyOTP();
-              });
-            });
-          }
-        });
-      }
-    }
-  }
-
-  @override
-  void dispose() {
-    for (var controller in _controllers) {
-      controller.dispose();
-    }
-    for (var node in _focusNodes) {
-      node.dispose();
-    }
-    for (var controller in _animationControllers) {
-      controller.dispose();
-    }
-    _resendTimer?.cancel();
-    cancel();
-    super.dispose();
+    SmsAutoFill().getAppSignature.then((signature) {
+      print("SMS app signature: $signature");
+    });
   }
 
   void _startResendTimer() {
@@ -160,44 +122,6 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen>
         }
       });
     });
-  }
-
-  void _setLoading(bool isLoading) {
-    setState(() {
-      _isLoading = isLoading;
-    });
-  }
-
-  Future<void> _verifyOTP() async {
-    if (_otpCode.length != 6) {
-      return;
-    }
-
-    _setLoading(true);
-
-    final response = await _authService.verifyOTP(
-      phoneNumber: widget.phoneNumber,
-      otp: _otpCode,
-      onLoading: (isLoading) {
-        _setLoading(isLoading);
-      },
-    );
-
-    if (response != null && response.success) {
-      // Use the AuthFlow to handle post-OTP verification flow
-      // This will check all verification statuses and redirect accordingly
-      final authFlow = AuthFlow();
-      await authFlow.handlePostOtpVerification();
-    } else {
-      // Show error
-      Get.snackbar(
-        'Error',
-        response?.message ?? 'Failed to verify OTP. Please try again.',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-    }
   }
 
   void _onKeyPressed(int digit) {
@@ -221,7 +145,7 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen>
             });
           }
           Future.delayed(const Duration(milliseconds: 300), () {
-            _verifyOTP();
+            widget.onVerifyOTP(_otpCode);
           });
         }
       });
@@ -243,39 +167,62 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen>
     }
   }
 
-  Future<void> _resendOTP() async {
-    if (!_canResendOTP) return;
+  @override
+  void codeUpdated() {
+    if (code != null && code!.length == 6) {
+      setState(() {
+        for (int i = 0; i < 6; i++) {
+          if (i < code!.length) {
+            _controllers[i].text = code![i];
+            _fieldFilled[i] = true;
+          }
+        }
 
-    final response = await _authService.generateOTP(
-      phoneNumber: widget.phoneNumber,
-      onLoading: _setLoading,
-    );
+        // Animate all fields
+        for (var controller in _animationControllers) {
+          controller.forward().then((_) {
+            controller.reverse();
+          });
+        }
 
-    if (response != null && response.success) {
-      for (var controller in _controllers) {
-        controller.clear();
-      }
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('OTP resent successfully!'),
-          backgroundColor: Colors.green,
-          duration: Duration(seconds: 2),
-        ),
-      );
-      _startResendTimer();
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(response?.message ?? 'Failed to resend OTP'),
-          backgroundColor: Colors.red,
-          duration: const Duration(seconds: 2),
-        ),
-      );
+        // Auto verify after a short delay
+        Future.delayed(const Duration(milliseconds: 300), () {
+          widget.onVerifyOTP(code!);
+        });
+      });
     }
   }
 
   @override
+  void dispose() {
+    for (var controller in _controllers) {
+      controller.dispose();
+    }
+    for (var node in _focusNodes) {
+      node.dispose();
+    }
+    for (var controller in _animationControllers) {
+      controller.dispose();
+    }
+    _resendTimer?.cancel();
+    cancel(); // Cancel SMS listener
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    return widget.isAnimating
+        ? FadeOutUp(
+          duration: const Duration(milliseconds: 500),
+          child: _buildContent(context),
+        )
+        : FadeInUp(
+          duration: const Duration(milliseconds: 500),
+          child: _buildContent(context),
+        );
+  }
+
+  Widget _buildContent(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -306,7 +253,7 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen>
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         AppText(
-                          "Enter 6 digit verification code \nsent to ${widget.phoneNumber}",
+                          "Enter 6 digit verification code \nsent to",
                           variant: AppTextVariant.headline4,
                           lineHeight: 1.3,
                           colorType: AppTextColorType.secondary,
@@ -314,9 +261,9 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen>
                         ),
                         const SizedBox(height: 6),
                         GestureDetector(
-                          onTap: () {
-                            Get.back();
-                          },
+                          // onTap: () {
+                          //   Get.back();
+                          // },
                           child: AppText(
                             "Edit Number",
                             variant: AppTextVariant.bodyMedium,
@@ -465,7 +412,9 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen>
                       const SizedBox(width: 4),
                       GestureDetector(
                         onTap:
-                            (_canResendOTP && !_isLoading) ? _resendOTP : null,
+                            (_canResendOTP && !_isLoading)
+                                ? widget.onResendOTP
+                                : null,
                         child: AppText(
                           _canResendOTP
                               ? "Resend Code"
@@ -514,7 +463,7 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen>
                 isDisabled: _otpCode.length != 6 || _isLoading,
                 onPressed: () {
                   if (_otpCode.length == 6 && !_isLoading) {
-                    _verifyOTP();
+                    widget.onVerifyOTP(_otpCode);
                   }
                 },
                 isLoading: _isLoading,
