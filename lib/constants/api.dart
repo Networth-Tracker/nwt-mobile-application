@@ -16,4 +16,5 @@ class ApiURLs {
 
   static const MF_HOLDINGS_TOKEN = "$baseUrl/mfcentral/token";
   static const MF_HOLDINGS_VERIFY = "$baseUrl/mfcentral/submit-otp";
+  static const GET_TOTAL_NETWORTH = "$baseUrl/dashboard/graph";
 }

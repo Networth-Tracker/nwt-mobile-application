@@ -71,7 +71,7 @@ class _OtpVerificationLayoutState extends State<OtpVerificationLayout>
 
   Timer? _resendTimer;
   int _timeLeft = 60;
-  bool _canResendOTP = false;
+  bool _canResendOTP = true;
 
   String get _otpCode {
     return _controllers.map((controller) => controller.text).join();

@@ -4,6 +4,7 @@ import 'package:nwt_app/controllers/user_controller.dart';
 import 'package:nwt_app/screens/auth/pan_card_verification.dart';
 import 'package:nwt_app/screens/auth/phone_number.dart';
 import 'package:nwt_app/screens/dashboard/dashboard.dart';
+import 'package:nwt_app/screens/fetch-holdings/mf_fetching.dart';
 import 'package:nwt_app/screens/onboarding/onboarding.dart';
 import 'package:nwt_app/services/auth/auth.dart';
 import 'package:nwt_app/services/global_storage.dart';
@@ -14,12 +15,9 @@ class AuthFlow {
   final AuthService _authService = AuthService();
   final UserController _userController = Get.find<UserController>();
 
-  /// Handles the flow after successful OTP verification
-  /// Fetches the latest user profile and redirects based on verification status
   Future<void> handlePostOtpVerification() async {
     AppLogger.info('Handling post-OTP verification flow', tag: 'AuthFlow');
 
-    // Fetch the latest user profile
     await _userController.fetchUserProfile(
       onLoading: (loading) {
         // Handle loading silently
@@ -31,7 +29,7 @@ class AuthFlow {
       final user = _userController.userData!;
 
       // Check all verification statuses at once
-      if (user.isverified && user.ispanverified) {
+      if (user.isverified && user.ispanverified && user.ismfverified) {
         // All verifications are complete, go directly to dashboard
         AppLogger.info(
           'User is fully verified, redirecting to dashboard',
@@ -103,6 +101,16 @@ class AuthFlow {
       return;
     }
 
+    // After PAN is verified, check if mutual funds have been fetched
+    if (!user.ismfverified) {
+      AppLogger.info(
+        'Mutual Fund not verified, redirecting to Mutual Fund verification',
+        tag: 'AuthFlow',
+      );
+      _navigateToMutualFundVerification();
+      return;
+    }
+
     // if (!user.isonboardingcompleted) {
     //   AppLogger.info(
     //     'Profile not completed, redirecting to user profile',
@@ -136,6 +144,13 @@ class AuthFlow {
   void _navigateToPanVerification() {
     Get.offAll(
       () => const PanCardVerification(),
+      transition: Transition.rightToLeft,
+    );
+  }
+
+  void _navigateToMutualFundVerification() {
+    Get.offAll(
+      () => const MutualFundHoldingsJourneyScreen(),
       transition: Transition.rightToLeft,
     );
   }

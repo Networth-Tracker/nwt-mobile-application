@@ -1,15 +1,11 @@
-import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_navigation/src/routes/transitions_type.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/sizing.dart';
-import 'package:nwt_app/screens/auth/phone_number.dart';
 import 'package:nwt_app/widgets/common/button_widget.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
+
 import 'widgets/mutual_fund_analysis_card.dart';
 
 class AnalysisMutualFund extends StatefulWidget {
@@ -217,7 +213,7 @@ class _AnalysisMutualFundState extends State<AnalysisMutualFund> {
           ),
         ),
       ),
-         bottomNavigationBar: Container(
+      bottomNavigationBar: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(
           horizontal: AppSizing.scaffoldHorizontalPadding,
@@ -233,14 +229,12 @@ class _AnalysisMutualFundState extends State<AnalysisMutualFund> {
                 isLoading: false,
                 variant: AppButtonVariant.primary,
                 size: AppButtonSize.large,
-                onPressed:(){},
+                onPressed: () {},
               ),
             ),
           ],
         ),
       ),
-      
     );
-    
   }
 }

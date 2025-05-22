@@ -6,13 +6,12 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:nwt_app/constants/storage_keys.dart';
 import 'package:nwt_app/constants/theme.dart';
 import 'package:nwt_app/controllers/theme_controller.dart';
 import 'package:nwt_app/controllers/user_controller.dart';
 import 'package:nwt_app/firebase_options.dart';
 import 'package:nwt_app/notification/firebase_messaging.dart';
-import 'package:nwt_app/screens/fetch-holdings/mf_fetching.dart';
+import 'package:nwt_app/screens/splash.dart';
 import 'package:nwt_app/services/auth/auth_flow.dart';
 import 'package:nwt_app/services/global_storage.dart';
 import 'package:nwt_app/services/network/connectivity_service.dart';
@@ -92,17 +91,18 @@ class MainEntry extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeController = Get.put(ThemeController());
-    StorageService.write(
-      StorageKeys.AUTH_TOKEN_KEY,
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjMsInBob25lbnVtYmVyIjoiOTIzOTg3NDU2MCIsImd1aWQiOiJVXzE3NDcwMzkzNzE1OTUiLCJwYW5udW1iZXIiOiJBUVFQUzc1NzZSIiwiaWF0IjoxNzQ3OTA0MzU0LCJleHAiOjE3NDg1MDkxNTR9.eHENEahc2CH5YKU_Mb0iIwaAIpV2JNplELi5jNz9zh4",
-    );
+    // StorageService.remove(StorageKeys.AUTH_TOKEN_KEY);
+    // StorageService.write(
+    //   StorageKeys.AUTH_TOKEN_KEY,
+    //   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjMsInBob25lbnVtYmVyIjoiOTIzOTg3NDU2MCIsImd1aWQiOiJVXzE3NDcwMzkzNzE1OTUiLCJwYW5udW1iZXIiOiJBUVFQUzc1NzZSIiwiaWF0IjoxNzQ3OTA0MzU0LCJleHAiOjE3NDg1MDkxNTR9.eHENEahc2CH5YKU_Mb0iIwaAIpV2JNplELi5jNz9zh4",
+    // );
     return Obx(
       () => GetMaterialApp(
         title: 'pivot.money',
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: themeController.themeMode,
-        home: const MutualFundHoldingsJourneyScreen(),
+        home: const SplashScreen(),
         builder: (context, child) {
           return MediaQuery(
             data: MediaQuery.of(

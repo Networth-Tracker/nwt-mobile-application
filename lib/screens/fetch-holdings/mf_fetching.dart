@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:nwt_app/controllers/user_controller.dart';
 import 'package:nwt_app/screens/fetch-holdings/layouts/layouts.dart';
 import 'package:nwt_app/screens/fetch-holdings/types/mf_fetching.dart';
+import 'package:nwt_app/services/auth/auth_flow.dart';
 import 'package:nwt_app/services/mf_onboarding/mf_onboarding_service.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 
@@ -18,8 +20,10 @@ class MutualFundHoldingsJourneyScreen extends StatefulWidget {
 class _MutualFundHoldingsJourneyScreenState
     extends State<MutualFundHoldingsJourneyScreen>
     with CodeAutoFill, TickerProviderStateMixin {
-  // Service for MF onboarding
+  // Services
   final MFOnboardingService _mfOnboardingService = MFOnboardingService();
+  final UserController _userController = Get.find<UserController>();
+  final AuthFlow _authFlow = AuthFlow();
 
   // CAS details from API response
   DecryptedCASDetails? _casDetails;
@@ -221,7 +225,7 @@ class _MutualFundHoldingsJourneyScreenState
     );
 
     if (result) {
-      // OTP verified successfully, move to loading step
+      // OTP verified successfully, update user status and move to loading step
       Get.snackbar(
         'Success',
         'OTP verified successfully',
@@ -229,7 +233,37 @@ class _MutualFundHoldingsJourneyScreenState
         backgroundColor: Colors.green.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
+      
+      // Update user's mutual fund verification status
+      await _updateMutualFundVerificationStatus();
+      
+      // Move to loading step
       _goToNextStep();
+    }
+  }
+
+  // Update mutual fund verification status in user profile
+  Future<void> _updateMutualFundVerificationStatus() async {
+    try {
+      // Update user profile to mark mutual fund verification as complete
+      await _userController.fetchUserProfile(
+        onLoading: (isLoading) {
+          setState(() {
+            _isLoading = isLoading;
+          });
+        },
+      );
+      
+      // Simulate a delay to ensure the user profile is updated
+      await Future.delayed(const Duration(seconds: 2));
+      
+      // Check if we need to redirect to dashboard
+      if (_userController.userData?.ismfverified == true) {
+        // Navigate to dashboard using the AuthFlow
+        await _authFlow.handlePostOtpVerification();
+      }
+    } catch (e) {
+      debugPrint('Error updating mutual fund verification status: $e');
     }
   }
 

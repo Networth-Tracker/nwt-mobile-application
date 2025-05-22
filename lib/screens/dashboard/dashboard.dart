@@ -13,6 +13,8 @@ import 'package:nwt_app/screens/dashboard/widgets/asset_card.dart';
 import 'package:nwt_app/screens/dashboard/widgets/mutual_fund_bottom_sheet.dart';
 import 'package:nwt_app/screens/dashboard/widgets/networth_chart.dart';
 import 'package:nwt_app/screens/dashboard/zerodha_webview.dart';
+import 'package:nwt_app/screens/dashboard/types/dashboard_networth.dart';
+import 'package:nwt_app/services/dashboard/total_networth.dart';
 import 'package:nwt_app/screens/mf_switch/mf_switch.dart';
 import 'package:nwt_app/screens/notifications/notification_list.dart';
 import 'package:nwt_app/services/auth/auth_flow.dart';
@@ -34,9 +36,14 @@ class _DashboardState extends State<Dashboard>
     with SingleTickerProviderStateMixin {
   final dashboardAssetController = Get.put(DashboardAssetController());
   final _zerodhaService = ZerodhaService();
+  final _totalNetworthService = TotalNetworthService();
   late AnimationController _refreshController;
   bool isAssetsLoading = false;
   bool isZerodhaLoading = false;
+  
+  // Networth data
+  double _networthAmount = 0.0;
+  String _lastFetchedTime = "";
 
   @override
   void initState() {
@@ -46,6 +53,7 @@ class _DashboardState extends State<Dashboard>
       duration: const Duration(milliseconds: 1500),
     );
     fetchDashboardAssets();
+    fetchTotalNetworth();
   }
 
   @override
@@ -70,6 +78,77 @@ class _DashboardState extends State<Dashboard>
         }
       },
     );
+  }
+  
+  /// Fetches the total networth data from the API
+  Future<void> fetchTotalNetworth() async {
+    _totalNetworthService.getTotalNetworth(
+      onLoading: (isLoading) {
+        if (mounted) {
+          setState(() {
+            isAssetsLoading = isLoading;
+          });
+          if (isLoading) {
+            _refreshController.repeat();
+          } else {
+            _refreshController.stop();
+            _refreshController.reset();
+          }
+        }
+      },
+    ).then((response) {
+      if (response != null && response.data != null) {
+        if (mounted) {
+          setState(() {
+            // Format the networth amount with rupee symbol
+            _networthAmount =response.data!.totalcurrentmarketvalue;
+            // Format the timestamp
+            _lastFetchedTime = _formatDateTime(response.data!.currentdatetime);
+          });
+        }
+      }
+    });
+  }
+  
+  /// Formats the networth value with commas
+  // String _formatNetworth(int value) {
+  //   String valueStr = value.toString();
+  //   String result = '';
+  //   int count = 0;
+    
+  //   // Add commas for Indian number format (e.g., 1,00,000)
+  //   for (int i = valueStr.length - 1; i >= 0; i--) {
+  //     result = valueStr[i] + result;
+  //     count++;
+  //     if (count == 3 && i > 0) {
+  //       result = ',' + result;
+  //       count = 0;
+  //     } else if (count == 2 && i > 0 && result.contains(',')) {
+  //       result = ',' + result;
+  //       count = 0;
+  //     }
+  //   }
+    
+  //   return result;
+  // }
+  
+  /// Formats the datetime to a readable time string (e.g., "Last data fetched at 11:00pm")
+  String _formatDateTime(DateTime dateTime) {
+    int hour = dateTime.hour;
+    String period = 'am';
+    
+    if (hour >= 12) {
+      period = 'pm';
+      if (hour > 12) {
+        hour -= 12;
+      }
+    }
+    if (hour == 0) {
+      hour = 12;
+    }
+    
+    String minute = dateTime.minute.toString().padLeft(2, '0');
+    return "Last data fetched at $hour:$minute$period";
   }
 
   /// Connects to Zerodha by fetching the login URL and opening it in a WebView
@@ -390,7 +469,7 @@ class _DashboardState extends State<Dashboard>
                                                       .spaceBetween,
                                               children: [
                                                 AnimatedAmount(
-                                                  amount: "₹76,171,095",
+                                                  amount: CurrencyFormatter.formatRupeeWithCommas(_networthAmount),
                                                   isAmountVisible:
                                                       _isAmountVisible,
                                                   style: const TextStyle(
@@ -425,130 +504,133 @@ class _DashboardState extends State<Dashboard>
                                               ],
                                             ),
                                             AppText(
-                                              "Last data fetched at 11:00pm",
+                                              _lastFetchedTime.isNotEmpty ? _lastFetchedTime : "Last data fetched at 11:00pm",
                                               variant: AppTextVariant.tiny,
                                               weight: AppTextWeight.semiBold,
                                               colorType:
                                                   AppTextColorType.secondary,
                                             ),
-                                            const NetworthChart(),
+                                            NetworthChart(
+                                              currentNetworth: _networthAmount,
+                                              projectedNetworth: _networthAmount,
+                                            ),
                                           ],
                                         ),
                                       ],
                                     ),
                                   ),
                                 ),
-                                Positioned(
-                                  top: 8,
-                                  left: 0,
-                                  right: 0,
-                                  bottom: 8,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      border: Border(
-                                        bottom: BorderSide(
-                                          color: AppColors.darkButtonBorder,
-                                          width: 1.0,
-                                        ),
-                                      ),
-                                    ),
-                                    child: Opacity(
-                                      opacity: t,
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal:
-                                              AppSizing
-                                                  .scaffoldHorizontalPadding,
-                                        ),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                AppText(
-                                                  "Your Networth",
-                                                  variant:
-                                                      AppTextVariant.bodySmall,
-                                                  weight: AppTextWeight.bold,
-                                                  colorType:
-                                                      AppTextColorType
-                                                          .secondary,
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    GestureDetector(
-                                                      onTap:
-                                                          fetchDashboardAssets,
-                                                      child: RotationTransition(
-                                                        turns:
-                                                            _refreshController,
-                                                        child: Icon(
-                                                          Icons.refresh_rounded,
-                                                          size: 20,
-                                                          color:
-                                                              AppColors
-                                                                  .darkButtonPrimaryBackground,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(width: 12),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                            const SizedBox(height: 4),
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                AnimatedAmount(
-                                                  amount: "₹76,171,095",
-                                                  isAmountVisible:
-                                                      _isAmountVisible,
-                                                  style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 28,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    GestureDetector(
-                                                      onTap: () {
-                                                        setState(() {
-                                                          _isAmountVisible =
-                                                              !_isAmountVisible;
-                                                        });
-                                                      },
-                                                      child: Icon(
-                                                        _isAmountVisible
-                                                            ? Icons
-                                                                .visibility_outlined
-                                                            : Icons
-                                                                .visibility_off_outlined,
-                                                        size: 20,
-                                                        color:
-                                                            AppColors
-                                                                .darkButtonPrimaryBackground,
-                                                      ),
-                                                    ),
-                                                    const SizedBox(width: 12),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
+                                // Positioned(
+                                //   top: 8,
+                                //   left: 0,
+                                //   right: 0,
+                                //   bottom: 8,
+                                //   child: Container(
+                                //     decoration: BoxDecoration(
+                                //       border: Border(
+                                //         bottom: BorderSide(
+                                //           color: AppColors.darkButtonBorder,
+                                //           width: 1.0,
+                                //         ),
+                                //       ),
+                                //     ),
+                                //     child: Opacity(
+                                //       opacity: t,
+                                //       child: Padding(
+                                //         padding: const EdgeInsets.symmetric(
+                                //           horizontal:
+                                //               AppSizing
+                                //                   .scaffoldHorizontalPadding,
+                                //         ),
+                                //         child: Column(
+                                //           mainAxisSize: MainAxisSize.min,
+                                //           crossAxisAlignment:
+                                //               CrossAxisAlignment.start,
+                                //           children: [
+                                //             Row(
+                                //               mainAxisAlignment:
+                                //                   MainAxisAlignment
+                                //                       .spaceBetween,
+                                //               children: [
+                                //                 AppText(
+                                //                   "Your Networth",
+                                //                   variant:
+                                //                       AppTextVariant.bodySmall,
+                                //                   weight: AppTextWeight.bold,
+                                //                   colorType:
+                                //                       AppTextColorType
+                                //                           .secondary,
+                                //                 ),
+                                //                 Row(
+                                //                   children: [
+                                //                     GestureDetector(
+                                //                       onTap:
+                                //                           fetchDashboardAssets,
+                                //                       child: RotationTransition(
+                                //                         turns:
+                                //                             _refreshController,
+                                //                         child: Icon(
+                                //                           Icons.refresh_rounded,
+                                //                           size: 20,
+                                //                           color:
+                                //                               AppColors
+                                //                                   .darkButtonPrimaryBackground,
+                                //                         ),
+                                //                       ),
+                                //                     ),
+                                //                     const SizedBox(width: 12),
+                                //                   ],
+                                //                 ),
+                                //               ],
+                                //             ),
+                                //             const SizedBox(height: 4),
+                                //             Row(
+                                //               mainAxisAlignment:
+                                //                   MainAxisAlignment
+                                //                       .spaceBetween,
+                                //               children: [
+                                //                 AnimatedAmount(
+                                //                   amount: CurrencyFormatter.formatRupeeWithCommas(_networthAmount),
+                                //                   isAmountVisible:
+                                //                       _isAmountVisible,
+                                //                   style: const TextStyle(
+                                //                     color: Colors.white,
+                                //                     fontSize: 28,
+                                //                     fontWeight: FontWeight.bold,
+                                //                   ),
+                                //                 ),
+                                //                 Row(
+                                //                   children: [
+                                //                     GestureDetector(
+                                //                       onTap: () {
+                                //                         setState(() {
+                                //                           _isAmountVisible =
+                                //                               !_isAmountVisible;
+                                //                         });
+                                //                       },
+                                //                       child: Icon(
+                                //                         _isAmountVisible
+                                //                             ? Icons
+                                //                                 .visibility_outlined
+                                //                             : Icons
+                                //                                 .visibility_off_outlined,
+                                //                         size: 20,
+                                //                         color:
+                                //                             AppColors
+                                //                                 .darkButtonPrimaryBackground,
+                                //                       ),
+                                //                     ),
+                                //                     const SizedBox(width: 12),
+                                //                   ],
+                                //                 ),
+                                //               ],
+                                //             ),
+                                //           ],
+                                //         ),
+                                //       ),
+                                //     ),
+                                //   ),
+                                // ),
                               ],
                             );
                           },
@@ -690,228 +772,229 @@ class _DashboardState extends State<Dashboard>
                           ),
                         ),
                       ),
-                      SliverToBoxAdapter(
-                        child: Material(
-                          color: AppColors.darkBackground,
-                          child: Column(
-                            children: [
-                              SizedBox(height: 24),
-                              Padding(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal:
-                                      AppSizing.scaffoldHorizontalPadding,
-                                ),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withValues(
-                                          alpha: 0.25,
-                                        ),
-                                        blurRadius: 15,
-                                        offset: const Offset(0, 6),
-                                      ),
-                                    ],
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      stops: const [0.1, 0.9],
-                                      colors: [
-                                        Color.fromRGBO(180, 120, 255, 0.95),
-                                        Color.fromRGBO(41, 9, 81, 1),
-                                      ],
-                                    ),
-                                  ),
-                                  child: Stack(
-                                    children: [
-                                      // Background decorative elements
-                                      Positioned(
-                                        right: -30,
-                                        top: -30,
-                                        child: Container(
-                                          height: 120,
-                                          width: 120,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: Colors.white.withValues(
-                                              alpha: 0.08,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Positioned(
-                                        left: 20,
-                                        bottom: -40,
-                                        child: Container(
-                                          height: 100,
-                                          width: 100,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: Colors.white.withValues(
-                                              alpha: 0.08,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Positioned(
-                                        right: 60,
-                                        top: 40,
-                                        child: Container(
-                                          height: 8,
-                                          width: 8,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: Colors.white.withValues(
-                                              alpha: 0.3,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Positioned(
-                                        left: 80,
-                                        bottom: 30,
-                                        child: Container(
-                                          height: 6,
-                                          width: 6,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: Colors.white.withValues(
-                                              alpha: 0.3,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 15,
-                                          vertical: 15,
-                                        ),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Expanded(
-                                              flex: 3,
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      AppText(
-                                                        "Connect with Zerodha",
-                                                        variant:
-                                                            AppTextVariant
-                                                                .bodyLarge,
-                                                        weight:
-                                                            AppTextWeight.bold,
-                                                        colorType:
-                                                            AppTextColorType
-                                                                .primary,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  const SizedBox(height: 5),
-                                                  AppText(
-                                                    "Log in to Kite to link all your investments and keep track of your portfolio in one place!",
-                                                    variant:
-                                                        AppTextVariant
-                                                            .bodySmall,
-                                                    weight:
-                                                        AppTextWeight.medium,
-                                                    colorType:
-                                                        AppTextColorType
-                                                            .primary,
-                                                    maxLines: 3,
-                                                    lineHeight: 1.4,
-                                                  ),
-                                                  const SizedBox(height: 8),
-                                                  InkWell(
-                                                    onTap: _showBottomSheet,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          8,
-                                                        ),
-                                                    child: Container(
-                                                      padding:
-                                                          const EdgeInsets.symmetric(
-                                                            horizontal: 8,
-                                                            vertical: 8,
-                                                          ),
-                                                      decoration: BoxDecoration(
-                                                        color:
-                                                            AppColors
-                                                                .darkButtonPrimaryBackground,
-                                                        borderRadius:
-                                                            BorderRadius.circular(
-                                                              8,
-                                                            ),
-                                                        boxShadow: [
-                                                          BoxShadow(
-                                                            color: Colors.black
-                                                                .withValues(
-                                                                  alpha: 0.25,
-                                                                ),
-                                                            blurRadius: 8,
-                                                            offset:
-                                                                const Offset(
-                                                                  0,
-                                                                  4,
-                                                                ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      child: Row(
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        children: [
-                                                          InkWell(
-                                                            onTap:
-                                                                connectToZerodha,
-                                                            child: AppText(
-                                                              "Connect Now",
-                                                              variant:
-                                                                  AppTextVariant
-                                                                      .tiny,
-                                                              weight:
-                                                                  AppTextWeight
-                                                                      .semiBold,
-                                                              colorType:
-                                                                  AppTextColorType
-                                                                      .tertiary,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ),
+                      
+                      // SliverToBoxAdapter(
+                      //   child: Material(
+                      //     color: AppColors.darkBackground,
+                      //     child: Column(
+                      //       children: [
+                      //         SizedBox(height: 24),
+                      //         Padding(
+                      //           padding: EdgeInsets.symmetric(
+                      //             horizontal:
+                      //                 AppSizing.scaffoldHorizontalPadding,
+                      //           ),
+                      //           child: Container(
+                      //             decoration: BoxDecoration(
+                      //               borderRadius: BorderRadius.circular(20),
+                      //               boxShadow: [
+                      //                 BoxShadow(
+                      //                   color: Colors.black.withValues(
+                      //                     alpha: 0.25,
+                      //                   ),
+                      //                   blurRadius: 15,
+                      //                   offset: const Offset(0, 6),
+                      //                 ),
+                      //               ],
+                      //               gradient: LinearGradient(
+                      //                 begin: Alignment.topLeft,
+                      //                 end: Alignment.bottomRight,
+                      //                 stops: const [0.1, 0.9],
+                      //                 colors: [
+                      //                   Color.fromRGBO(180, 120, 255, 0.95),
+                      //                   Color.fromRGBO(41, 9, 81, 1),
+                      //                 ],
+                      //               ),
+                      //             ),
+                      //             child: Stack(
+                      //               children: [
+                      //                 // Background decorative elements
+                      //                 Positioned(
+                      //                   right: -30,
+                      //                   top: -30,
+                      //                   child: Container(
+                      //                     height: 120,
+                      //                     width: 120,
+                      //                     decoration: BoxDecoration(
+                      //                       shape: BoxShape.circle,
+                      //                       color: Colors.white.withValues(
+                      //                         alpha: 0.08,
+                      //                       ),
+                      //                     ),
+                      //                   ),
+                      //                 ),
+                      //                 Positioned(
+                      //                   left: 20,
+                      //                   bottom: -40,
+                      //                   child: Container(
+                      //                     height: 100,
+                      //                     width: 100,
+                      //                     decoration: BoxDecoration(
+                      //                       shape: BoxShape.circle,
+                      //                       color: Colors.white.withValues(
+                      //                         alpha: 0.08,
+                      //                       ),
+                      //                     ),
+                      //                   ),
+                      //                 ),
+                      //                 Positioned(
+                      //                   right: 60,
+                      //                   top: 40,
+                      //                   child: Container(
+                      //                     height: 8,
+                      //                     width: 8,
+                      //                     decoration: BoxDecoration(
+                      //                       shape: BoxShape.circle,
+                      //                       color: Colors.white.withValues(
+                      //                         alpha: 0.3,
+                      //                       ),
+                      //                     ),
+                      //                   ),
+                      //                 ),
+                      //                 Positioned(
+                      //                   left: 80,
+                      //                   bottom: 30,
+                      //                   child: Container(
+                      //                     height: 6,
+                      //                     width: 6,
+                      //                     decoration: BoxDecoration(
+                      //                       shape: BoxShape.circle,
+                      //                       color: Colors.white.withValues(
+                      //                         alpha: 0.3,
+                      //                       ),
+                      //                     ),
+                      //                   ),
+                      //                 ),
+                      //                 Padding(
+                      //                   padding: const EdgeInsets.symmetric(
+                      //                     horizontal: 15,
+                      //                     vertical: 15,
+                      //                   ),
+                      //                   child: Row(
+                      //                     mainAxisAlignment:
+                      //                         MainAxisAlignment.spaceBetween,
+                      //                     crossAxisAlignment:
+                      //                         CrossAxisAlignment.center,
+                      //                     children: [
+                      //                       Expanded(
+                      //                         flex: 3,
+                      //                         child: Column(
+                      //                           crossAxisAlignment:
+                      //                               CrossAxisAlignment.start,
+                      //                           children: [
+                      //                             Row(
+                      //                               children: [
+                      //                                 AppText(
+                      //                                   "Connect with Zerodha",
+                      //                                   variant:
+                      //                                       AppTextVariant
+                      //                                           .bodyLarge,
+                      //                                   weight:
+                      //                                       AppTextWeight.bold,
+                      //                                   colorType:
+                      //                                       AppTextColorType
+                      //                                           .primary,
+                      //                                 ),
+                      //                               ],
+                      //                             ),
+                      //                             const SizedBox(height: 5),
+                      //                             AppText(
+                      //                               "Log in to Kite to link all your investments and keep track of your portfolio in one place!",
+                      //                               variant:
+                      //                                   AppTextVariant
+                      //                                       .bodySmall,
+                      //                               weight:
+                      //                                   AppTextWeight.medium,
+                      //                               colorType:
+                      //                                   AppTextColorType
+                      //                                       .primary,
+                      //                               maxLines: 3,
+                      //                               lineHeight: 1.4,
+                      //                             ),
+                      //                             const SizedBox(height: 8),
+                      //                             InkWell(
+                      //                               onTap: _showBottomSheet,
+                      //                               borderRadius:
+                      //                                   BorderRadius.circular(
+                      //                                     8,
+                      //                                   ),
+                      //                               child: Container(
+                      //                                 padding:
+                      //                                     const EdgeInsets.symmetric(
+                      //                                       horizontal: 8,
+                      //                                       vertical: 8,
+                      //                                     ),
+                      //                                 decoration: BoxDecoration(
+                      //                                   color:
+                      //                                       AppColors
+                      //                                           .darkButtonPrimaryBackground,
+                      //                                   borderRadius:
+                      //                                       BorderRadius.circular(
+                      //                                         8,
+                      //                                       ),
+                      //                                   boxShadow: [
+                      //                                     BoxShadow(
+                      //                                       color: Colors.black
+                      //                                           .withValues(
+                      //                                             alpha: 0.25,
+                      //                                           ),
+                      //                                       blurRadius: 8,
+                      //                                       offset:
+                      //                                           const Offset(
+                      //                                             0,
+                      //                                             4,
+                      //                                           ),
+                      //                                     ),
+                      //                                   ],
+                      //                                 ),
+                      //                                 child: Row(
+                      //                                   mainAxisSize:
+                      //                                       MainAxisSize.min,
+                      //                                   children: [
+                      //                                     InkWell(
+                      //                                       onTap:
+                      //                                           connectToZerodha,
+                      //                                       child: AppText(
+                      //                                         "Connect Now",
+                      //                                         variant:
+                      //                                             AppTextVariant
+                      //                                                 .tiny,
+                      //                                         weight:
+                      //                                             AppTextWeight
+                      //                                                 .semiBold,
+                      //                                         colorType:
+                      //                                             AppTextColorType
+                      //                                                 .tertiary,
+                      //                                       ),
+                      //                                     ),
+                      //                                   ],
+                      //                                 ),
+                      //                               ),
+                      //                             ),
 
-                                                  // const SizedBox(height: 24),
-                                                ],
-                                              ),
-                                            ),
-                                            // const SizedBox(width: 20),
-                                            // Expanded(
-                                            //   flex: 2,
-                                            //   child: SvgPicture.asset(
-                                            //     "assets/svgs/dashboard/zerodha_banner.svg",
-                                            //     fit: BoxFit.contain,
-                                            //   ),
-                                            // ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                      //                             // const SizedBox(height: 24),
+                      //                           ],
+                      //                         ),
+                      //                       ),
+                      //                       // const SizedBox(width: 20),
+                      //                       // Expanded(
+                      //                       //   flex: 2,
+                      //                       //   child: SvgPicture.asset(
+                      //                       //     "assets/svgs/dashboard/zerodha_banner.svg",
+                      //                       //     fit: BoxFit.contain,
+                      //                       //   ),
+                      //                       // ),
+                      //                     ],
+                      //                   ),
+                      //                 ),
+                      //               ],
+                      //             ),
+                      //           ),
+                      //         ),
+                      //       ],
+                      //     ),
+                      //   ),
+                      // ),
                       SliverToBoxAdapter(
                         child: Material(
                           color: AppColors.darkBackground,
