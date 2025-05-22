@@ -10,6 +10,7 @@ import 'package:nwt_app/screens/assets/banks/banks.dart';
 import 'package:nwt_app/screens/assets/investments/investments.dart';
 import 'package:nwt_app/screens/connections/connections.dart';
 import 'package:nwt_app/screens/dashboard/widgets/asset_card.dart';
+import 'package:nwt_app/screens/dashboard/widgets/mutual_fund_bottom_sheet.dart';
 import 'package:nwt_app/screens/dashboard/widgets/networth_chart.dart';
 import 'package:nwt_app/screens/dashboard/zerodha_webview.dart';
 import 'package:nwt_app/screens/mf_switch/mf_switch.dart';
@@ -148,6 +149,16 @@ class _DashboardState extends State<Dashboard>
 
   PageController pageViewController = PageController();
   int currentPage = 0;
+
+  // Function to show the bottom sheet
+  void _showBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const MutualFundBottomSheet(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -819,9 +830,7 @@ class _DashboardState extends State<Dashboard>
                                                   ),
                                                   const SizedBox(height: 8),
                                                   InkWell(
-                                                    onTap: () {
-                                                      // Add action for connect button
-                                                    },
+                                                    onTap: _showBottomSheet,
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                           8,
@@ -1060,8 +1069,8 @@ class _DashboardState extends State<Dashboard>
                                                     ? AppColors.darkPrimary
                                                     : AppColors.lightPrimary
                                                 : themeController.isDarkMode
-                                                ? AppColors.darkButtonBorder
-                                                : AppColors.lightButtonBorder,
+                                                    ? AppColors.darkButtonBorder
+                                                    : AppColors.lightButtonBorder,
                                       ),
                                     );
                                   }),
@@ -1090,6 +1099,23 @@ class _DashboardState extends State<Dashboard>
                                   ],
                                 ),
                               ),
+                              // SizedBox(height: 20),
+                              // InkWell(
+                              //   onTap: _showBottomSheet,
+                              //   child: Container(
+                              //     padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                              //     decoration: BoxDecoration(
+                              //       color: AppColors.darkPrimary,
+                              //       borderRadius: BorderRadius.circular(12),
+                              //     ),
+                              //     child: AppText(
+                              //       "Open Dashboard Actions",
+                              //       variant: AppTextVariant.bodyLarge,
+                              //       weight: AppTextWeight.bold,
+                              //       colorType: AppTextColorType.primary,
+                              //     ),
+                              //   ),
+                              // ),
                               SizedBox(height: 20),
                               Padding(
                                 padding: const EdgeInsets.symmetric(
