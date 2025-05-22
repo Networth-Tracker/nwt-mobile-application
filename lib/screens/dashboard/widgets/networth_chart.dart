@@ -54,7 +54,7 @@ class NetworthChart extends StatelessWidget {
                           ),
                           const SizedBox(width: 4),
                           AppText(
-                            "₹50,935",
+                            currentNetworth.toString(),
                             variant: AppTextVariant.bodySmall,
                             weight: AppTextWeight.semiBold,
                             colorType: AppTextColorType.success,
@@ -94,7 +94,7 @@ class NetworthChart extends StatelessWidget {
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.darkPrimary.withOpacity(0.4),
+                                color: AppColors.darkPrimary.withValues(alpha: 0.4),
                                 blurRadius: 6,
                                 offset: const Offset(0, 2),
                               ),
@@ -132,7 +132,7 @@ class NetworthChart extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   AppText(
-                    "Mar 2025",
+                    "Mar 2024",
                     variant: AppTextVariant.tiny,
                     weight: AppTextWeight.medium,
                     colorType: AppTextColorType.gray,
