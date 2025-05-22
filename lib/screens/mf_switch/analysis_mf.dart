@@ -1,8 +1,14 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/routes/transitions_type.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/sizing.dart';
+import 'package:nwt_app/screens/auth/phone_number.dart';
+import 'package:nwt_app/widgets/common/button_widget.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 import 'widgets/mutual_fund_analysis_card.dart';
 
@@ -165,32 +171,76 @@ class _AnalysisMutualFundState extends State<AnalysisMutualFund> {
                 Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: AppColors.darkInputBorder,
+                    color: AppColors.darkCardBG,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: AppColors.darkButtonBorder),
                   ),
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 20,
+                    horizontal: 14,
+                    vertical: 14,
                   ),
-                  child: AppText(
-                    "Mutual Fund Holdings",
-                    variant: AppTextVariant.headline5,
-                    weight: AppTextWeight.bold,
-                    colorType: AppTextColorType.primary,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AppText(
+                        "Mutual Fund Holdings",
+                        variant: AppTextVariant.headline5,
+                        weight: AppTextWeight.bold,
+                        colorType: AppTextColorType.primary,
+                      ),
+                      const SizedBox(height: 16),
+
+                      Column(
+                        spacing: 12,
+                        children: [
+                          MutualFundAnalysisCard(
+                            logoUrl:
+                                "https://s3-symbol-logo.tradingview.com/kotak-mahindra-bank--big.svg",
+                            schemeName: "Kotak Emerging Equity Scheme",
+                            fundType: "Regular Fund",
+                            investedAmount: "₹45,000",
+                          ),
+                          MutualFundAnalysisCard(
+                            logoUrl:
+                                "https://s3-symbol-logo.tradingview.com/kotak-mahindra-bank--big.svg",
+                            schemeName: "Kotak Emerging Equity Scheme",
+                            fundType: "Direct Fund",
+                            investedAmount: "₹45,000",
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                ),
-                MutualFundAnalysisCard(
-                  logoUrl: "https://s3-symbol-logo.tradingview.com/kotak-mahindra-bank--big.svg",
-                  schemeName: "Kotak Emerging Equity Scheme",
-                  fundType: "Regular Fund",
-                  investedAmount: "₹45,000",
                 ),
               ],
             ),
           ),
         ),
       ),
+         bottomNavigationBar: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSizing.scaffoldHorizontalPadding,
+        ),
+        margin: EdgeInsets.only(
+          bottom: MediaQuery.of(context).padding.bottom + 16,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: AppButton(
+                text: 'Continue',
+                isLoading: false,
+                variant: AppButtonVariant.primary,
+                size: AppButtonSize.large,
+                onPressed:(){},
+              ),
+            ),
+          ],
+        ),
+      ),
+      
     );
+    
   }
 }
