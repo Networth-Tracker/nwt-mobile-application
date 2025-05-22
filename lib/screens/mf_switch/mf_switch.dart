@@ -49,170 +49,157 @@ class _MutualFundSwitchScreenState extends State<MutualFundSwitchScreen> {
             ),
             child: Column(
               children: [
-                                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 20,
-                  ),
+                Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: AppColors.darkCardBG,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: AppColors.darkButtonBorder),
                   ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 14,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       AppText(
-                        "Potential Lifetime Savings",
-                        variant: AppTextVariant.headline4,
+                        "Past Performance",
+                        variant: AppTextVariant.bodyLarge,
                         weight: AppTextWeight.bold,
                         colorType: AppTextColorType.primary,
                       ),
-                      SizedBox(height: 12),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          AppText(
-                            "₹1,00,000",
-                            variant: AppTextVariant.display,
-                            weight: AppTextWeight.bold,
-                            colorType: AppTextColorType.primary,
-                          ),
-                          Icon(
-                            Icons.visibility_outlined,
-                            color: AppColors.darkButtonPrimaryBackground,
-                          ),
-                        ],
+                      const SizedBox(height: 12),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 14,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.darkInputBorder,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: AppColors.darkButtonBorder),
+                        ),
+                        child: Column(
+                          spacing: 6,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                AppText(
+                                  "Invested",
+                                  variant: AppTextVariant.bodyMedium,
+                                  weight: AppTextWeight.semiBold,
+                                  colorType: AppTextColorType.primary,
+                                ),
+                                AppText(
+                                  "₹10,00,000",
+                                  variant: AppTextVariant.bodyMedium,
+                                  weight: AppTextWeight.bold,
+                                  colorType: AppTextColorType.primary,
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                AppText(
+                                  "Held For",
+                                  variant: AppTextVariant.bodyMedium,
+                                  weight: AppTextWeight.semiBold,
+                                  colorType: AppTextColorType.primary,
+                                ),
+                                AppText(
+                                  "1 Year",
+                                  variant: AppTextVariant.bodyMedium,
+                                  weight: AppTextWeight.bold,
+                                  colorType: AppTextColorType.primary,
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                AppText(
+                                  "Regular Plan value",
+                                  variant: AppTextVariant.bodyMedium,
+                                  weight: AppTextWeight.semiBold,
+                                  colorType: AppTextColorType.primary,
+                                ),
+                                AppText(
+                                  "₹10,88,500",
+                                  variant: AppTextVariant.bodyMedium,
+                                  weight: AppTextWeight.bold,
+                                  colorType: AppTextColorType.primary,
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                AppText(
+                                  "Direct Plan value",
+                                  variant: AppTextVariant.bodyMedium,
+                                  weight: AppTextWeight.semiBold,
+                                  colorType: AppTextColorType.primary,
+                                ),
+                                AppText(
+                                  "₹10,88,500",
+                                  variant: AppTextVariant.bodyMedium,
+                                  weight: AppTextWeight.bold,
+                                  colorType: AppTextColorType.primary,
+                                ),
+                              ],
+                            ),
+                            const Divider(color: AppColors.darkTextSecondary),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                AppText(
+                                  "Commission Paid",
+                                  variant: AppTextVariant.bodyMedium,
+                                  weight: AppTextWeight.semiBold,
+                                  colorType: AppTextColorType.error,
+                                ),
+                                AppText(
+                                  "₹11,500",
+                                  variant: AppTextVariant.bodyMedium,
+                                  weight: AppTextWeight.bold,
+                                  colorType: AppTextColorType.error
+                                  ,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 12),
-
-                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  spacing: 12,
-                  children: [
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 20,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.darkCardBG,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: AppColors.darkButtonBorder),
-                        ),
-                        child: Column(
-                          children: [
-                            AppText(
-                              "Regular Fund Expense Ratio",
-                              variant: AppTextVariant.headline6,
-                              weight: AppTextWeight.medium,
-                              colorType: AppTextColorType.primary,
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 8),
-                            AppText(
-                              "2.10%",
-                              variant: AppTextVariant.headline4,
-                              weight: AppTextWeight.medium,
-                              colorType: AppTextColorType.error,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 20,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.darkCardBG,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: AppColors.darkButtonBorder),
-                        ),
-                        child: Column(
-                          children: [
-                            AppText(
-                              "Direct Fund Expense Ratio",
-                              variant: AppTextVariant.headline6,
-                              weight: AppTextWeight.medium,
-                              colorType: AppTextColorType.primary,
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 8),
-                            AppText(
-                              "0.65%",
-                              variant: AppTextVariant.headline4,
-                              weight: AppTextWeight.medium,
-                              colorType: AppTextColorType.success,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                MFAccordion(
-                  title: "Direct Plan Summary",
-                  initiallyExpanded: true,
-                  child: PlanSummaryCard(
-                    totalInvested: 24.05,
-                    avgInvestedPeriod: "3 Years",
-                    currentValue: 10.05,
-                    additionalEarnings: 2.05,
+                Container(
+                     width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: AppColors.darkCardBG,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppColors.darkButtonBorder),
                   ),
-                ),
-                const SizedBox(height: 16),
-                MFAccordion(
-                  title: "Switch Regular to Direct Plans",
-                  initiallyExpanded: true,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 14,
+                  ),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                     SwitchFundCard(
-                        fundName: "Kotak Emerging Equity Scheme",
-                        fundType: "Regular Fund",
-                        commission: "0.45% commission",
-                        gainAmount: 102000,
-                        targetFundName: "Kotak Emerging Fund Direct Growth",
-                        targetFundType: "Direct Fund",
-                        targetCommission: "No commission",
-                        fundIconUrl: "https://s3-symbol-logo.tradingview.com/kotak-mahindra-bank--big.svg",
+                      AppText(
+                        "Switch Regular to DIrect Plans",
+                        variant: AppTextVariant.headline6,
+                        weight: AppTextWeight.bold,
                       ),
                       const SizedBox(height: 12),
-                      SwitchFundCard(
-                        fundName: "SBI Emerging Equity Scheme",
-                        fundType: "Regular Fund",
-                        commission: "0.45% commission",
-                        gainAmount: 102000,
-                        targetFundName: "SBI Emerging Fund Direct Growth",
-                        targetFundType: "Direct Fund",
-                        targetCommission: "No commission",
-                        fundIconUrl: "https://s3-symbol-logo.tradingview.com/kotak-mahindra-bank--big.svg",
-                      ),
                     ],
                   ),
-                ),
-                const SizedBox(height: 22),
-                Row(
-                  children: [
-                    Expanded(
-                      child: AppButton(
-                        text: 'Continue',
-                        variant: AppButtonVariant.primary,
-                        size: AppButtonSize.large,
-                        isLoading: _isLoading,
-                        onPressed: () {},
-                      ),
-                    ),
-                  ],
-                ),
+                )
               ],
             ),
           ),
