@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
+import 'package:nwt_app/widgets/common/text_widget.dart';
 
 class ResetPin extends StatefulWidget {
   const ResetPin({super.key});
@@ -47,16 +48,11 @@ class _ResetPinState extends State<ResetPin> {
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.black,
-        title: const Text(
+        title: const AppText(
           'Reset Pin',
-          style: TextStyle(
-            color: Color(0xFFFCFCFC),
-            fontFamily: 'Poppins',
-            fontWeight: FontWeight.w600,
-            fontSize: 16,
-            height: 24 / 16,
-            letterSpacing: 0,
-          ),
+          variant: AppTextVariant.headline6,
+          weight: AppTextWeight.bold,
+          colorType: AppTextColorType.primary,
         ),
         centerTitle: true,
         leading: IconButton(
@@ -80,17 +76,12 @@ class _ResetPinState extends State<ResetPin> {
             const SizedBox(height: 40),
             const Padding(
               padding: EdgeInsets.only(left: 10),
-              child: Text(
+              child: AppText(
                 'Reset your 4-digit pin',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w600,
-                  fontSize: 20,
-                  height: 30 / 20,
-                  letterSpacing: 0,
-                  color: Color(0xFFFCFCFC),
-                ),
-                textAlign: TextAlign.start,
+                variant: AppTextVariant.headline4, // or another variant based on your theme
+                lineHeight: 1.5, // equivalent to 30 / 20
+                colorType: AppTextColorType.primary, // or secondary if your theme uses that
+                weight: AppTextWeight.bold,
               ),
             ),
             const SizedBox(height: 30),
@@ -116,15 +107,11 @@ class _ResetPinState extends State<ResetPin> {
               onPressed: () {
                 // Add reset pin logic here
               },
-              child: const Text(
+              child: const AppText(
                 'Confirm',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                  height: 32 / 16,
-                  letterSpacing: 0,
-                ),
+                  variant: AppTextVariant.bodyLarge,
+                  weight: AppTextWeight.bold,
+                  colorType: AppTextColorType.tertiary,
               ),
             ),
             const SizedBox(height: 20),

@@ -1,7 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:nwt_app/widgets/common/app_input_field.dart';
+import 'package:nwt_app/widgets/common/text_widget.dart';
+import 'package:nwt_app/utils/validators.dart';
 
-class EditProfile extends StatelessWidget {
+class EditProfile extends StatefulWidget {
   const EditProfile({super.key});
+
+  @override
+  State<EditProfile> createState() => _EditProfileState();
+}
+
+class _EditProfileState extends State<EditProfile> {
+  final firstNameController = TextEditingController();
+  final lastNameController = TextEditingController();
+  final dobController = TextEditingController();
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime(2000),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null) {
+      setState(() {
+        dobController.text = "${picked.day}/${picked.month}/${picked.year}";
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +39,12 @@ class EditProfile extends StatelessWidget {
           icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Edit Profile',style: TextStyle(fontFamily: 'Poppins',fontWeight: FontWeight.w600,fontSize: 16,height: 24 / 16,letterSpacing: 0,),),
+        title: const AppText(
+          'Edit Profile',
+          variant: AppTextVariant.headline6,
+          weight: AppTextWeight.bold,
+          colorType: AppTextColorType.primary,
+        ),
         centerTitle: true,
       ),
       body: Padding(
@@ -30,81 +61,62 @@ class EditProfile extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             const Center(
-              child: Text("Upload image", style:TextStyle(
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w500,
-                      fontSize: 14,
-                      height: 24 / 14,
-                      letterSpacing: 0,
-                      color: Color(0XFF808284),
-
-                    ),
+              child: AppText(
+                "Upload image",
+                variant: AppTextVariant.bodySmall,
+                weight: AppTextWeight.medium,
+                colorType: AppTextColorType.secondary,
               ),
             ),
             const SizedBox(height: 30),
 
-            const Text(
+            const AppText(
               'First Name',
-              style: TextStyle(
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w500,
-                      fontSize: 14,
-                      height: 24 / 14,
-                      letterSpacing: 0,
-                      color: Color(0XFF808284),
-
-                    ),
+              variant: AppTextVariant.bodyMedium,
+              weight: AppTextWeight.medium,
+              colorType: AppTextColorType.secondary,
             ),
             const SizedBox(height: 6),
-            const TextField(
-              style: TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-              ),
+            AppInputField(
+              controller: firstNameController,
+              hintText: "First Name",
+              validator: AppValidators.validateFirstName,
+              inputFormatters: AppInputFormatters.firstNameFormatters(),
+              textCapitalization: TextCapitalization.words,
             ),
             const SizedBox(height: 20),
 
-            const Text(
+            const AppText(
               'Last Name',
-              style: TextStyle(
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w500,
-                      fontSize: 14,
-                      height: 24 / 14,
-                      letterSpacing: 0,
-                      color: Color(0XFF808284),
-
-                    ),
+              variant: AppTextVariant.bodyMedium,
+              weight: AppTextWeight.medium,
+              colorType: AppTextColorType.secondary,
             ),
             const SizedBox(height: 6),
-            const TextField(
-              style: TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-              ),
+            AppInputField(
+              controller: lastNameController,
+              hintText: "Last Name",
+              validator: AppValidators.validateLastName,
+              inputFormatters: AppInputFormatters.lastNameFormatters(),
+              textCapitalization: TextCapitalization.words,
             ),
             const SizedBox(height: 20),
 
-            const Text(
+            const AppText(
               'Date of Birth',
-              style: TextStyle(
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w500,
-                      fontSize: 14,
-                      height: 24 / 14,
-                      letterSpacing: 0,
-                      color: Color(0XFF808284),
-
-                    ),
+              variant: AppTextVariant.bodyMedium,
+              weight: AppTextWeight.medium,
+              colorType: AppTextColorType.secondary,
             ),
             const SizedBox(height: 6),
-            const TextField(
-              style: TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-              ),
+            AppInputField(
+              controller: dobController,
+              hintText: "DD/MM/YYYY",
+              readOnly: true,
+              onTap: () => _selectDate(context),
+              validator: AppValidators.validateDOB,
+              inputFormatters: AppInputFormatters.dobFormatters(),
             ),
-
             const Spacer(),
 
             ElevatedButton(
@@ -116,9 +128,12 @@ class EditProfile extends StatelessWidget {
               onPressed: () {
                 // Add your save logic here
               },
-              child: const Text(
+              child: const AppText(
                 'Continue',
-                style: TextStyle(fontFamily: 'Poppins',fontWeight: FontWeight.w600,fontSize: 16,height: 32 / 16,letterSpacing: 0,),),
+                variant: AppTextVariant.bodyLarge,
+                weight: AppTextWeight.bold,
+                colorType: AppTextColorType.tertiary,
+              ),
             ),
           ],
         ),

@@ -1,10 +1,8 @@
-// profile/userProfile.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nwt_app/screens/profile/editprofile.dart';
 import 'package:nwt_app/screens/profile/setPin.dart';
-
-
+import 'package:nwt_app/widgets/common/text_widget.dart';
 
 class UserProfile extends StatefulWidget {
   const UserProfile({super.key});
@@ -21,10 +19,12 @@ class _UserProfileState extends State<UserProfile> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text('User Profile',
-        style: TextStyle(fontFamily: 'Poppins',fontWeight: FontWeight.w600,fontSize: 16,height: 24 / 16,letterSpacing: 0,),
-      ),
-
+        title: const AppText(
+          'User Profile',
+          variant: AppTextVariant.headline6,
+          weight: AppTextWeight.bold,
+          colorType: AppTextColorType.primary,
+        ),
         centerTitle: true,
         backgroundColor: Colors.black,
         elevation: 0,
@@ -38,65 +38,54 @@ class _UserProfileState extends State<UserProfile> {
         child: Column(
           children: [
             // Profile section
-       Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF17181A),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 30,
-                      backgroundColor: Colors.grey[300],
-                      backgroundImage: const AssetImage('assets/images/avatar.png'),
-                      onBackgroundImageError: (_, __) {},
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text(
-                            'Virti Sanghavi',
-                            style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.w500,
-                              fontSize: 16,
-                              height: 24 / 16,
-                              letterSpacing: 0,
-                              color: Color(0xFFFCFCFC),
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            '+91 8369535136',
-                            style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.w300,
-                              fontSize: 12,
-                              height: 24 / 12,
-                              letterSpacing: 0,
-                              color: Color(0xFFFCFCFC),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.edit, color: Colors.white),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const EditProfile()),
-                        );
-                      },
-                    )
-                  ],
-                ),
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: const Color(0xFF17181A),
+                borderRadius: BorderRadius.circular(12),
               ),
-              const SizedBox(height: 20),
-
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 30,
+                    backgroundColor: Colors.grey[300],
+                    backgroundImage: const AssetImage('assets/images/avatar.png'),
+                    onBackgroundImageError: (_, __) {},
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: const [
+                        AppText(
+                          'Virti Sanghavi',
+                          variant: AppTextVariant.bodyLarge,
+                          weight: AppTextWeight.semiBold,
+                          colorType: AppTextColorType.primary,
+                        ),
+                        SizedBox(height: 4),
+                        AppText(
+                          '+91 8369535136',
+                          variant: AppTextVariant.bodySmall,
+                          weight: AppTextWeight.light,
+                          colorType: AppTextColorType.primary,
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.edit, color: Colors.white),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const EditProfile()),
+                      );
+                    },
+                  )
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
 
             // Menu items
             _buildMenuItem('Active Connections', () {}),
@@ -106,7 +95,6 @@ class _UserProfileState extends State<UserProfile> {
                 MaterialPageRoute(builder: (context) => const SetPin()),
               );
             }),
-
             _buildMenuItem('Help & FAQ', () {}),
             _buildMenuItem('Data Protection', () {}),
             _buildMenuItem('Privacy Policy', () {}),
@@ -124,16 +112,11 @@ class _UserProfileState extends State<UserProfile> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  const AppText(
                     'Biometric Lock',
-                    style: TextStyle(
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w500,
-                      fontSize: 14,
-                      height: 24 / 14,
-                      letterSpacing: 0,
-                      color: Color(0xFFFCFCFC),
-                    ),
+                    variant: AppTextVariant.bodyMedium,
+                    weight: AppTextWeight.semiBold,
+                    colorType: AppTextColorType.primary,
                   ),
                   Switch(
                     value: isBiometricEnabled,
@@ -148,7 +131,6 @@ class _UserProfileState extends State<UserProfile> {
               ),
             ),
 
-
             const Spacer(),
 
             // Logout button
@@ -158,22 +140,17 @@ class _UserProfileState extends State<UserProfile> {
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.black,
                   backgroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
                 onPressed: () {
                   // TODO: Add logout logic
                 },
-                child: const Text(
+                child: const AppText(
                   'Log out',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                    height: 32 / 16,
-                    letterSpacing: 0,
-                  ),
+                  variant: AppTextVariant.bodyLarge,
+                  weight: AppTextWeight.bold,
+                  colorType: AppTextColorType.tertiary,
                 ),
               ),
             ),
@@ -183,29 +160,24 @@ class _UserProfileState extends State<UserProfile> {
     );
   }
 
-Widget _buildMenuItem(String title, VoidCallback onTap) {
-      return Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        height: 60,
-        decoration: BoxDecoration(
-          color: const Color(0xFF17181A),
-          borderRadius: BorderRadius.circular(8),
+  Widget _buildMenuItem(String title, VoidCallback onTap) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      height: 60,
+      decoration: BoxDecoration(
+        color: const Color(0xFF17181A),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: ListTile(
+        title: AppText(
+          title,
+          variant: AppTextVariant.bodyMedium,
+          weight: AppTextWeight.semiBold,
+          colorType: AppTextColorType.primary,
         ),
-        child: ListTile(
-          title: Text(
-            title,
-            style: const TextStyle(
-              fontFamily: 'Poppins',
-              fontWeight: FontWeight.w500,
-              fontSize: 14,
-              height: 24 / 14,
-              letterSpacing: 0,
-              color: Color(0xFFFCFCFC),
-            ),
-          ),
-          trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 16),
-          onTap: onTap,
-        ),
-      );
-    }
-    }
+        trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 16),
+        onTap: onTap,
+      ),
+    );
+  }
+}

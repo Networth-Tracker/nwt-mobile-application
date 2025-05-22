@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nwt_app/screens/profile/resetPin.dart';
 import 'package:lottie/lottie.dart';
+import 'package:nwt_app/widgets/common/text_widget.dart';
 
 class SetPin extends StatefulWidget {
   const SetPin({super.key});
@@ -48,16 +49,11 @@ class _SetPinState extends State<SetPin> {
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.black,
-        title: const Text(
+        title: const AppText(
           'Set Pin',
-          style: TextStyle(
-            color: Color(0xFFFCFCFC),
-            fontFamily: 'Poppins',
-            fontWeight: FontWeight.w600,
-            fontSize: 16,
-            height: 24 / 16,
-            letterSpacing: 0,
-          ),
+          variant: AppTextVariant.headline6,
+          weight: AppTextWeight.bold,
+          colorType: AppTextColorType.primary,
         ),
         centerTitle: true,
         leading: IconButton(
@@ -81,47 +77,41 @@ class _SetPinState extends State<SetPin> {
             const SizedBox(height: 40),
             const Padding(
               padding: EdgeInsets.only(left: 10),
-              child: Text(
-                'Set your 4-digit pin',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w600,
-                  fontSize: 20,
-                  height: 30 / 20,
-                  letterSpacing: 0,
-                  color: Color(0xFFFCFCFC),
-                ),
-                textAlign: TextAlign.start,
+              child: AppText(
+                "Set your 4-digit pin",
+                variant: AppTextVariant.headline4, // or another variant based on your theme
+                lineHeight: 1.5, // equivalent to 30 / 20
+                colorType: AppTextColorType.primary, // or secondary if your theme uses that
+                weight: AppTextWeight.bold,
               ),
             ),
             const SizedBox(height: 30),
+                      
             Padding(
               padding: const EdgeInsets.only(left: 10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: List.generate(4, (index) {
                   return Padding(
-                    padding: const EdgeInsets.only(right: 12.0),
+                    padding: EdgeInsets.only(right: index < 3 ? 12 : 0), // space between boxes
                     child: _buildPinInputBox(index),
                   );
                 }),
               ),
             ),
-            const SizedBox(height: 20),
+
+
+                  const SizedBox(height: 10),
             Padding(
               padding: const EdgeInsets.only(left: 10),
               child: Row(
                 children: [
-                  const Text(
-                    'Forget your pin?',
-                    style: TextStyle(
-                      color: Color(0XFF808284),
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                      height: 28 / 14,
-                      letterSpacing: 0,
-                    ),
+                  AppText(
+                    "Forget your pin?",
+                    variant: AppTextVariant.bodyMedium,
+                    lineHeight: 28 / 14,
+                    colorType: AppTextColorType.muted,
+                    weight: AppTextWeight.bold,
                   ),
                   const SizedBox(width: 6),
                   GestureDetector(
@@ -133,21 +123,18 @@ class _SetPinState extends State<SetPin> {
                         ),
                       );
                     },
-                    child: const Text(
-                      'Reset Pin',
-                      style: TextStyle(
-                        color: Color(0xFFFCFCFC),
-                        fontFamily: 'Poppins',
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                        height: 28 / 14,
-                        letterSpacing: 0,
-                      ),
+                    child: AppText(
+                      "Reset Pin",
+                      variant: AppTextVariant.bodyMedium,
+                      lineHeight: 28 / 14,
+                      colorType: AppTextColorType.primary, // or secondary, depending on your theme
+                      weight: AppTextWeight.bold,
                     ),
                   ),
                 ],
               ),
             ),
+
             const Spacer(),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -158,15 +145,11 @@ class _SetPinState extends State<SetPin> {
               onPressed: () {
                 // Add your save logic here
               },
-              child: const Text(
+              child: const AppText(
                 'Confirm',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                  height: 32 / 16,
-                  letterSpacing: 0,
-                ),
+                  variant: AppTextVariant.bodyLarge,
+                  weight: AppTextWeight.bold,
+                  colorType: AppTextColorType.tertiary,
               ),
             ),
             const SizedBox(height: 20),
