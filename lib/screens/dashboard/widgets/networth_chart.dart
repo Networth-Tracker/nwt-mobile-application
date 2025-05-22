@@ -54,7 +54,7 @@ class NetworthChart extends StatelessWidget {
                           ),
                           const SizedBox(width: 4),
                           AppText(
-                            currentNetworth.toString(),
+                            projectedNetworth.toString(),
                             variant: AppTextVariant.bodySmall,
                             weight: AppTextWeight.semiBold,
                             colorType: AppTextColorType.success,
@@ -78,7 +78,7 @@ class NetworthChart extends StatelessWidget {
                   // Current point indicator
                   Positioned(
                     top: 76,
-                    right: MediaQuery.of(context).size.width * 0.35,
+                    right: _getTodayPosition(context),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -108,7 +108,7 @@ class NetworthChart extends StatelessWidget {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: AppColors.darkCardBG.withOpacity(0.8),
+                            color: AppColors.darkCardBG.withValues(alpha: 0.8),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: AppText(
@@ -138,7 +138,7 @@ class NetworthChart extends StatelessWidget {
                     colorType: AppTextColorType.gray,
                   ),
                   AppText(
-                    "Aug 2025",
+                    "May 2026",
                     variant: AppTextVariant.tiny,
                     weight: AppTextWeight.medium,
                     colorType: AppTextColorType.gray,
@@ -152,30 +152,88 @@ class NetworthChart extends StatelessWidget {
     );
   }
 
+  
+  // Calculate the position of the "Today" indicator based on the current date
+  double _getTodayPosition(BuildContext context) {
+    // Get current date
+    final now = DateTime.now();
+    
+    // Define start and end dates (from Mar 2024 to May 2026)
+    final startDate = DateTime(2024, 3, 1);
+    final endDate = DateTime(2026, 5, 31);
+    
+    // Calculate total duration in days
+    final totalDuration = endDate.difference(startDate).inDays;
+    
+    // Calculate days elapsed since start date
+    final daysElapsed = now.difference(startDate).inDays;
+    
+    // Calculate position as a percentage of the total duration
+    final percentage = daysElapsed / totalDuration;
+    
+    // Calculate the chart width (accounting for padding)
+    final chartWidth = MediaQuery.of(context).size.width - 40; // Subtract horizontal padding
+    
+    // Calculate the position from right
+    // The chart area is drawn from left to right, but we position from right
+    // We need to convert the X position (0-10 scale) to screen coordinates
+    final xPosition = percentage * 10; // Same calculation as in mainData()
+    final rightPosition = chartWidth * (0.9 - (xPosition / 11));
+    
+    return rightPosition;
+  }
+
   LineChartData mainData() {
-    // Current value point
-    final double currentValueX = 5.0;
-    final double currentValueY = 76.17;
-
-    // Actual data points with smoother curve
-    final List<FlSpot> actualSpots = [
-      FlSpot(0, 70.5),
-      FlSpot(1, 72.8),
-      FlSpot(2, 71.2),
-      FlSpot(3, 74.6),
-      FlSpot(4, 75.3),
-      FlSpot(currentValueX, currentValueY),
-    ];
-
-    // Projection data points
+    // Calculate current position on X-axis based on current date
+    // Use the same date calculation as in _getTodayPosition for consistency
+    final now = DateTime.now();
+    final startDate = DateTime(2024, 3, 1);
+    final endDate = DateTime(2026, 5, 31);
+    final totalDuration = endDate.difference(startDate).inDays;
+    final daysElapsed = now.difference(startDate).inDays;
+    final percentage = daysElapsed / totalDuration;
+    
+    // Map percentage to X-axis position (0-10 scale)
+    // This must match the calculation used for the Today marker position
+    final currentValueX = percentage * 10;
+    final currentValueY = 76.17;
+    
+    // Generate actual data points up to current date
+    final List<FlSpot> actualSpots = [];
+    
+    // Add points up to current date with a smooth curve
+    final pointCount = (currentValueX / 10 * 6).round() + 1; // Number of points up to current date
+    for (int i = 0; i < pointCount; i++) {
+      final x = i * (currentValueX / (pointCount - 1));
+      // Create a realistic curve with some fluctuations
+      final baseValue = 70.5;
+      final growth = (currentValueY - baseValue) * (x / currentValueX);
+      // Add some minor fluctuations
+      final fluctuation = (i % 2 == 0) ? 0.7 : -0.5;
+      final y = baseValue + growth + fluctuation;
+      actualSpots.add(FlSpot(x, y));
+    }
+    
+    // Make sure the last point is exactly at current position
+    if (actualSpots.isNotEmpty) {
+      actualSpots.last = FlSpot(currentValueX, currentValueY);
+    } else {
+      actualSpots.add(FlSpot(currentValueX, currentValueY));
+    }
+    
+    // Projection data points from current date to end
     final List<FlSpot> projectionSpots = [
       FlSpot(currentValueX, currentValueY),
-      FlSpot(6, 77.2),
-      FlSpot(7, 78.5),
-      FlSpot(8, 79.3),
-      FlSpot(9, 80.7),
-      FlSpot(10, 81.9),
     ];
+    
+    // Add projection points after current date
+    final remainingPoints = 5; // Number of projection points
+    final remainingXRange = 10 - currentValueX;
+    for (int i = 1; i <= remainingPoints; i++) {
+      final x = currentValueX + (i * (remainingXRange / remainingPoints));
+      final growth = i * ((81.9 - currentValueY) / remainingPoints);
+      projectionSpots.add(FlSpot(x, currentValueY + growth));
+    };
 
     return LineChartData(
       gridData: FlGridData(show: false),
@@ -185,6 +243,7 @@ class NetworthChart extends StatelessWidget {
       maxX: 10,
       minY: 68, // Adjusted to make the chart more dramatic
       maxY: 84,
+      clipData: FlClipData.all(), // Ensure chart is properly clipped
       lineTouchData: LineTouchData(enabled: false),
       lineBarsData: [
         // Actual growth line
@@ -198,6 +257,8 @@ class NetworthChart extends StatelessWidget {
           dotData: FlDotData(show: false),
           belowBarData: BarAreaData(
             show: true,
+            cutOffY: 0, // Ensure the fill extends to the bottom
+            applyCutOffY: true,
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
