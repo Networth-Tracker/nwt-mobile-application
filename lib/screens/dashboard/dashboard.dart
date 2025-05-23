@@ -22,6 +22,7 @@ import 'package:nwt_app/utils/currency_formatter.dart';
 import 'package:nwt_app/utils/logger.dart';
 import 'package:nwt_app/widgets/avatar.dart';
 import 'package:nwt_app/widgets/common/animated_amount.dart';
+import 'package:nwt_app/widgets/common/shimmer_text.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 
 class Dashboard extends StatefulWidget {
@@ -37,6 +38,7 @@ class _DashboardState extends State<Dashboard>
   final _zerodhaService = ZerodhaService();
   final _totalNetworthService = TotalNetworthService();
   late AnimationController _refreshController;
+  bool isNetworthLoading = true;
   bool isAssetsLoading = false;
   bool isZerodhaLoading = false;
 
@@ -89,7 +91,7 @@ class _DashboardState extends State<Dashboard>
           onLoading: (isLoading) {
             if (mounted) {
               setState(() {
-                isAssetsLoading = isLoading;
+                isNetworthLoading = isLoading;
               });
               if (isLoading) {
                 _refreshController.repeat();
@@ -115,28 +117,6 @@ class _DashboardState extends State<Dashboard>
           }
         });
   }
-
-  /// Formats the networth value with commas
-  // String _formatNetworth(int value) {
-  //   String valueStr = value.toString();
-  //   String result = '';
-  //   int count = 0;
-
-  //   // Add commas for Indian number format (e.g., 1,00,000)
-  //   for (int i = valueStr.length - 1; i >= 0; i--) {
-  //     result = valueStr[i] + result;
-  //     count++;
-  //     if (count == 3 && i > 0) {
-  //       result = ',' + result;
-  //       count = 0;
-  //     } else if (count == 2 && i > 0 && result.contains(',')) {
-  //       result = ',' + result;
-  //       count = 0;
-  //     }
-  //   }
-
-  //   return result;
-  // }
 
   /// Formats the datetime to a readable time string (e.g., "Last data fetched at 11:00pm")
   String _formatDateTime(DateTime dateTime) {
@@ -257,6 +237,7 @@ class _DashboardState extends State<Dashboard>
                 bottom: false,
                 child: RefreshIndicator(
                   onRefresh: () async {
+                    await fetchTotalNetworth();
                     await fetchDashboardAssets();
                   },
                   color:
@@ -427,6 +408,7 @@ class _DashboardState extends State<Dashboard>
                             children: [
                               const SizedBox(height: 24),
                               Column(
+                                spacing: 5,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   AppText(
@@ -439,17 +421,26 @@ class _DashboardState extends State<Dashboard>
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      AnimatedAmount(
-                                        amount: CurrencyFormatter.formatRupee(
-                                          _networthAmount,
-                                        ),
-                                        isAmountVisible: _isAmountVisible,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 36,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
+                                      isNetworthLoading
+                                          ? ShimmerTextPlaceholder(
+                                            width: 220,
+                                            height: 55,
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                          )
+                                          : AnimatedAmount(
+                                            amount:
+                                                CurrencyFormatter.formatRupee(
+                                                  _networthAmount,
+                                                ),
+                                            isAmountVisible: _isAmountVisible,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 36,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
                                       Row(
                                         children: [
                                           GestureDetector(
@@ -1043,7 +1034,7 @@ class _DashboardState extends State<Dashboard>
                                     });
                                   },
                                   children: [
-                                    ...List.generate(5, (index) {
+                                    ...List.generate(1, (index) {
                                       return Container(
                                         color:
                                             themeController.isDarkMode
@@ -1142,7 +1133,7 @@ class _DashboardState extends State<Dashboard>
                                 height: 8,
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
-                                  children: List.generate(5, (index) {
+                                  children: List.generate(1, (index) {
                                     return AnimatedContainer(
                                       duration: Duration(milliseconds: 300),
                                       curve: Curves.easeInOut,

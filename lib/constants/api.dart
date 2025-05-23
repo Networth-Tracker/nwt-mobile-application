@@ -1,5 +1,5 @@
 class ApiURLs {
-  static const String baseUrl = "https://app.networthtracker.in/api/v1";
+  static const String baseUrl = "https://lab.networthtracker.in/api/v1";
 
   static const GENERATE_OTP = "$baseUrl/auth/send-otp";
   static const VERIFY_OTP = "$baseUrl/auth/verify-otp";
