@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/sizing.dart';
-import 'package:nwt_app/widgets/common/text_widget.dart';
 import 'package:nwt_app/widgets/common/custom_checkbox.dart';
+import 'package:nwt_app/widgets/common/text_widget.dart';
 
 class MutualFundSwitchScreen extends StatefulWidget {
   const MutualFundSwitchScreen({super.key});
@@ -13,7 +13,7 @@ class MutualFundSwitchScreen extends StatefulWidget {
 }
 
 class _MutualFundSwitchScreenState extends State<MutualFundSwitchScreen> {
-  bool _selectAllFunds = false;
+  final bool _selectAllFunds = false;
   bool _selectedFund = true;
   @override
   Widget build(BuildContext context) {
@@ -40,6 +40,7 @@ class _MutualFundSwitchScreenState extends State<MutualFundSwitchScreen> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
           child: Padding(
             padding: EdgeInsets.only(
               left: AppSizing.scaffoldHorizontalPadding,
@@ -250,7 +251,7 @@ class _MutualFundSwitchScreenState extends State<MutualFundSwitchScreen> {
                         ],
                       ),
                       const SizedBox(height: 12),
-                      
+
                       Column(
                         spacing: 12,
                         children: [
@@ -259,7 +260,9 @@ class _MutualFundSwitchScreenState extends State<MutualFundSwitchScreen> {
                             decoration: BoxDecoration(
                               color: AppColors.darkInputBorder,
                               borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: AppColors.darkButtonBorder),
+                              border: Border.all(
+                                color: AppColors.darkButtonBorder,
+                              ),
                             ),
                             padding: const EdgeInsets.symmetric(
                               horizontal: 14,
@@ -299,17 +302,20 @@ class _MutualFundSwitchScreenState extends State<MutualFundSwitchScreen> {
                                                   text:
                                                       "Franklin India Opportunities Fund",
                                                   style: TextStyle(
-                                                    color: AppColors.darkPrimary,
+                                                    color:
+                                                        AppColors.darkPrimary,
                                                     fontSize: 14,
                                                     fontWeight: FontWeight.w600,
                                                     fontFamily: 'Montserrat',
                                                   ),
                                                 ),
                                                 TextSpan(
-                                                  text: " (1.10% expense ratio) ",
+                                                  text:
+                                                      " (1.10% expense ratio) ",
                                                   style: TextStyle(
                                                     color:
-                                                        AppColors.darkTextSecondary,
+                                                        AppColors
+                                                            .darkTextSecondary,
                                                     fontSize: 10,
                                                     fontWeight: FontWeight.w600,
                                                     fontFamily: 'Montserrat',
@@ -345,26 +351,36 @@ class _MutualFundSwitchScreenState extends State<MutualFundSwitchScreen> {
                                                         ),
                                                     decoration: BoxDecoration(
                                                       color: AppColors.success
-                                                          .withValues(alpha: 0.15),
+                                                          .withValues(
+                                                            alpha: 0.15,
+                                                          ),
                                                       borderRadius:
-                                                          BorderRadius.circular(4),
+                                                          BorderRadius.circular(
+                                                            4,
+                                                          ),
                                                     ),
                                                     child: const AppText(
                                                       "Gain 1.10%",
                                                       variant:
-                                                          AppTextVariant.bodySmall,
-                                                      weight: AppTextWeight.bold,
+                                                          AppTextVariant
+                                                              .bodySmall,
+                                                      weight:
+                                                          AppTextWeight.bold,
                                                       colorType:
-                                                          AppTextColorType.success,
+                                                          AppTextColorType
+                                                              .success,
                                                     ),
                                                   ),
                                                   AppText(
                                                     "LTCG Tax Payable ₹12,812",
                                                     variant:
-                                                        AppTextVariant.bodySmall,
-                                                    weight: AppTextWeight.medium,
+                                                        AppTextVariant
+                                                            .bodySmall,
+                                                    weight:
+                                                        AppTextWeight.medium,
                                                     colorType:
-                                                        AppTextColorType.primary,
+                                                        AppTextColorType
+                                                            .primary,
                                                   ),
                                                 ],
                                               ),
@@ -388,7 +404,7 @@ class _MutualFundSwitchScreenState extends State<MutualFundSwitchScreen> {
                                     ),
                                   ],
                                 ),
-                          
+
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -419,17 +435,20 @@ class _MutualFundSwitchScreenState extends State<MutualFundSwitchScreen> {
                                                   text:
                                                       "Franklin India Opportunities Fund",
                                                   style: TextStyle(
-                                                    color: AppColors.darkPrimary,
+                                                    color:
+                                                        AppColors.darkPrimary,
                                                     fontSize: 14,
                                                     fontWeight: FontWeight.w600,
                                                     fontFamily: 'Montserrat',
                                                   ),
                                                 ),
                                                 TextSpan(
-                                                  text: " (1.10% expense ratio) ",
+                                                  text:
+                                                      " (1.10% expense ratio) ",
                                                   style: TextStyle(
                                                     color:
-                                                        AppColors.darkTextSecondary,
+                                                        AppColors
+                                                            .darkTextSecondary,
                                                     fontSize: 10,
                                                     fontWeight: FontWeight.w600,
                                                     fontFamily: 'Montserrat',
@@ -453,12 +472,14 @@ class _MutualFundSwitchScreenState extends State<MutualFundSwitchScreen> {
                               ],
                             ),
                           ),
-                           Container(
+                          Container(
                             width: double.infinity,
                             decoration: BoxDecoration(
                               color: AppColors.darkInputBorder,
                               borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: AppColors.darkButtonBorder),
+                              border: Border.all(
+                                color: AppColors.darkButtonBorder,
+                              ),
                             ),
                             padding: const EdgeInsets.symmetric(
                               horizontal: 14,
@@ -498,17 +519,20 @@ class _MutualFundSwitchScreenState extends State<MutualFundSwitchScreen> {
                                                   text:
                                                       "Franklin India Opportunities Fund",
                                                   style: TextStyle(
-                                                    color: AppColors.darkPrimary,
+                                                    color:
+                                                        AppColors.darkPrimary,
                                                     fontSize: 14,
                                                     fontWeight: FontWeight.w600,
                                                     fontFamily: 'Montserrat',
                                                   ),
                                                 ),
                                                 TextSpan(
-                                                  text: " (1.10% expense ratio) ",
+                                                  text:
+                                                      " (1.10% expense ratio) ",
                                                   style: TextStyle(
                                                     color:
-                                                        AppColors.darkTextSecondary,
+                                                        AppColors
+                                                            .darkTextSecondary,
                                                     fontSize: 10,
                                                     fontWeight: FontWeight.w600,
                                                     fontFamily: 'Montserrat',
@@ -544,26 +568,36 @@ class _MutualFundSwitchScreenState extends State<MutualFundSwitchScreen> {
                                                         ),
                                                     decoration: BoxDecoration(
                                                       color: AppColors.success
-                                                          .withValues(alpha: 0.15),
+                                                          .withValues(
+                                                            alpha: 0.15,
+                                                          ),
                                                       borderRadius:
-                                                          BorderRadius.circular(4),
+                                                          BorderRadius.circular(
+                                                            4,
+                                                          ),
                                                     ),
                                                     child: const AppText(
                                                       "Gain 1.10%",
                                                       variant:
-                                                          AppTextVariant.bodySmall,
-                                                      weight: AppTextWeight.bold,
+                                                          AppTextVariant
+                                                              .bodySmall,
+                                                      weight:
+                                                          AppTextWeight.bold,
                                                       colorType:
-                                                          AppTextColorType.success,
+                                                          AppTextColorType
+                                                              .success,
                                                     ),
                                                   ),
                                                   AppText(
                                                     "LTCG Tax Payable ₹12,812",
                                                     variant:
-                                                        AppTextVariant.bodySmall,
-                                                    weight: AppTextWeight.medium,
+                                                        AppTextVariant
+                                                            .bodySmall,
+                                                    weight:
+                                                        AppTextWeight.medium,
                                                     colorType:
-                                                        AppTextColorType.primary,
+                                                        AppTextColorType
+                                                            .primary,
                                                   ),
                                                 ],
                                               ),
@@ -587,7 +621,7 @@ class _MutualFundSwitchScreenState extends State<MutualFundSwitchScreen> {
                                     ),
                                   ],
                                 ),
-                          
+
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -618,17 +652,20 @@ class _MutualFundSwitchScreenState extends State<MutualFundSwitchScreen> {
                                                   text:
                                                       "Franklin India Opportunities Fund",
                                                   style: TextStyle(
-                                                    color: AppColors.darkPrimary,
+                                                    color:
+                                                        AppColors.darkPrimary,
                                                     fontSize: 14,
                                                     fontWeight: FontWeight.w600,
                                                     fontFamily: 'Montserrat',
                                                   ),
                                                 ),
                                                 TextSpan(
-                                                  text: " (1.10% expense ratio) ",
+                                                  text:
+                                                      " (1.10% expense ratio) ",
                                                   style: TextStyle(
                                                     color:
-                                                        AppColors.darkTextSecondary,
+                                                        AppColors
+                                                            .darkTextSecondary,
                                                     fontSize: 10,
                                                     fontWeight: FontWeight.w600,
                                                     fontFamily: 'Montserrat',

@@ -12,7 +12,7 @@ class CustomCheckbox extends StatelessWidget {
   final double borderRadius;
 
   const CustomCheckbox({
-    Key? key,
+    super.key,
     required this.value,
     required this.onChanged,
     this.size = 20.0,
@@ -21,13 +21,14 @@ class CustomCheckbox extends StatelessWidget {
     this.borderColor,
     this.borderWidth = 1.5,
     this.borderRadius = 4.0,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     final Color effectiveActiveColor = activeColor ?? AppColors.darkPrimary;
     final Color effectiveCheckColor = checkColor ?? Colors.white;
-    final Color effectiveBorderColor = borderColor ?? AppColors.darkButtonBorder;
+    final Color effectiveBorderColor =
+        borderColor ?? AppColors.darkButtonBorder;
 
     return GestureDetector(
       onTap: () {
@@ -46,15 +47,17 @@ class CustomCheckbox extends StatelessWidget {
             width: borderWidth,
           ),
         ),
-        child: value
-            ? Center(
-                child: Icon(
-                  Icons.check,
-                  size: size * 0.65,
-                  color: effectiveCheckColor,
-                ),
-              )
-            : null,
+        child:
+            value
+                ? Center(
+                  child: Icon(
+                    weight: 1,
+                    Icons.check,
+                    size: size * 0.65,
+                    color: effectiveCheckColor,
+                  ),
+                )
+                : null,
       ),
     );
   }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import '../../../constants/colors.dart';
-import '../../../widgets/common/text_widget.dart';
+import 'package:nwt_app/constants/colors.dart';
+import 'package:nwt_app/widgets/common/text_widget.dart';
 
 class MutualFundAnalysisCard extends StatelessWidget {
   final String logoUrl;
@@ -10,12 +10,12 @@ class MutualFundAnalysisCard extends StatelessWidget {
   final String investedAmount;
 
   const MutualFundAnalysisCard({
-    Key? key,
+    super.key,
     required this.logoUrl,
     required this.schemeName,
     required this.fundType,
     required this.investedAmount,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,10 +26,7 @@ class MutualFundAnalysisCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.darkButtonBorder),
       ),
-      padding: const EdgeInsets.symmetric(
-        horizontal: 14,
-        vertical: 14,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
