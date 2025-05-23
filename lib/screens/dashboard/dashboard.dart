@@ -111,37 +111,15 @@ class _DashboardState extends State<Dashboard>
             if (mounted) {
               setState(() {
                 // Format the networth amount with rupee symbol
-                _networthAmount = response.data!.totalcurrentmarketvalue;
+                _networthAmount = response.data!.totalNetWorth;
                 // Format the timestamp
-                _lastFetchedTime = _formatDateTime(
-                  response.data!.currentdatetime,
-                );
+                _lastFetchedTime = response.data!.currentdatetime;
               });
             }
           }
         });
   }
 
-  /// Formats the datetime to a readable time string (e.g., "Last data fetched at 11:00pm")
-  String _formatDateTime(DateTime dateTime) {
-    int hour = dateTime.hour;
-    String period = 'am';
-
-    if (hour >= 12) {
-      period = 'pm';
-      if (hour > 12) {
-        hour -= 12;
-      }
-    }
-    if (hour == 0) {
-      hour = 12;
-    }
-
-    String minute = dateTime.minute.toString().padLeft(2, '0');
-    return "Last data fetched at $hour:$minute$period";
-  }
-
-  /// Connects to Zerodha by fetching the login URL and opening it in a WebView
   Future<void> connectToZerodha() async {
     // Show loading indicator
     Get.dialog(
@@ -1096,6 +1074,9 @@ class _DashboardState extends State<Dashboard>
                                                         () => Get.to(
                                                           () =>
                                                               MutualFundSwitchScreen(),
+                                                          transition:
+                                                              Transition
+                                                                  .rightToLeft,
                                                         ),
                                                     child: AppText(
                                                       "Switch Funds",

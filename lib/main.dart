@@ -11,11 +11,7 @@ import 'package:nwt_app/controllers/theme_controller.dart';
 import 'package:nwt_app/controllers/user_controller.dart';
 import 'package:nwt_app/firebase_options.dart';
 import 'package:nwt_app/notification/firebase_messaging.dart';
-import 'package:nwt_app/screens/advisory/advisory.dart';
 import 'package:nwt_app/screens/dashboard/dashboard.dart';
-import 'package:nwt_app/screens/explore/explore.dart';
-import 'package:nwt_app/screens/products/products.dart';
-import 'package:nwt_app/screens/splash.dart';
 import 'package:nwt_app/services/auth/auth_flow.dart';
 import 'package:nwt_app/services/global_storage.dart';
 import 'package:nwt_app/services/network/connectivity_service.dart';
@@ -55,6 +51,9 @@ void main() async {
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
+  // Initialize Firebase Remote Config before anything else that might use it
+  await setupRemoteConfig();
+
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   final messagingAPI = FirebaseMessagingAPI();
@@ -74,19 +73,42 @@ void main() async {
 }
 
 Future<void> setupRemoteConfig() async {
-  final remoteConfig = FirebaseRemoteConfig.instance;
+  try {
+    final remoteConfig = FirebaseRemoteConfig.instance;
 
-  await remoteConfig.setConfigSettings(
-    RemoteConfigSettings(
-      fetchTimeout: const Duration(seconds: 10),
-      minimumFetchInterval: const Duration(seconds: 10),
-    ),
-  );
+    await remoteConfig.setConfigSettings(
+      RemoteConfigSettings(
+        fetchTimeout: const Duration(seconds: 10),
+        minimumFetchInterval: const Duration(seconds: 10),
+      ),
+    );
 
-  // await remoteConfig.setDefaults(<String, dynamic>{
-  //   'welcome_message': 'Hello from default!',
-  // });
-  // await remoteConfig.fetchAndActivate();
+    // Set default values for remote config parameters
+    await remoteConfig.setDefaults({
+      'api_base_url': 'https://app.networthtracker.in/api/v1',
+    });
+
+    // Fetch and activate the latest remote config values
+    bool updated = await remoteConfig.fetchAndActivate();
+
+    // Log the current base URL from remote config
+    final baseUrl = remoteConfig.getString('api_base_url');
+    AppLogger.info(
+      'Remote Config updated: $updated, API Base URL: $baseUrl',
+      tag: 'RemoteConfig',
+    );
+
+    // Additional check to ensure we have a value
+    if (baseUrl.isEmpty) {
+      AppLogger.warning(
+        'Remote Config API Base URL is empty, using default',
+        tag: 'RemoteConfig',
+      );
+    }
+  } catch (e) {
+    // Log any errors that occur during remote config setup
+    AppLogger.error('Error setting up Remote Config: $e', tag: 'RemoteConfig');
+  }
 }
 
 class MainEntry extends StatelessWidget {
@@ -122,7 +144,6 @@ class MainEntry extends StatelessWidget {
           Get.put<AuthFlow>(AuthFlow());
         }),
       ),
-
     );
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/controllers/theme_controller.dart';
+import 'package:nwt_app/screens/dashboard/types/dashboard_networth.dart';
 import 'package:nwt_app/utils/currency_formatter.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 
@@ -10,12 +11,16 @@ class NetworthChart extends StatelessWidget {
   final bool showProjection;
   final double currentNetworth;
   final double projectedNetworth;
+  final List<Currentprojection>? currentprojection;
+  final List<Futureprojection>? futureprojection;
 
   const NetworthChart({
     super.key,
     this.showProjection = true,
     this.currentNetworth = 76171095,
     this.projectedNetworth = 80000000,
+    this.currentprojection,
+    this.futureprojection,
   });
 
   @override
@@ -188,66 +193,315 @@ class NetworthChart extends StatelessWidget {
 
   LineChartData mainData() {
     // Calculate current position on X-axis based on current date
-    // Use the same date calculation as in _getTodayPosition for consistency
     final now = DateTime.now();
-    final startDate = DateTime(2024, 3, 1);
-    final endDate = DateTime(2026, 5, 31);
-    final totalDuration = endDate.difference(startDate).inDays;
-    final daysElapsed = now.difference(startDate).inDays;
-    final percentage = daysElapsed / totalDuration;
 
-    // Map percentage to X-axis position (0-10 scale)
-    // This must match the calculation used for the Today marker position
-    final currentValueX = percentage * 10;
-    final currentValueY = 76.17;
+    // Define default start and end dates if projection data is not available
+    DateTime startDate;
+    DateTime endDate;
 
-    // Generate actual data points up to current date
-    final List<FlSpot> actualSpots = [];
+    // Determine actual date range from projection data
+    if (currentprojection != null &&
+        currentprojection!.isNotEmpty &&
+        futureprojection != null &&
+        futureprojection!.isNotEmpty) {
+      // Sort current projection by date
+      final sortedCurrentProjection = List<Currentprojection>.from(
+        currentprojection!,
+      );
+      sortedCurrentProjection.sort((a, b) => a.date.compareTo(b.date));
 
-    // Add points up to current date with a smooth curve
-    final pointCount =
-        (currentValueX / 10 * 6).round() +
-        1; // Number of points up to current date
-    for (int i = 0; i < pointCount; i++) {
-      final x = i * (currentValueX / (pointCount - 1));
-      // Create a realistic curve with some fluctuations
-      final baseValue = 70.5;
-      final growth = (currentValueY - baseValue) * (x / currentValueX);
-      // Add some minor fluctuations
-      final fluctuation = (i % 2 == 0) ? 0.7 : -0.5;
-      final y = baseValue + growth + fluctuation;
-      actualSpots.add(FlSpot(x, y));
-    }
+      // Sort future projection by date
+      final sortedFutureProjection = List<Futureprojection>.from(
+        futureprojection!,
+      );
+      sortedFutureProjection.sort((a, b) => a.date.compareTo(b.date));
 
-    // Make sure the last point is exactly at current position
-    if (actualSpots.isNotEmpty) {
-      actualSpots.last = FlSpot(currentValueX, currentValueY);
+      // Use actual start and end dates from data
+      startDate = sortedCurrentProjection.first.date;
+      endDate = sortedFutureProjection.last.date;
     } else {
-      actualSpots.add(FlSpot(currentValueX, currentValueY));
+      // Default date range if no projection data
+      startDate = DateTime.now().subtract(const Duration(days: 365));
+      endDate = DateTime.now().add(const Duration(days: 365 * 2));
     }
 
-    // Projection data points from current date to end
-    final List<FlSpot> projectionSpots = [FlSpot(currentValueX, currentValueY)];
+    // Calculate total duration for X-axis scaling
+    final totalDuration = endDate.difference(startDate).inDays;
 
-    // Add projection points after current date
-    final remainingPoints = 5; // Number of projection points
-    final remainingXRange = 10 - currentValueX;
-    for (int i = 1; i <= remainingPoints; i++) {
-      final x = currentValueX + (i * (remainingXRange / remainingPoints));
-      final growth = i * ((81.9 - currentValueY) / remainingPoints);
-      projectionSpots.add(FlSpot(x, currentValueY + growth));
+    // Find position of today on the X-axis
+    final daysElapsed = now.difference(startDate).inDays;
+    final todayPercentage = daysElapsed / totalDuration;
+
+    // Map today's position to X-axis (0-10 scale)
+    var currentValueX = todayPercentage * 10;
+
+    // Default Y value if no projection data available
+    double currentValueY =
+        currentNetworth / 1000000; // Convert to millions for better scale
+
+    // Set fixed min and max values for the chart
+    // This ensures consistent scaling regardless of data values
+    const double minY = 68;
+    const double maxY = 84;
+
+    // We'll normalize values to fit within our chart range
+    // First, find the maximum value across both datasets for proper scaling
+    double maxDataValue =
+        currentNetworth / 1000000; // Start with current networth
+
+    if (currentprojection != null && currentprojection!.isNotEmpty) {
+      for (var point in currentprojection!) {
+        if (point.value > maxDataValue) maxDataValue = point.value;
+      }
+    }
+
+    if (futureprojection != null && futureprojection!.isNotEmpty) {
+      for (var point in futureprojection!) {
+        if (point.projectedValue > maxDataValue)
+          maxDataValue = point.projectedValue;
+      }
+    }
+
+    // Add 10% padding to max value for better visualization
+    maxDataValue = maxDataValue * 1.1;
+
+    // Generate data points for the chart
+    final List<FlSpot> actualSpots = [];
+    final List<FlSpot> projectionSpots = [];
+
+    // Find the point closest to today to ensure a smooth transition between actual and projected data
+    FlSpot? todaySpot;
+
+    // Combine and sort all projection data by date for proper timeline plotting
+    List<Map<String, dynamic>> allProjections = [];
+
+    // Add current projections (with type identifier)
+    if (currentprojection != null && currentprojection!.isNotEmpty) {
+      for (var point in currentprojection!) {
+        allProjections.add({
+          'date': point.date,
+          'value': point.value,
+          'type': 'current',
+        });
+      }
+    }
+
+    // Add future projections (with type identifier)
+    if (futureprojection != null && futureprojection!.isNotEmpty) {
+      for (var point in futureprojection!) {
+        allProjections.add({
+          'date': point.date,
+          'value': point.projectedValue,
+          'type': 'future',
+        });
+      }
+    }
+
+    // Sort all projections by date
+    allProjections.sort(
+      (a, b) => (a['date'] as DateTime).compareTo(b['date'] as DateTime),
+    );
+
+    // Find the point closest to today to ensure a smooth transition
+    Map<String, dynamic>? closestToToday;
+    int closestDayDifference = 999999;
+
+    // Process all projections and add to appropriate spots list
+    for (var point in allProjections) {
+      final date = point['date'] as DateTime;
+      final value = point['value'] as double;
+      final type = point['type'] as String;
+
+      // Calculate position on chart
+      final daysSinceStart = date.difference(startDate).inDays;
+      final xPosition = (daysSinceStart / totalDuration) * 10;
+      // Map the actual value to our chart's Y range
+      final yValue = minY + ((value / maxDataValue) * (maxY - minY));
+
+      // Determine which list to add to based on date and type
+      if (date.isBefore(now)) {
+        // Only use current projection data for dates before today
+        if (type == 'current') {
+          actualSpots.add(FlSpot(xPosition, yValue));
+
+          // Check if this point is closest to today
+          final dayDifference = now.difference(date).inDays.abs();
+          if (dayDifference < closestDayDifference) {
+            closestDayDifference = dayDifference;
+            closestToToday = point;
+            currentValueY = yValue;
+            currentValueX = xPosition;
+          }
+        }
+      } else {
+        // Only use future projection data for dates after today
+        if (type == 'future') {
+          projectionSpots.add(FlSpot(xPosition, yValue));
+        }
+      }
+    }
+
+    // If we found a point closest to today, use it as the transition point
+    if (closestToToday != null) {
+      final date = closestToToday['date'] as DateTime;
+      final value = closestToToday['value'] as double;
+
+      final daysSinceStart = date.difference(startDate).inDays;
+      final xPosition = (daysSinceStart / totalDuration) * 10;
+      final yValue = minY + ((value / maxDataValue) * (maxY - minY));
+      todaySpot = FlSpot(xPosition, yValue);
+    } else {
+      // Fallback to generated data if no projection data available
+      final pointCount = (currentValueX / 10 * 6).round() + 1;
+      for (int i = 0; i < pointCount; i++) {
+        final x = i * (currentValueX / (pointCount - 1));
+        final baseValue = 70.5;
+        final growth = (currentValueY - baseValue) * (x / currentValueX);
+        final fluctuation = (i % 2 == 0) ? 0.7 : -0.5;
+        final y = baseValue + growth + fluctuation;
+        actualSpots.add(FlSpot(x, y));
+      }
+
+      // Use the last actual point as today's spot
+      if (actualSpots.isNotEmpty) {
+        todaySpot = actualSpots.last;
+      } else {
+        todaySpot = FlSpot(currentValueX, currentValueY);
+        actualSpots.add(todaySpot);
+      }
+    }
+
+    // Make sure we have a today spot for transition
+    todaySpot ??= FlSpot(currentValueX, currentValueY);
+
+    // Start projection spots with today's spot for a smooth transition
+    projectionSpots.add(todaySpot);
+
+    // If we have no future projection points from the data, generate some
+    if (projectionSpots.length <= 1) {
+      // Fallback to generated projection if no future projection data available
+      final remainingPoints = 5;
+      final remainingXRange = 10 - currentValueX;
+      for (int i = 1; i <= remainingPoints; i++) {
+        final x = currentValueX + (i * (remainingXRange / remainingPoints));
+        final growth = i * ((81.9 - currentValueY) / remainingPoints);
+        projectionSpots.add(FlSpot(x, currentValueY + growth));
+      }
+    }
+
+    // Format dates for X-axis display
+    String formatDateForAxis(DateTime date) {
+      final months = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+      ];
+      return '${months[date.month - 1]} ${date.year}';
     }
 
     return LineChartData(
-      gridData: FlGridData(show: false),
-      titlesData: FlTitlesData(show: false),
+      gridData: FlGridData(
+        show: true,
+        drawVerticalLine: true,
+        drawHorizontalLine: true,
+        verticalInterval: 2,
+        horizontalInterval: 4,
+        getDrawingVerticalLine:
+            (value) => FlLine(
+              color: Colors.grey.withOpacity(0.15),
+              strokeWidth: 1,
+              dashArray: [5, 5],
+            ),
+        getDrawingHorizontalLine:
+            (value) => FlLine(
+              color: Colors.grey.withOpacity(0.15),
+              strokeWidth: 1,
+              dashArray: [5, 5],
+            ),
+      ),
+      titlesData: FlTitlesData(
+        show: true,
+        topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        bottomTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: true,
+            reservedSize: 22,
+            interval: 2,
+            getTitlesWidget: (value, meta) {
+              // Only show labels at specific intervals
+              if (value == 0 || value == 5 || value == 10) {
+                // Calculate the date for this X position
+                final percentage = value / 10;
+                final days = (percentage * totalDuration).round();
+                final date = startDate.add(Duration(days: days));
+                final dateLabel = formatDateForAxis(date);
+
+                return Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Text(
+                    dateLabel,
+                    style: TextStyle(
+                      color:
+                          Get.find<ThemeController>().isDarkMode
+                              ? Colors.white70
+                              : Colors.black54,
+                      fontSize: 10,
+                    ),
+                  ),
+                );
+              }
+              return const SizedBox();
+            },
+          ),
+        ),
+      ),
       borderData: FlBorderData(show: false),
       minX: 0,
       maxX: 10,
-      minY: 68, // Adjusted to make the chart more dramatic
-      maxY: 84,
+      minY: minY,
+      maxY: maxY,
       clipData: FlClipData.all(), // Ensure chart is properly clipped
-      lineTouchData: LineTouchData(enabled: false),
+      lineTouchData: LineTouchData(
+        enabled: true,
+        handleBuiltInTouches: true,
+        touchTooltipData: LineTouchTooltipData(
+          fitInsideHorizontally: true,
+          fitInsideVertically: true,
+          getTooltipItems: (touchedSpots) {
+            return touchedSpots.map((touchedSpot) {
+              // Calculate the date for this X position
+              final percentage = touchedSpot.x / 10;
+              final days = (percentage * totalDuration).round();
+              final date = startDate.add(Duration(days: days));
+
+              // Format the date and value
+              final formattedDate = formatDateForAxis(date);
+              final formattedValue = CurrencyFormatter.formatRupee(
+                touchedSpot.y * 1000000, // Convert back to actual value
+              );
+
+              return LineTooltipItem(
+                '$formattedDate\n$formattedValue',
+                const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              );
+            }).toList();
+          },
+        ),
+      ),
       lineBarsData: [
         // Actual growth line
         LineChartBarData(

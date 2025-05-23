@@ -68,7 +68,7 @@ class Regtodirplan {
   double ltcgtax;
   double gain;
   String dirfundname;
-  double direxpration;
+  double direxpratio;
 
   Regtodirplan({
     required this.regfundname,
@@ -76,7 +76,7 @@ class Regtodirplan {
     required this.ltcgtax,
     required this.gain,
     required this.dirfundname,
-    required this.direxpration,
+    required this.direxpratio,
   });
 
   factory Regtodirplan.fromJson(Map<String, dynamic> json) => Regtodirplan(
@@ -85,7 +85,7 @@ class Regtodirplan {
     ltcgtax: json["ltcgtax"] + 0.0,
     gain: json["gain"] + 0.0,
     dirfundname: json["dirfundname"],
-    direxpration: json["direxpration"] + 0.0,
+    direxpratio: json["direxpratio"] + 0.0,
   );
 
   Map<String, dynamic> toJson() => {
@@ -94,6 +94,6 @@ class Regtodirplan {
     "ltcgtax": ltcgtax,
     "gain": gain,
     "dirfundname": dirfundname,
-    "direxpration": direxpration,
+    "direxpratio": direxpratio,
   };
 }

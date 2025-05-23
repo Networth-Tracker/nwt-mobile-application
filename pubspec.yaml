@@ -2,7 +2,7 @@ name: nwt_app
 description: "A new Flutter project."
 publish_to: 'none'
 
-version: 0.1.4+9
+version: 0.1.4+10
 
 environment:
   sdk: ^3.7.2
