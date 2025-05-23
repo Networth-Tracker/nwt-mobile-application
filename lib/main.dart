@@ -11,7 +11,11 @@ import 'package:nwt_app/controllers/theme_controller.dart';
 import 'package:nwt_app/controllers/user_controller.dart';
 import 'package:nwt_app/firebase_options.dart';
 import 'package:nwt_app/notification/firebase_messaging.dart';
-import 'package:nwt_app/screens/mf_switch/mf_switch.dart';
+import 'package:nwt_app/screens/advisory/advisory.dart';
+import 'package:nwt_app/screens/dashboard/dashboard.dart';
+import 'package:nwt_app/screens/explore/explore.dart';
+import 'package:nwt_app/screens/products/products.dart';
+import 'package:nwt_app/screens/splash.dart';
 import 'package:nwt_app/services/auth/auth_flow.dart';
 import 'package:nwt_app/services/global_storage.dart';
 import 'package:nwt_app/services/network/connectivity_service.dart';
@@ -102,7 +106,7 @@ class MainEntry extends StatelessWidget {
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: themeController.themeMode,
-        home: MutualFundSwitchScreen(),
+        home: Dashboard(),
         builder: (context, child) {
           return MediaQuery(
             data: MediaQuery.of(
@@ -118,6 +122,7 @@ class MainEntry extends StatelessWidget {
           Get.put<AuthFlow>(AuthFlow());
         }),
       ),
+
     );
   }
 }

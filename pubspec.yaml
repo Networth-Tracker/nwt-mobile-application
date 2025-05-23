@@ -50,6 +50,8 @@ flutter:
     - assets/svgs/connections/
     - assets/svgs/assets/investments/
     - assets/svgs/mf_switch/
+    - assets/svgs/products/
+    - assets/svgs/advisory/
     
   uses-material-design: true
   fonts:
