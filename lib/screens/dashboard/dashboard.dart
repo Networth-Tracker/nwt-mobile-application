@@ -28,6 +28,10 @@ import 'package:nwt_app/widgets/common/animated_amount.dart';
 import 'package:nwt_app/widgets/common/shimmer_text.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 
+import '../assets/banks/banks.dart';
+import '../assets/investments/investments.dart';
+import '../mf_switch/mf_switch.dart';
+
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
 
@@ -1225,7 +1229,7 @@ class _DashboardState extends State<Dashboard>
                   if (index == 1) {
                     // Products tab
                     Get.to(
-                      () => const ProductsScreen(),
+                      () => const MutualFundSwitchScreen(),
                       transition: Transition.rightToLeft,
                     )?.then((_) {
                       setState(() {
@@ -1235,7 +1239,7 @@ class _DashboardState extends State<Dashboard>
                   } else if (index == 2) {
                     // Advisory tab
                     Get.to(
-                      () => const AdvisoryScreen(),
+                      () => const AssetBankScreen(),
                       transition: Transition.rightToLeft,
                     )?.then((_) {
                       setState(() {
@@ -1245,7 +1249,7 @@ class _DashboardState extends State<Dashboard>
                   } else if (index == 3) {
                     // Explore tab
                     Get.to(
-                      () => const ExploreScreen(),
+                      () => const AssetInvestmentScreen(),
                       transition: Transition.rightToLeft,
                     )?.then((_) {
                       setState(() {
@@ -1264,15 +1268,15 @@ class _DashboardState extends State<Dashboard>
                   ),
                   BottomNavigationBarItem(
                     icon: Icon(Icons.category_rounded),
-                    label: "Products",
+                    label: "Switch",
                   ),
                   BottomNavigationBarItem(
                     icon: Icon(Icons.smart_toy_rounded),
-                    label: "Advisory",
+                    label: "Banks",
                   ),
                   BottomNavigationBarItem(
                     icon: Icon(Icons.dashboard_rounded),
-                    label: "Explore",
+                    label: "Investments",
                   ),
                 ],
               ),
