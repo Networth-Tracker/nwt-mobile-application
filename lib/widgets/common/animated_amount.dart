@@ -13,7 +13,7 @@ class AnimatedAmount extends StatelessWidget {
     super.key,
     required this.isAmountVisible,
     required this.amount,
-    this.hiddenText = '₹•••••••',
+    this.hiddenText = '₹•••••',
     this.duration = const Duration(milliseconds: 400),
     this.style,
     this.slideOffset = const Offset(0, 0.2),

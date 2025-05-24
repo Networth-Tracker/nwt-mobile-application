@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/theme.dart';
 
 /// Text variants available in the application
 enum AppTextVariant {
-  display,    // New variant with font size 30
+  display, // New variant with font size 30
   headline1,
   headline2,
   headline3,
@@ -14,20 +15,14 @@ enum AppTextVariant {
   bodyLarge,
   bodyMedium,
   bodySmall,
-  tiny,      // New variant with font size 8
+  tiny, // New variant with font size 8
   caption,
   button,
-  label
+  label,
 }
 
 /// Text weight options
-enum AppTextWeight {
-  light,
-  regular,
-  medium,
-  semiBold,
-  bold
-}
+enum AppTextWeight { light, regular, medium, semiBold, bold }
 
 /// Text color options
 enum AppTextColorType {
@@ -43,10 +38,14 @@ enum AppTextColorType {
 }
 
 /// Resolves [AppTextColorType] to an actual [Color] from the current theme extension
-Color _resolveTextColor(BuildContext context, AppTextColorType colorType, Color? customColor) {
+Color _resolveTextColor(
+  BuildContext context,
+  AppTextColorType colorType,
+  Color? customColor,
+) {
   final textThemeColors = context.textThemeColors;
   final theme = Theme.of(context);
-  
+
   switch (colorType) {
     case AppTextColorType.primary:
       return textThemeColors.primaryText;
@@ -86,57 +85,119 @@ FontWeight _resolveFontWeight(AppTextWeight weight) {
 }
 
 /// Gets the appropriate text style based on variant and theme
-TextStyle _getTextStyle(BuildContext context, AppTextVariant variant, AppTextWeight weight, 
-    AppTextColorType colorType, Color? customColor, double? lineHeight, TextDecoration? decoration) {
-  
+TextStyle _getTextStyle(
+  BuildContext context,
+  AppTextVariant variant,
+  AppTextWeight weight,
+  AppTextColorType colorType,
+  Color? customColor,
+  double? lineHeight,
+  TextDecoration? decoration,
+) {
   // Resolve color and weight
   final color = _resolveTextColor(context, colorType, customColor);
   final fontWeight = _resolveFontWeight(weight);
-  
+
   // Base style with variant-specific properties
   TextStyle style;
   switch (variant) {
     case AppTextVariant.display:
-      style = TextStyle(fontSize: 36, fontWeight: fontWeight, fontFamily: "Poppins");
+      style = TextStyle(
+        fontSize: 36.sp,
+        fontWeight: fontWeight,
+        fontFamily: "Montserrat",
+      );
       break;
     case AppTextVariant.headline1:
-      style = TextStyle(fontSize: 28, fontWeight: fontWeight, fontFamily: "Poppins");
+      style = TextStyle(
+        fontSize: 28.sp,
+        fontWeight: fontWeight,
+        fontFamily: "Montserrat",
+      );
       break;
     case AppTextVariant.headline2:
-      style = TextStyle(fontSize: 24, fontWeight: fontWeight, fontFamily: "Poppins");
+      style = TextStyle(
+        fontSize: 24.sp,
+        fontWeight: fontWeight,
+        fontFamily: "Montserrat",
+      );
       break;
     case AppTextVariant.headline3:
-      style = TextStyle(fontSize: 20, fontWeight: fontWeight, fontFamily: "Poppins");
+      style = TextStyle(
+        fontSize: 20.sp,
+        fontWeight: fontWeight,
+        fontFamily: "Montserrat",
+      );
       break;
     case AppTextVariant.headline4:
-      style = TextStyle(fontSize: 18, fontWeight: fontWeight, fontFamily: "Poppins");
+      style = TextStyle(
+        fontSize: 18.sp,
+        fontWeight: fontWeight,
+        fontFamily: "Montserrat",
+      );
       break;
     case AppTextVariant.headline5:
-      style = TextStyle(fontSize: 16, fontWeight: fontWeight, fontFamily: "Poppins");
+      style = TextStyle(
+        fontSize: 16.sp,
+        fontWeight: fontWeight,
+        fontFamily: "Montserrat",
+      );
       break;
     case AppTextVariant.headline6:
-      style = TextStyle(fontSize: 14, fontWeight: fontWeight, fontFamily: "Poppins");
+      style = TextStyle(
+        fontSize: 14.sp,
+        fontWeight: fontWeight,
+        fontFamily: "Montserrat",
+      );
       break;
     case AppTextVariant.bodyLarge:
-      style = TextStyle(fontSize: 16, fontWeight: fontWeight, fontFamily: "Poppins");
+      style = TextStyle(
+        fontSize: 16.sp,
+        fontWeight: fontWeight,
+        fontFamily: "Montserrat",
+      );
       break;
     case AppTextVariant.bodyMedium:
-      style = TextStyle(fontSize: 14, fontWeight: fontWeight, fontFamily: "Poppins");
+      style = TextStyle(
+        fontSize: 14.sp,
+        fontWeight: fontWeight,
+        fontFamily: "Montserrat",
+      );
       break;
     case AppTextVariant.bodySmall:
-      style = TextStyle(fontSize: 12, fontWeight: fontWeight, fontFamily: "Poppins");
+      style = TextStyle(
+        fontSize: 12.sp,
+        fontWeight: fontWeight,
+        fontFamily: "Montserrat",
+      );
       break;
     case AppTextVariant.tiny:
-      style = TextStyle(fontSize: 10, fontWeight: fontWeight, fontFamily: "Poppins");
+      style = TextStyle(
+        fontSize: 10.sp,
+        fontWeight: fontWeight,
+        fontFamily: "Montserrat",
+      );
       break;
     case AppTextVariant.caption:
-      style = TextStyle(fontSize: 12, fontWeight: fontWeight, fontFamily: "Poppins");
+      style = TextStyle(
+        fontSize: 12.sp,
+        fontWeight: fontWeight,
+        fontFamily: "Montserrat",
+      );
       break;
     case AppTextVariant.button:
-      style = TextStyle(fontSize: 14, fontWeight: fontWeight, fontFamily: "Poppins");
+      style = TextStyle(
+        fontSize: 14.sp,
+        fontWeight: fontWeight,
+        fontFamily: "Montserrat",
+      );
       break;
     case AppTextVariant.label:
-      style = TextStyle(fontSize: 12, fontWeight: fontWeight, fontFamily: "Poppins");
+      style = TextStyle(
+        fontSize: 12.sp,
+        fontWeight: fontWeight,
+        fontFamily: "Montserrat",
+      );
       break;
   }
 
@@ -164,7 +225,7 @@ class AppText extends StatelessWidget {
 
   const AppText(
     this.text, {
-    Key? key,
+    super.key,
     this.variant = AppTextVariant.bodyMedium,
     this.weight = AppTextWeight.regular,
     this.colorType = AppTextColorType.primary,
@@ -175,20 +236,20 @@ class AppText extends StatelessWidget {
     this.overflow,
     this.decoration,
     this.selectable = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     final TextStyle style = _getTextStyle(
-      context, 
-      variant, 
-      weight, 
-      colorType, 
-      customColor, 
-      lineHeight, 
-      decoration
+      context,
+      variant,
+      weight,
+      colorType,
+      customColor,
+      lineHeight,
+      decoration,
     );
-    
+
     if (selectable) {
       return SelectableText(
         text,
@@ -227,7 +288,7 @@ class AnimatedAppText extends StatelessWidget {
 
   const AnimatedAppText(
     this.text, {
-    Key? key,
+    super.key,
     this.variant = AppTextVariant.bodyMedium,
     this.weight = AppTextWeight.regular,
     this.colorType = AppTextColorType.primary,
@@ -241,20 +302,20 @@ class AnimatedAppText extends StatelessWidget {
     this.curve = Curves.easeInOut,
     this.beginOffset,
     this.delay,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     final style = _getTextStyle(
-      context, 
-      variant, 
-      weight, 
-      colorType, 
-      customColor, 
-      lineHeight, 
-      decoration
+      context,
+      variant,
+      weight,
+      colorType,
+      customColor,
+      lineHeight,
+      decoration,
     );
-    
+
     Widget textWidget = AnimatedDefaultTextStyle(
       duration: duration,
       curve: curve,
@@ -266,7 +327,7 @@ class AnimatedAppText extends StatelessWidget {
         overflow: overflow,
       ),
     );
-    
+
     // Apply animation if beginOffset is provided
     if (beginOffset != null) {
       textWidget = TweenAnimationBuilder<Offset>(
@@ -274,15 +335,12 @@ class AnimatedAppText extends StatelessWidget {
         duration: duration,
         curve: curve,
         builder: (context, value, child) {
-          return Transform.translate(
-            offset: value,
-            child: child,
-          );
+          return Transform.translate(offset: value, child: child);
         },
         child: textWidget,
       );
     }
-    
+
     // Apply delay if provided
     if (delay != null) {
       return FutureBuilder(
@@ -296,20 +354,13 @@ class AnimatedAppText extends StatelessWidget {
         },
       );
     }
-    
+
     return textWidget;
   }
 }
 
 /// Semantic color options for BasicText (legacy support)
-enum BasicTextColor {
-  primary,
-  secondary,
-  error,
-  success,
-  warning,
-  link,
-}
+enum BasicTextColor { primary, secondary, error, success, warning, link }
 
 /// Resolves [BasicTextColor] to an actual [Color] from the current theme extension
 Color _resolveBasicTextColor(BuildContext context, BasicTextColor color) {
@@ -345,14 +396,14 @@ class BasicText extends StatelessWidget {
 
   const BasicText(
     this.text, {
-    Key? key,
+    super.key,
     this.fontSize = 14,
     this.fontWeight = FontWeight.normal,
     this.textAlign,
     this.overflow,
     this.lineHeight,
     this.color = BasicTextColor.primary,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -361,11 +412,11 @@ class BasicText extends StatelessWidget {
       textAlign: textAlign,
       overflow: overflow,
       style: TextStyle(
-        fontSize: fontSize,
+        fontSize: fontSize.sp,
         fontWeight: fontWeight,
         color: _resolveBasicTextColor(context, color),
         height: lineHeight,
-        fontFamily: "Poppins",
+        fontFamily: "Montserrat",
         decorationColor: _resolveBasicTextColor(context, color),
       ),
     );

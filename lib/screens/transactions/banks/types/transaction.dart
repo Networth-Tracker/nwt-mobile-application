@@ -65,7 +65,7 @@ class Banktransation {
         required this.userguid,
         required this.type,
         required this.mode,
-        required this.amount,
+      required this.amount,
         required this.transactionalbalance,
         required this.transactiontimestamp,
         required this.valuedate,

@@ -1,7 +1,8 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:nwt_app/constants/storage_keys.dart';
 import 'package:nwt_app/services/global_storage.dart';
 import 'package:nwt_app/services/network/connectivity_service.dart';
@@ -14,8 +15,9 @@ class NetworkAPIHelper {
   final NetworkInterceptor _interceptor = NetworkInterceptor(
     timeout: const Duration(seconds: 30),
   );
-  
-  final ConnectivityService _connectivityService = Get.find<ConnectivityService>();
+
+  final ConnectivityService _connectivityService =
+      Get.find<ConnectivityService>();
 
   /// Creates default headers for API requests
   Map<String, String> _getHeaders({bool requiresAuth = true}) {
@@ -85,7 +87,7 @@ class NetworkAPIHelper {
 
       AppLogger.info('POST Request: $url', tag: 'NetworkAPIHelper');
       AppLogger.info('POST Body: ${jsonEncode(body)}', tag: 'NetworkAPIHelper');
-      
+
       final response = await _interceptor.post(url, body, headers: headers);
       return response;
     } on NetworkException catch (e) {
@@ -189,27 +191,28 @@ class NetworkAPIHelper {
         break;
       case NetworkErrorType.serverError:
         title = 'Server Error';
-        message = 'Something went wrong on our servers. Please try again later.';
+        message =
+            'Something went wrong on our servers. Please try again later.';
         break;
       default:
         title = 'Error';
     }
 
-    // Show error message to user
-    Get.snackbar(
-      title,
-      message,
-      snackPosition: SnackPosition.BOTTOM,
-      duration: const Duration(seconds: 3),
-      backgroundColor: Get.theme.colorScheme.error.withOpacity(0.8),
-      colorText: Get.theme.colorScheme.onError,
-    );
+    // // Show error message to user
+    // Get.snackbar(
+    //   title,
+    //   message,
+    //   snackPosition: SnackPosition.BOTTOM,
+    //   duration: const Duration(seconds: 3),
+    //   backgroundColor: Get.theme.colorScheme.error.withOpacity(0.8),
+    //   colorText: Get.theme.colorScheme.onError,
+    // );
   }
 
   /// Handles no connectivity scenario
   void _handleNoConnectivity() {
     AppLogger.warning('No internet connection', tag: 'NetworkAPIHelper');
-    
+
     Get.snackbar(
       'No Internet Connection',
       'Please check your network settings and try again.',

@@ -1,16 +1,17 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
-import 'package:nwt_app/widgets/common/button_widget.dart';
-import 'package:nwt_app/widgets/common/key_pad.dart';
-import 'package:nwt_app/widgets/common/text_widget.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/constants/theme.dart';
 import 'package:nwt_app/services/auth/auth.dart';
 import 'package:nwt_app/services/auth/auth_flow.dart';
 import 'package:nwt_app/utils/logger.dart';
+import 'package:nwt_app/widgets/common/button_widget.dart';
+import 'package:nwt_app/widgets/common/key_pad.dart';
+import 'package:nwt_app/widgets/common/text_widget.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 
 class PhoneOTPVerifyScreen extends StatefulWidget {
@@ -281,25 +282,24 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen>
           padding: EdgeInsets.only(
             left: AppSizing.scaffoldHorizontalPadding,
             right: AppSizing.scaffoldHorizontalPadding,
-            bottom: MediaQuery.of(context).padding.bottom,
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Column(
                 children: [
-                  const SizedBox(height: 20),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.05),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.5,
+                        width: MediaQuery.of(context).size.width * 0.45,
                         child: Lottie.asset('assets/lottie/lock.json'),
                       ),
                     ],
                   ),
                   const SizedBox(height: 5),
-                  Container(
+                  SizedBox(
                     width: MediaQuery.of(context).size.width,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -489,29 +489,38 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen>
                     onKeyPressed: _onKeyPressed,
                     onBackspace: _onBackspace,
                   ),
-                  const SizedBox(height: 20),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: AppButton(
-                          text: 'Continue',
-                          variant: AppButtonVariant.primary,
-                          size: AppButtonSize.large,
-                          isDisabled: _otpCode.length != 6 || _isLoading,
-                          onPressed: () {
-                            if (_otpCode.length == 6 && !_isLoading) {
-                              _verifyOTP();
-                            }
-                          },
-                          isLoading: _isLoading,
-                        ),
-                      ),
-                    ],
-                  ),
+                  SizedBox(height: 10),
                 ],
               ),
             ],
           ),
+        ),
+      ),
+      bottomNavigationBar: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSizing.scaffoldHorizontalPadding,
+        ),
+        margin: EdgeInsets.only(
+          bottom: MediaQuery.of(context).padding.bottom + 16,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: AppButton(
+                text: 'Continue',
+                variant: AppButtonVariant.primary,
+                size: AppButtonSize.large,
+                isDisabled: _otpCode.length != 6 || _isLoading,
+                onPressed: () {
+                  if (_otpCode.length == 6 && !_isLoading) {
+                    _verifyOTP();
+                  }
+                },
+                isLoading: _isLoading,
+              ),
+            ),
+          ],
         ),
       ),
     );

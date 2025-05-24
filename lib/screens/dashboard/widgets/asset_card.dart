@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
-import 'package:get/get.dart';
 
 class AssetCard extends StatelessWidget {
   final String title;
@@ -16,7 +16,7 @@ class AssetCard extends StatelessWidget {
   final Widget? destination;
 
   const AssetCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.amount,
     required this.delta,
@@ -27,12 +27,15 @@ class AssetCard extends StatelessWidget {
     this.backgroundColor,
     this.borderColor,
     this.destination,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: destination != null ? () => Get.to(destination, transition: Transition.rightToLeft) : null,
+      onTap:
+          destination != null
+              ? () => Get.to(destination, transition: Transition.rightToLeft)
+              : null,
       borderRadius: BorderRadius.circular(12),
       child: Container(
         width: width,
@@ -40,9 +43,7 @@ class AssetCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: backgroundColor ?? AppColors.darkCardBG,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: borderColor ?? AppColors.darkButtonBorder,
-          ),
+          border: Border.all(color: borderColor ?? AppColors.darkButtonBorder),
         ),
         child: Column(
           children: [
@@ -52,12 +53,15 @@ class AssetCard extends StatelessWidget {
                 Row(
                   children: [
                     if (icon != null)
-                      IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          icon,
-                          size: 26,
+                      Container(
+                        height: 30,
+                        width: 30,
+                        decoration: BoxDecoration(
+                          // color: AppColors.darkButtonBorder,
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(color: AppColors.darkButtonBorder),
                         ),
+                        child: Icon(icon, size: 18),
                       ),
                     if (icon != null) const SizedBox(width: 10),
                     AppText(
@@ -113,10 +117,7 @@ class AssetCard extends StatelessWidget {
         break;
     }
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 6,
-        vertical: 2,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(6),
@@ -131,8 +132,4 @@ class AssetCard extends StatelessWidget {
   }
 }
 
-enum DeltaType {
-  positive,
-  negative,
-  neutral,
-}
+enum DeltaType { positive, negative, neutral }

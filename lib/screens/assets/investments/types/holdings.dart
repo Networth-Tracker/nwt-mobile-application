@@ -41,7 +41,7 @@ class HoldingsData {
 
 class Investment {
   int id;
-  DateTime createdat;
+  String createdat;
   String userguid;
   bool activestate;
   String? reqid;
@@ -57,7 +57,7 @@ class Investment {
   String? assettype;
   String? schemetype;
   double? nav;
-  DateTime? navdate;
+  String? navdate;
   double? closingbalance;
   bool? isdemat;
   double currentmktvalue;
@@ -94,13 +94,13 @@ class Investment {
   String? symbol;
   String? securityname;
   String? status;
-  DateTime? buydate;
-  DateTime? selldate;
+  String? buydate;
+  String? selldate;
   double? averageprice;
   String? currency;
   String? exchangename;
-  DateTime? tradedate;
-  DateTime? updatedat;
+  String? tradedate;
+  String? updatedat;
 
   Investment({
     required this.id,
@@ -168,7 +168,7 @@ class Investment {
 
   factory Investment.fromJson(Map<String, dynamic> json) => Investment(
     id: json["id"],
-    createdat: DateTime.parse(json["createdat"]),
+    createdat: json["createdat"],
     userguid: json["userguid"],
     activestate: json["activestate"],
     reqid: json["reqid"],
@@ -184,7 +184,7 @@ class Investment {
     assettype: json["assettype"],
     schemetype: json["schemetype"],
     nav: (json["nav"] as num?)?.toDouble(),
-    navdate: json["navdate"] == null ? null : DateTime.parse(json["navdate"]),
+    navdate: json["navdate"],
     closingbalance: (json["closingbalance"] as num?)?.toDouble(),
     isdemat: json["isdimat"],
     currentmktvalue: (json["currentmktvalue"] as num).toDouble(),
@@ -221,19 +221,18 @@ class Investment {
     symbol: json["symbol"],
     securityname: json["securityname"],
     status: json["status"],
-    buydate: json["buydate"] == null ? null : DateTime.parse(json["buydate"]),
+    buydate: json["buydate"],
     selldate: json["selldate"],
     averageprice: (json["averageprice"] as num?)?.toDouble(),
     currency: json["currency"],
     exchangename: json["exchangename"],
-    tradedate:
-        json["tradedate"] == null ? null : DateTime.parse(json["tradedate"]),
+    tradedate: json["tradedate"],
     updatedat: json["updatedat"],
   );
 
   Map<String, dynamic> toJson() => {
     "id": id,
-    "createdat": createdat.toIso8601String(),
+    "createdat": createdat,
     "userguid": userguid,
     "activestate": activestate,
     "reqid": reqid,
@@ -249,7 +248,7 @@ class Investment {
     "assettype": assettype,
     "schemetype": schemetype,
     "nav": nav,
-    "navdate": navdate?.toIso8601String(),
+    "navdate": navdate,
     "closingbalance": closingbalance,
     "isdemat": isdemat,
     "currentmktvalue": currentmktvalue,
@@ -286,13 +285,12 @@ class Investment {
     "symbol": symbol,
     "securityname": securityname,
     "status": status,
-    "buydate": buydate?.toIso8601String(),
+    "buydate": buydate,
     "selldate": selldate,
     "averageprice": averageprice,
     "currency": currency,
     "exchangename": exchangename,
-    "tradedate":
-        "${tradedate!.year.toString().padLeft(4, '0')}-${tradedate!.month.toString().padLeft(2, '0')}-${tradedate!.day.toString().padLeft(2, '0')}",
+    "tradedate": tradedate,
     "updatedat": updatedat,
   };
 }

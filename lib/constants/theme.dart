@@ -10,7 +10,7 @@ class AppTheme {
     brightness: Brightness.light,
     scaffoldBackgroundColor: AppColors.lightBackground,
     primaryColor: AppColors.lightPrimary,
-    fontFamily: 'Poppins',
+    fontFamily: 'Montserrat',
 
     // Make sure to use ColorScheme to properly handle theme transitions
     colorScheme: ColorScheme.light(
@@ -32,7 +32,7 @@ class AppTheme {
         color: AppColors.lightTextPrimary,
         fontSize: 18,
         fontWeight: FontWeight.w600,
-        fontFamily: "Poppins"
+        fontFamily: "Montserrat"
       ),
     ),
 
@@ -97,13 +97,13 @@ class AppTheme {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       labelStyle: const TextStyle(
         color: AppColors.darkTextPrimary,
-        fontFamily: 'Poppins',
+        fontFamily: 'Montserrat',
         fontSize: 12,
         fontWeight: FontWeight.w600,
       ),
       secondaryLabelStyle: const TextStyle(
         color: AppColors.darkTextPrimary,
-        fontFamily: 'Poppins',
+        fontFamily: 'Montserrat',
         fontSize: 12,
         fontWeight: FontWeight.w600,
       ),
@@ -141,7 +141,7 @@ class AppTheme {
     brightness: Brightness.dark,
     scaffoldBackgroundColor: AppColors.darkBackground,
     primaryColor: AppColors.darkPrimary,
-    fontFamily: 'Poppins',
+    fontFamily: 'Montserrat',
 
     // Make sure to use ColorScheme to properly handle theme transitions
     colorScheme: ColorScheme.dark(
@@ -162,7 +162,7 @@ class AppTheme {
         color: AppColors.darkTextPrimary,
         fontSize: 18,
         fontWeight: FontWeight.w600,
-        fontFamily: "Poppins"
+        fontFamily: "Montserrat"
       ),
     ),
 
@@ -242,13 +242,13 @@ class AppTheme {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       labelStyle: const TextStyle(
         color: AppColors.darkTextPrimary,
-        fontFamily: 'Poppins',
+        fontFamily: 'Montserrat',
         fontSize: 12,
         fontWeight: FontWeight.w600,
       ),
       secondaryLabelStyle: const TextStyle(
         color: AppColors.darkTextPrimary,
-        fontFamily: 'Poppins',
+        fontFamily: 'Montserrat',
         fontSize: 12,
         fontWeight: FontWeight.w600,
       ),
@@ -319,7 +319,7 @@ class AppTextThemeColors extends ThemeExtension<AppTextThemeColors> {
   static const dark = AppTextThemeColors(
     primaryText: AppColors.darkTextPrimary,
     secondaryText: AppColors.darkTextSecondary,
-    tertiaryText: AppColors.darkTextTertiary,
+    tertiaryText: AppColors.lightTextTertiary,
     mutedText: AppColors.darkTextMuted,
     grayText: AppColors.darkTextGray,
     buttonText: AppColors.darkButtonPrimaryText,

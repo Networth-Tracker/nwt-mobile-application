@@ -6,7 +6,7 @@ class AppPadding {
 }
 
 class AppSizing {
-  static const double scaffoldHorizontalPadding = 25.0;
+  static const double scaffoldHorizontalPadding = 20.0;
   static const double scaffoldVerticalPadding = 0.0;
   static const double buttonHorizontalPadding = 0.0;
   static const double buttonVerticalPadding = 12.0;
