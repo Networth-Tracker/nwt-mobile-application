@@ -2,14 +2,12 @@ import 'dart:async';
 
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/constants/theme.dart';
-import 'package:nwt_app/screens/dashboard/dashboard.dart';
-import 'package:nwt_app/screens/fetch-holdings/layouts/loading_layout.dart';
 import 'package:nwt_app/screens/fetch-holdings/types/mf_fetching.dart';
+import 'package:nwt_app/widgets/common/animated_error_message.dart';
 import 'package:nwt_app/widgets/common/button_widget.dart';
 import 'package:nwt_app/widgets/common/key_pad.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
@@ -17,7 +15,6 @@ import 'package:sms_autofill/sms_autofill.dart';
 
 class OtpVerificationLayout extends StatefulWidget {
   final bool isAnimating;
-  final bool isLoading;
   final bool canResendOTP;
   final int timeLeft;
   final int activeFieldIndex;
@@ -31,11 +28,11 @@ class OtpVerificationLayout extends StatefulWidget {
   final VoidCallback onPrevious;
   final VoidCallback onNext;
   final DecryptedCASDetails? casDetails;
+  final String? errorMessage;
 
   const OtpVerificationLayout({
     super.key,
     required this.isAnimating,
-    required this.isLoading,
     required this.canResendOTP,
     required this.timeLeft,
     required this.activeFieldIndex,
@@ -49,6 +46,7 @@ class OtpVerificationLayout extends StatefulWidget {
     required this.onPrevious,
     required this.onNext,
     this.casDetails,
+    this.errorMessage,
   });
 
   @override
@@ -75,6 +73,7 @@ class _OtpVerificationLayoutState extends State<OtpVerificationLayout>
   Timer? _resendTimer;
   int _timeLeft = 60;
   bool _canResendOTP = true;
+  String? _previousErrorMessage;
 
   String get _otpCode {
     return _controllers.map((controller) => controller.text).join();
@@ -107,6 +106,26 @@ class _OtpVerificationLayoutState extends State<OtpVerificationLayout>
     SmsAutoFill().getAppSignature.then((signature) {
       print("SMS app signature: $signature");
     });
+  }
+
+  @override
+  void didUpdateWidget(OtpVerificationLayout oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // If an error message appears, immediately stop loading
+    if (widget.errorMessage != null &&
+        widget.errorMessage != _previousErrorMessage) {
+      setState(() {
+        _isLoading = false;
+        _previousErrorMessage = widget.errorMessage;
+      });
+    }
+
+    // If error message is cleared, it might be a successful verification
+    // Don't reset loading state as we want to maintain it during navigation
+    if (oldWidget.errorMessage != null && widget.errorMessage == null) {
+      _previousErrorMessage = null;
+    }
   }
 
   void _startResendTimer() {
@@ -218,24 +237,18 @@ class _OtpVerificationLayoutState extends State<OtpVerificationLayout>
 
     setState(() {
       _isLoading = true;
+      _previousErrorMessage = null; // Reset previous error message
     });
 
-    // Call the verification function
+    // Call the verification function and let the parent handle navigation
+    // The parent will only navigate to the next screen on successful verification
+    // The loading state will be maintained until we get a response (success or error)
     widget.onVerifyOTP(otpCode);
 
-    // Navigate to loading layout
-    Future.delayed(const Duration(milliseconds: 500), () {
-      // Navigate to loading layout
-      Get.to(
-        () => Scaffold(body: LoadingLayout(onPrevious: () => Get.back())),
-        transition: Transition.rightToLeft,
-      );
-
-      // After 7 seconds, navigate to dashboard
-      Future.delayed(const Duration(seconds: 7), () {
-        Get.offAll(() => const Dashboard(), transition: Transition.rightToLeft);
-      });
-    });
+    // Note: We're not setting a timeout to reset loading state anymore
+    // The loading state will be maintained until we get a response
+    // It will be reset in didUpdateWidget if there's an error
+    // For successful verification, we want to maintain loading during navigation
   }
 
   @override
@@ -456,10 +469,14 @@ class _OtpVerificationLayoutState extends State<OtpVerificationLayout>
                       ),
                       const SizedBox(width: 4),
                       GestureDetector(
-                        onTap:
-                            (_canResendOTP && !_isLoading)
-                                ? widget.onResendOTP
-                                : null,
+                        onTap: (_canResendOTP && !_isLoading)
+                            ? () {
+                                // Start the timer locally first
+                                _startResendTimer();
+                                // Then call the parent's resend function
+                                widget.onResendOTP();
+                              }
+                            : null,
                         child: AppText(
                           _canResendOTP
                               ? "Resend Code"
@@ -468,7 +485,7 @@ class _OtpVerificationLayoutState extends State<OtpVerificationLayout>
                           lineHeight: 1.3,
                           colorType:
                               _canResendOTP
-                                  ? AppTextColorType.secondary
+                                  ? AppTextColorType.primary
                                   : AppTextColorType.muted,
                           weight: AppTextWeight.bold,
                         ),
@@ -498,21 +515,28 @@ class _OtpVerificationLayoutState extends State<OtpVerificationLayout>
         margin: EdgeInsets.only(
           bottom: MediaQuery.of(context).padding.bottom + 16,
         ),
-        child: Row(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Expanded(
-              child: AppButton(
-                text: 'Continue',
-                variant: AppButtonVariant.primary,
-                size: AppButtonSize.large,
-                isDisabled: _otpCode.length != 6 || _isLoading,
-                onPressed: () {
-                  if (_otpCode.length == 6 && !_isLoading) {
-                    _verifyAndNavigate(_otpCode);
-                  }
-                },
-                isLoading: _isLoading,
-              ),
+            AnimatedErrorMessage(errorMessage: widget.errorMessage),
+            SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: AppButton(
+                    text: 'Continue',
+                    variant: AppButtonVariant.primary,
+                    size: AppButtonSize.large,
+                    isDisabled: _otpCode.length != 6 || _isLoading,
+                    onPressed: () {
+                      if (_otpCode.length == 6 && !_isLoading) {
+                        _verifyAndNavigate(_otpCode);
+                      }
+                    },
+                    isLoading: _isLoading,
+                  ),
+                ),
+              ],
             ),
           ],
         ),

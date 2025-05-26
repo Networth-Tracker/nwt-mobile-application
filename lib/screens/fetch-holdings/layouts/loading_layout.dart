@@ -2,13 +2,16 @@ import 'dart:async';
 
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:nwt_app/screens/dashboard/dashboard.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 
 class LoadingLayout extends StatefulWidget {
   final VoidCallback onPrevious;
+  final VoidCallback? onComplete;
 
-  const LoadingLayout({super.key, required this.onPrevious});
+  const LoadingLayout({super.key, required this.onPrevious, this.onComplete});
 
   @override
   State<LoadingLayout> createState() => _LoadingLayoutState();
@@ -17,6 +20,8 @@ class LoadingLayout extends StatefulWidget {
 class _LoadingLayoutState extends State<LoadingLayout> {
   int _currentMessageIndex = 0;
   late Timer _messageTimer;
+  late Timer _redirectTimer;
+  bool _isRedirecting = false;
 
   final List<String> _loadingMessages = [
     "Fetching your\nMutual Fund details",
@@ -41,11 +46,34 @@ class _LoadingLayoutState extends State<LoadingLayout> {
         });
       }
     });
+
+    // Start a 7-second timer to redirect to dashboard
+    _redirectTimer = Timer(const Duration(seconds: 7), () {
+      if (mounted && !_isRedirecting) {
+        setState(() {
+          _isRedirecting = true;
+        });
+
+        // Call the onComplete callback to navigate to dashboard
+        if (widget.onComplete != null) {
+          widget.onComplete!();
+        } else {
+          // Default navigation to dashboard if no callback provided
+          _navigateToDashboard();
+        }
+      }
+    });
+  }
+
+  // Navigate to dashboard screen
+  void _navigateToDashboard() {
+    Get.offAll(() => const Dashboard());
   }
 
   @override
   void dispose() {
     _messageTimer.cancel();
+    _redirectTimer.cancel();
     super.dispose();
   }
 

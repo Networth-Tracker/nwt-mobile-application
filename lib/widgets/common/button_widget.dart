@@ -258,7 +258,7 @@ class AppButton extends StatelessWidget {
           );
       }
     }
-  }
+   }
 
   // Light theme color helper
   _ThemeColors _getLightThemeColors(BuildContext context) {
