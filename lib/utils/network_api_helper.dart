@@ -130,6 +130,39 @@ class NetworkAPIHelper {
     }
   }
 
+  /// Performs a PATCH request
+  Future<http.Response?> patch(
+    String url,
+    dynamic body, {
+    bool requiresAuth = true,
+    Map<String, String>? additionalHeaders,
+  }) async {
+    try {
+      // Check connectivity before making the request
+      if (!_connectivityService.isConnected) {
+        _handleNoConnectivity();
+        return null;
+      }
+
+      final headers = _getHeaders(requiresAuth: requiresAuth);
+      if (additionalHeaders != null) {
+        headers.addAll(additionalHeaders);
+      }
+
+      AppLogger.info('PATCH Request: $url', tag: 'NetworkAPIHelper');
+      AppLogger.info('PATCH Body: ${jsonEncode(body)}', tag: 'NetworkAPIHelper');
+
+      final response = await _interceptor.patch(url, body, headers: headers);
+      return response;
+    } on NetworkException catch (e) {
+      _handleNetworkException(e);
+      return null;
+    } catch (e) {
+      AppLogger.error('PATCH Request Error: $e', tag: 'NetworkAPIHelper');
+      return null;
+    }
+  }
+
   /// Performs a DELETE request
   Future<http.Response?> delete(
     String url, {

@@ -10,8 +10,8 @@ import 'package:nwt_app/constants/theme.dart';
 import 'package:nwt_app/controllers/theme_controller.dart';
 import 'package:nwt_app/controllers/user_controller.dart';
 import 'package:nwt_app/firebase_options.dart';
-import 'package:nwt_app/notification/firebase_messaging.dart';
 import 'package:nwt_app/screens/dashboard/dashboard.dart';
+import 'package:nwt_app/services/app_notificationpermission/notification_permission.dart';
 import 'package:nwt_app/services/auth/auth_flow.dart';
 import 'package:nwt_app/services/global_storage.dart';
 import 'package:nwt_app/services/network/connectivity_service.dart';
@@ -39,25 +39,23 @@ void main() async {
   debugPaintPointersEnabled = false;
   debugPaintLayerBordersEnabled = false;
 
-  const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('@drawable/ic_notification');
-  const DarwinInitializationSettings initializationSettingsDarwin =
-      DarwinInitializationSettings();
-  const InitializationSettings initializationSettings = InitializationSettings(
-    android: initializationSettingsAndroid,
-    iOS: initializationSettingsDarwin,
+  // We'll initialize notifications only when needed in the OTP verification screen
+  // This prevents automatic permission prompts at app startup
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
   );
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // Initialize Firebase Remote Config
+  await FirebaseRemoteConfig.instance.setConfigSettings(RemoteConfigSettings(
+    fetchTimeout: const Duration(minutes: 1),
+    minimumFetchInterval: const Duration(hours: 1),
+  ));
+  await FirebaseRemoteConfig.instance.fetchAndActivate();
 
-  // Initialize Firebase Remote Config before anything else that might use it
-  await setupRemoteConfig();
-
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
-  final messagingAPI = FirebaseMessagingAPI();
-  await messagingAPI.initPushNotifications();
+  // Check for pending FCM tokens and retry sending them
+  final notificationService = NotificationPermissionService();
+  notificationService.retryPendingTokens();
 
   // Initialize controllers and services
   await Get.putAsync(() => ConnectivityService().init());
@@ -85,7 +83,7 @@ Future<void> setupRemoteConfig() async {
 
     // Set default values for remote config parameters
     await remoteConfig.setDefaults({
-      'api_base_url': 'https://app.networthtracker.in/api/v1',
+      'api_base_url': 'https://lab.networthtracker.in/api/v1',
     });
 
     // Fetch and activate the latest remote config values

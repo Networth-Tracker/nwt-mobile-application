@@ -10,10 +10,10 @@ class ApiURLs {
       // If remote config has a value, use it, otherwise use the default
       return configBaseUrl.isNotEmpty
           ? configBaseUrl
-          : "https://app.networthtracker.in/api/v1";
+          : "https://lab.networthtracker.in/api/v1";
     } catch (e) {
       // Fallback to default URL if remote config fails
-      return "https://app.networthtracker.in/api/v1";
+      return "https://lab.networthtracker.in/api/v1";
     }
   }
 
@@ -37,4 +37,6 @@ class ApiURLs {
 
   // Mutual Fund Switch Advice endpoints
   static String get GET_MF_SWITCH_ADVICE => "$baseUrl/mfcentral/switch/details";
+
+  static String get GET_NOTIFICATION_PERMISSION => "$baseUrl/userdetail/fcm";
 }

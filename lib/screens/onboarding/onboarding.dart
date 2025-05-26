@@ -5,7 +5,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/controllers/theme_controller.dart';
-import 'package:nwt_app/notification/firebase_messaging.dart';
 import 'package:nwt_app/screens/auth/phone_number.dart';
 import 'package:nwt_app/utils/logger.dart';
 import 'package:nwt_app/widgets/common/button_widget.dart';
@@ -20,17 +19,13 @@ class OnboardingScreen extends StatefulWidget {
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final remoteConfig = FirebaseRemoteConfig.instance;
+
   @override
   void initState() {
     super.initState();
-    initNotifications();
+    // Removed notification initialization as it's now handled in OTP verification
     String message = remoteConfig.getString('welcome_message');
     AppLogger.info("message: $message");
-  }
-
-  Future<void> initNotifications() async {
-    String? fcmtoken = await FirebaseMessagingAPI().initNotifications();
-    AppLogger.info("fcmtoken: $fcmtoken", tag: "FCM");
   }
 
   @override
