@@ -28,36 +28,46 @@ class AnimatedAmount extends StatelessWidget {
       fontWeight: FontWeight.bold,
     );
 
-    return AnimatedSwitcher(
-      duration: duration,
-      transitionBuilder: (Widget child, Animation<double> animation) {
-        return FadeTransition(
-          opacity: animation,
-          child: SlideTransition(
-            position: Tween<Offset>(
-              begin: slideOffset,
-              end: Offset.zero,
-            ).animate(CurvedAnimation(
-              parent: animation,
-              curve: curve,
-            )),
-            child: child,
-          ),
-        );
-      },
-      child: isAmountVisible
-          ? Text(
-              amount,
-              key: const ValueKey('amount_visible'),
-              style: style ?? defaultStyle,
-              textAlign: TextAlign.left,
-            )
-          : Text(
-              hiddenText,
-              key: const ValueKey('amount_hidden'),
-              style: style ?? defaultStyle,
-              textAlign: TextAlign.left
+    return Container(
+      alignment: Alignment.centerLeft,
+      child: AnimatedSwitcher(
+        duration: duration,
+        layoutBuilder: (Widget? currentChild, List<Widget> previousChildren) {
+          return Stack(
+            alignment: Alignment.centerLeft,
+            children: <Widget>[
+              ...previousChildren,
+              if (currentChild != null) currentChild,
+            ],
+          );
+        },
+        transitionBuilder: (Widget child, Animation<double> animation) {
+          return FadeTransition(
+            opacity: animation,
+            child: SlideTransition(
+              position: Tween<Offset>(
+                begin: slideOffset,
+                end: Offset.zero,
+              ).animate(CurvedAnimation(parent: animation, curve: curve)),
+              child: child,
             ),
+          );
+        },
+        child:
+            isAmountVisible
+                ? Text(
+                  amount,
+                  key: const ValueKey('amount_visible'),
+                  style: style ?? defaultStyle,
+                  textAlign: TextAlign.left,
+                )
+                : Text(
+                  hiddenText,
+                  key: const ValueKey('amount_hidden'),
+                  style: style ?? defaultStyle,
+                  textAlign: TextAlign.left,
+                ),
+      ),
     );
   }
 }
