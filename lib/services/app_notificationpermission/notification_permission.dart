@@ -1,13 +1,26 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:get/get.dart';
 import 'package:nwt_app/constants/api.dart';
 import 'package:nwt_app/services/global_storage.dart';
 import 'package:nwt_app/types/app_notificationpermission/notification_permission.dart';
 import 'package:nwt_app/utils/logger.dart';
 import 'package:nwt_app/utils/network_api_helper.dart';
 
-class NotificationPermissionService {
+class NotificationPermissionService extends GetxService {
+  static NotificationPermissionService get to =>
+      Get.find<NotificationPermissionService>();
+
+  // Singleton instance
+  static final NotificationPermissionService _instance =
+      NotificationPermissionService._internal();
+
+  // Factory constructor to return the same instance
+  factory NotificationPermissionService() => _instance;
+
+  // Private constructor
+  NotificationPermissionService._internal();
   // Maximum number of retry attempts
   static const int _maxRetries = 3;
 
@@ -63,7 +76,7 @@ class NotificationPermissionService {
       try {
         final response = await NetworkAPIHelper().patch(
           ApiURLs.GET_NOTIFICATION_PERMISSION,
-          {'fcm_token': fcmToken},
+          {'fcm': fcmToken},
         );
 
         if (response != null) {
@@ -125,6 +138,15 @@ class NotificationPermissionService {
     // Return the completer's future, but don't await it
     // This allows the caller to continue execution while retries happen in background
     return completer.future;
+  }
+
+  /// Initialize the service
+  Future<NotificationPermissionService> init() async {
+    AppLogger.info(
+      'Initializing NotificationPermissionService',
+      tag: 'NotificationPermissionService',
+    );
+    return this;
   }
 
   /// Check for pending FCM token and attempt to send it

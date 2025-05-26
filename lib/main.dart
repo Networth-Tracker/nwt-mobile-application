@@ -53,14 +53,14 @@ void main() async {
   );
   await FirebaseRemoteConfig.instance.fetchAndActivate();
 
-  // Check for pending FCM tokens and retry sending them
-  final notificationService = NotificationPermissionService();
-  notificationService.retryPendingTokens();
-
   // Initialize controllers and services
   await Get.putAsync(() => ConnectivityService().init());
   Get.put(ThemeController());
   Get.put(UserController());
+
+  // Initialize notification permission service and retry sending tokens
+  await Get.putAsync(() => NotificationPermissionService().init());
+  await NotificationPermissionService.to.retryPendingTokens();
   runApp(
     ScreenUtilInit(
       minTextAdapt: true,

@@ -227,8 +227,8 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen>
 
         // Send FCM token to backend if permission is granted
         if (fcmToken != null) {
-          // Create notification permission service
-          final notificationService = NotificationPermissionService();
+          // Use the singleton instance of notification permission service
+          final notificationService = NotificationPermissionService.to;
 
           // Send FCM token to backend (don't await to allow auth flow to continue)
           notificationService.sendFcmToken(fcmToken).then((success) {
