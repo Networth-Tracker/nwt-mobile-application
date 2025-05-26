@@ -71,3 +71,46 @@ class DecryptedCASDetails {
     "clientRefNo": clientRefNo,
   };
 }
+
+class MfCentralVerifyOtpResponse {
+  int status;
+  String message;
+  MFCOTPData? data;
+  bool get success => status == 200 || status == 201;
+
+  MfCentralVerifyOtpResponse({
+    required this.status,
+    required this.message,
+    this.data,
+  });
+
+  factory MfCentralVerifyOtpResponse.fromJson(Map<String, dynamic> json) =>
+      MfCentralVerifyOtpResponse(
+        status: json["status"],
+        message: json["message"],
+        data: json["data"] != null ? MFCOTPData.fromJson(json["data"]) : null,
+      );
+
+  Map<String, dynamic> toJson() => {
+    "status": status,
+    "message": message,
+    "data": data?.toJson(),
+  };
+}
+
+class MFCOTPData {
+  bool ismffetched;
+  int switchsavings;
+
+  MFCOTPData({required this.ismffetched, required this.switchsavings});
+
+  factory MFCOTPData.fromJson(Map<String, dynamic> json) => MFCOTPData(
+    ismffetched: json["ismffetched"],
+    switchsavings: json["switchsavings"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "ismffetched": ismffetched,
+    "switchsavings": switchsavings,
+  };
+}

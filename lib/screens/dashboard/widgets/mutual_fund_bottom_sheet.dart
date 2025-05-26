@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:nwt_app/constants/colors.dart';
+import 'package:nwt_app/constants/storage_keys.dart';
+import 'package:nwt_app/services/global_storage.dart';
 import 'package:nwt_app/widgets/common/button_widget.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 
 /// A custom bottom sheet for the dashboard that shows mutual fund data is ready
 class MutualFundBottomSheet extends StatelessWidget {
-  const MutualFundBottomSheet({
-    Key? key,
-  }) : super(key: key);
+  const MutualFundBottomSheet({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +103,7 @@ class MutualFundBottomSheet extends StatelessWidget {
                     ),
                   ),
                   TextSpan(
-                    text: "₹2,05,854",
+                    text: StorageService.read(StorageKeys.MF_SAVINGS_KEY).toString(),
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
@@ -124,7 +124,7 @@ class MutualFundBottomSheet extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: AppButton(
-                text: 'Check Now', 
+                text: 'Check Now',
                 onPressed: () {
                   Navigator.pop(context);
                 },

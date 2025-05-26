@@ -60,7 +60,9 @@ class NetworthChart extends StatelessWidget {
                           ),
                           const SizedBox(width: 4),
                           AppText(
-                            CurrencyFormatter.formatRupee(projectedNetworth),
+                            CurrencyFormatter.formatRupee(
+                              projectedNetworth / 1000,
+                            ),
                             variant: AppTextVariant.bodySmall,
                             weight: AppTextWeight.semiBold,
                             colorType: AppTextColorType.success,

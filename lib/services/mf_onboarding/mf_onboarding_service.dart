@@ -53,7 +53,7 @@ class MFOnboardingService {
     }
   }
 
-  Future<bool> verifyOTP({
+  Future<MfCentralVerifyOtpResponse?> verifyOTP({
     required String token,
     required DecryptedCASDetails casDetails,
     required String otp,
@@ -87,17 +87,20 @@ class MFOnboardingService {
         );
 
         if (response.statusCode == 200 || response.statusCode == 201) {
-          return true;
+          return MfCentralVerifyOtpResponse.fromJson(responseData);
         } else {
           final errorMessage =
               responseData['message'] ?? 'Failed to verify OTP';
           onError(errorMessage);
-          return false;
+          return MfCentralVerifyOtpResponse(status: 0, message: errorMessage);
         }
       }
 
       onError('Network error occurred');
-      return false;
+      return MfCentralVerifyOtpResponse(
+        status: 0,
+        message: 'Network error occurred',
+      );
     } catch (e, stackTrace) {
       AppLogger.error(
         'MF OTP Verification Error',
@@ -106,7 +109,10 @@ class MFOnboardingService {
         tag: 'MFOnboardingService',
       );
       onError('An unexpected error occurred');
-      return false;
+      return MfCentralVerifyOtpResponse(
+        status: 0,
+        message: 'An unexpected error occurred',
+      );
     } finally {
       onLoading(false);
     }

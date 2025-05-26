@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:nwt_app/constants/storage_keys.dart';
 import 'package:nwt_app/screens/dashboard/dashboard.dart';
 import 'package:nwt_app/screens/fetch-holdings/layouts/layouts.dart';
 import 'package:nwt_app/screens/fetch-holdings/types/mf_fetching.dart';
+import 'package:nwt_app/services/global_storage.dart';
 import 'package:nwt_app/services/mf_onboarding/mf_onboarding_service.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 
@@ -212,98 +214,105 @@ class _MutualFundHoldingsJourneyScreenState
   Future<void> _verifyOTP(String otp) async {
     if (_casDetails == null) return;
 
-    // Set up a timer to switch to loading layout after 1 second
-    Timer? loadingTimer;
-    loadingTimer = Timer(const Duration(milliseconds: 1000), () {
-      // If we're still verifying after 1 second, switch to loading layout
-      if (mounted && _errorMessage == null) {
-        setState(() {
-          _currentStep = 2; // Loading step
-        });
+    // Show loading layout immediately
+    if (mounted) {
+      setState(() {
+        _currentStep = 2; // Show loading layout
+        _errorMessage = null;
+      });
+    }
+
+    // Start the 7-second timer immediately
+    // We'll use a Completer to track when the timer is done
+    final timerCompleter = Completer<void>();
+    Future.delayed(const Duration(seconds: 7), () {
+      if (!timerCompleter.isCompleted) {
+        timerCompleter.complete();
       }
     });
 
-    try {
-      // Clear any previous error messages
-      if (mounted) {
-        setState(() {
-          _errorMessage = null;
-        });
-      }
+    // Variable to track if we have a successful response
+    bool hasSuccessfulResponse = false;
 
+    try {
       // Start verification process
-      final success = await _mfOnboardingService.verifyOTP(
+      final response = await _mfOnboardingService.verifyOTP(
         token: _token,
         casDetails: _casDetails!,
         otp: otp,
         onLoading: (isLoading) {
-          // OTP layout handles its own loading state
+          // Already showing loading layout
         },
         onError: (message) {
-          // Cancel the loading timer if there's an error
-          if (loadingTimer != null) {
-            loadingTimer.cancel();
-          }
-
           if (mounted) {
             setState(() {
               // Set error message immediately to trigger UI update
               _errorMessage = message;
 
-              // Ensure we're back on the OTP layout if we switched to loading
-              if (_currentStep == 2) {
-                // If on loading step
-                _currentStep = 1; // Go back to OTP verification step
-              }
+              // Go back to OTP layout to show the error
+              _currentStep = 1; // Go back to OTP verification step
             });
           }
         },
       );
 
-      // Cancel the timer as we have a response now
-      loadingTimer.cancel();
+      // Process the response
+      if (response != null) {
+        // Check if response was successful using the success getter
+        if (response.success) {
+          // Store savings value from response
+          StorageService.write(
+            StorageKeys.MF_SAVINGS_KEY,
+            response.data?.switchsavings ?? 0,
+          );
 
-      // Handle verification failure
-      if (!success) {
+          // Mark that we have a successful response
+          hasSuccessfulResponse = true;
+        } else {
+          // Handle unsuccessful response (status not 200/201)
+          if (mounted) {
+            setState(() {
+              _errorMessage =
+                  response.message.isNotEmpty
+                      ? response.message
+                      : 'Verification failed. Please try again.';
+
+              // Go back to OTP layout to show the error
+              _currentStep = 1; // Go back to OTP verification step
+            });
+          }
+        }
+      } else {
+        // Handle null response
         if (mounted) {
           setState(() {
-            _errorMessage ??= 'Failed to verify OTP. Please try again.';
+            _errorMessage = 'Failed to verify OTP. Please try again.';
 
-            // Ensure we're back on the OTP layout if we switched to loading
-            if (_currentStep == 2) {
-              // If on loading step
-              _currentStep = 1; // Go back to OTP verification step
-            }
+            // Go back to OTP layout to show the error
+            _currentStep = 1; // Go back to OTP verification step
           });
         }
-        return;
-      }
-
-      // Handle verification success - ensure we're on the loading screen
-      if (mounted) {
-        setState(() {
-          _errorMessage = null;
-          _currentStep = 2; // Loading step
-        });
-
-        // Continue with the next steps of the flow
-        _goToNextStep();
       }
     } catch (e) {
-      // Cancel the timer in case of exception
-      loadingTimer.cancel();
-
       if (mounted) {
         setState(() {
           _errorMessage = 'An unexpected error occurred. Please try again.';
 
-          // Ensure we're back on the OTP layout if we switched to loading
-          if (_currentStep == 2) {
-            // If on loading step
-            _currentStep = 1; // Go back to OTP verification step
-          }
+          // Go back to OTP layout to show the error
+          _currentStep = 1; // Go back to OTP verification step
         });
       }
+    }
+
+    // If we have a successful response, wait for the timer to complete
+    // before navigating to the dashboard
+    if (hasSuccessfulResponse) {
+      // Wait for the timer to complete
+      Future.delayed(const Duration(seconds: 7), () {
+        if (mounted) {
+          Get.offAll(() => const Dashboard());
+        }
+      });
     }
   }
 

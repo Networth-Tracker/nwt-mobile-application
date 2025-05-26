@@ -64,6 +64,7 @@ class _OtpVerificationLayoutState extends State<OtpVerificationLayout>
   final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
   bool _isLoading = false;
   int _activeFieldIndex = 0;
+  Timer? _verificationTimer;
 
   late List<AnimationController> _animationControllers;
   late List<Animation<double>> _scaleAnimations;
@@ -119,6 +120,9 @@ class _OtpVerificationLayoutState extends State<OtpVerificationLayout>
         _isLoading = false;
         _previousErrorMessage = widget.errorMessage;
       });
+
+      // Cancel the verification timer if there's an error
+      _verificationTimer?.cancel();
     }
 
     // If error message is cleared, it might be a successful verification
@@ -240,15 +244,24 @@ class _OtpVerificationLayoutState extends State<OtpVerificationLayout>
       _previousErrorMessage = null; // Reset previous error message
     });
 
+    // Cancel any existing verification timer
+    _verificationTimer?.cancel();
+
+    // Start a timer to switch to loading layout after 2 seconds
+    // This will only happen if the response takes longer than 2 seconds
+    _verificationTimer = Timer(const Duration(seconds: 2), () {
+      if (mounted && _isLoading) {
+        // Only navigate to loading layout if we're still loading after 2 seconds
+        // and haven't received an error response
+        if (_previousErrorMessage == null) {
+          widget.onNext();
+        }
+      }
+    });
+
     // Call the verification function and let the parent handle navigation
     // The parent will only navigate to the next screen on successful verification
-    // The loading state will be maintained until we get a response (success or error)
     widget.onVerifyOTP(otpCode);
-
-    // Note: We're not setting a timeout to reset loading state anymore
-    // The loading state will be maintained until we get a response
-    // It will be reset in didUpdateWidget if there's an error
-    // For successful verification, we want to maintain loading during navigation
   }
 
   @override
@@ -263,6 +276,7 @@ class _OtpVerificationLayoutState extends State<OtpVerificationLayout>
       controller.dispose();
     }
     _resendTimer?.cancel();
+    _verificationTimer?.cancel();
     cancel(); // Cancel SMS listener
     super.dispose();
   }
@@ -469,14 +483,15 @@ class _OtpVerificationLayoutState extends State<OtpVerificationLayout>
                       ),
                       const SizedBox(width: 4),
                       GestureDetector(
-                        onTap: (_canResendOTP && !_isLoading)
-                            ? () {
-                                // Start the timer locally first
-                                _startResendTimer();
-                                // Then call the parent's resend function
-                                widget.onResendOTP();
-                              }
-                            : null,
+                        onTap:
+                            (_canResendOTP && !_isLoading)
+                                ? () {
+                                  // Start the timer locally first
+                                  _startResendTimer();
+                                  // Then call the parent's resend function
+                                  widget.onResendOTP();
+                                }
+                                : null,
                         child: AppText(
                           _canResendOTP
                               ? "Resend Code"

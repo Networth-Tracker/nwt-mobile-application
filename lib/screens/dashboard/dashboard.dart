@@ -10,6 +10,7 @@ import 'package:nwt_app/screens/Advisory/advisory.dart';
 import 'package:nwt_app/screens/assets/banks/banks.dart';
 import 'package:nwt_app/screens/assets/investments/investments.dart';
 import 'package:nwt_app/screens/connections/connections.dart';
+import 'package:nwt_app/screens/dashboard/data/networth_chart_dummy_data.dart';
 import 'package:nwt_app/screens/dashboard/widgets/asset_card.dart';
 import 'package:nwt_app/screens/dashboard/widgets/mutual_fund_bottom_sheet.dart';
 import 'package:nwt_app/screens/dashboard/widgets/networth_chart.dart';
@@ -50,8 +51,6 @@ class _DashboardState extends State<Dashboard>
   double _networthAmount = 0.0;
   String _lastFetchedTime = "";
 
-  final UserController userController = Get.find<UserController>();
-
   @override
   void initState() {
     super.initState();
@@ -59,9 +58,24 @@ class _DashboardState extends State<Dashboard>
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     );
+    initData();
+  }
+
+  final UserController _userController = UserController();
+
+  void initData() async {
+    final userResponse = await _userController.fetchUserProfile(
+      onLoading: (isLoading) {
+        if (mounted) {
+          setState(() {
+            isUserLoading = isLoading;
+          });
+        }
+      },
+    );
     fetchDashboardAssets();
     fetchTotalNetworth();
-    if (userController.userData?.ismfverified == true) {
+    if (userResponse?.data.user.ismfverified == true) {
       Future.delayed(const Duration(milliseconds: 1900), () {
         _showBottomSheet();
       });
@@ -124,6 +138,7 @@ class _DashboardState extends State<Dashboard>
         });
   }
 
+  bool isUserLoading = false;
   Future<void> connectToZerodha() async {
     // Show loading indicator
     Get.dialog(
@@ -480,9 +495,20 @@ class _DashboardState extends State<Dashboard>
                                         colorType: AppTextColorType.secondary,
                                       ),
                                       NetworthChart(
-                                        currentNetworth: _networthAmount,
-                                        projectedNetworth: _networthAmount,
+                                        showProjection: true,
+                                        currentNetworth:
+                                            NetworthChartDummyData.getTotalNetworth(),
+                                        projectedNetworth:
+                                            NetworthChartDummyData.getProjectedNetworth(),
+                                        currentprojection:
+                                            NetworthChartDummyData.getCurrentProjection(),
+                                        futureprojection:
+                                            NetworthChartDummyData.getFutureProjection(),
                                       ),
+                                      // NetworthChart(
+                                      //   currentNetworth: _networthAmount,
+                                      //   projectedNetworth: _networthAmount,
+                                      // ),
                                     ],
                                   ),
                                 ],
