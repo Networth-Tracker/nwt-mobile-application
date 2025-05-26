@@ -9,6 +9,7 @@ import 'package:nwt_app/constants/theme.dart';
 import 'package:nwt_app/services/auth/auth.dart';
 import 'package:nwt_app/services/auth/auth_flow.dart';
 import 'package:nwt_app/utils/logger.dart';
+import 'package:nwt_app/widgets/common/animated_error_message.dart';
 import 'package:nwt_app/widgets/common/button_widget.dart';
 import 'package:nwt_app/widgets/common/key_pad.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
@@ -34,6 +35,7 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen>
   final AuthService _authService = AuthService();
   bool _isLoading = false;
   int _activeFieldIndex = 0;
+  String? _errorMessage;
 
   late List<AnimationController> _animationControllers;
   late List<Animation<double>> _scaleAnimations;
@@ -169,7 +171,15 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen>
   }
 
   Future<void> _verifyOTP() async {
+    // Clear any previous error messages
+    setState(() {
+      _errorMessage = null;
+    });
+    
     if (_otpCode.length != 6) {
+      setState(() {
+        _errorMessage = "Please enter a valid 6-digit OTP";
+      });
       return;
     }
 
@@ -189,14 +199,10 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen>
       final authFlow = AuthFlow();
       await authFlow.handlePostOtpVerification();
     } else {
-      // Show error
-      Get.snackbar(
-        'Error',
-        response?.message ?? 'Failed to verify OTP. Please try again.',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      // Show error message above the button
+      setState(() {
+        _errorMessage = response?.message ?? 'Failed to verify OTP. Please try again.';
+      });
     }
   }
 
@@ -244,33 +250,44 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen>
   }
 
   Future<void> _resendOTP() async {
-    if (!_canResendOTP) return;
+    // Clear any previous error messages
+    setState(() {
+      _errorMessage = null;
+    });
+    
+    if (!_canResendOTP || _isLoading) {
+      return;
+    }
+
+    _setLoading(true);
 
     final response = await _authService.generateOTP(
       phoneNumber: widget.phoneNumber,
-      onLoading: _setLoading,
+      onLoading: (isLoading) {
+        _setLoading(isLoading);
+      },
     );
 
-    if (response != null && response.success) {
-      for (var controller in _controllers) {
-        controller.clear();
+    if (response != null) {
+      if (response.success) {
+        // Restart the timer
+        _startResendTimer();
+
+        // Show success message
+        setState(() {
+          _errorMessage = null; // Clear any error message on success
+        });
+      } else {
+        // Show error message above the button
+        setState(() {
+          _errorMessage = response.message;
+        });
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('OTP resent successfully!'),
-          backgroundColor: Colors.green,
-          duration: Duration(seconds: 2),
-        ),
-      );
-      _startResendTimer();
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(response?.message ?? 'Failed to resend OTP'),
-          backgroundColor: Colors.red,
-          duration: const Duration(seconds: 2),
-        ),
-      );
+      // Show connection error
+      setState(() {
+        _errorMessage = 'Failed to resend OTP. Please try again.';
+      });
     }
   }
 
@@ -504,21 +521,27 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen>
         margin: EdgeInsets.only(
           bottom: MediaQuery.of(context).padding.bottom + 16,
         ),
-        child: Row(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Expanded(
-              child: AppButton(
-                text: 'Continue',
-                variant: AppButtonVariant.primary,
-                size: AppButtonSize.large,
-                isDisabled: _otpCode.length != 6 || _isLoading,
-                onPressed: () {
-                  if (_otpCode.length == 6 && !_isLoading) {
-                    _verifyOTP();
-                  }
-                },
-                isLoading: _isLoading,
-              ),
+            AnimatedErrorMessage(errorMessage: _errorMessage),
+            Row(
+              children: [
+                Expanded(
+                  child: AppButton(
+                    text: 'Continue',
+                    variant: AppButtonVariant.primary,
+                    size: AppButtonSize.large,
+                    isDisabled: _otpCode.length != 6 || _isLoading,
+                    onPressed: () {
+                      if (_otpCode.length == 6 && !_isLoading) {
+                        _verifyOTP();
+                      }
+                    },
+                    isLoading: _isLoading,
+                  ),
+                ),
+              ],
             ),
           ],
         ),

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:nwt_app/screens/dashboard/dashboard.dart';
 import 'package:nwt_app/screens/fetch-holdings/layouts/layouts.dart';
 import 'package:nwt_app/screens/fetch-holdings/types/mf_fetching.dart';
 import 'package:nwt_app/services/mf_onboarding/mf_onboarding_service.dart';
@@ -28,7 +29,7 @@ class _MutualFundHoldingsJourneyScreenState
   // Current step in the journey
   int _currentStep = 0;
   bool _isAnimating = false;
-  bool _isLoading = false;
+  String? _errorMessage;
 
   // OTP related variables
   final List<TextEditingController> _controllers = List.generate(
@@ -209,96 +210,112 @@ class _MutualFundHoldingsJourneyScreenState
 
   // Handle OTP verification
   Future<void> _verifyOTP(String otp) async {
-    if (_isLoading || _casDetails == null) return;
+    if (_casDetails == null) return;
 
-    // Set loading state to true for the Continue button
-    if (mounted) {
-      setState(() {
-        _isLoading = true;
-      });
-    }
-
-    // Verify OTP
-    final success = await _mfOnboardingService.verifyOTP(
-      token: _token,
-      casDetails: _casDetails!,
-      otp: otp,
-      onLoading: (isLoading) {
-        // Keep the loading state true during the entire verification process
-        // We'll only update it when explicitly needed
-      },
-      onError: (message) {
-        if (mounted) {
-          Get.snackbar(
-            'Error',
-            message,
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.red.withValues(alpha: 0.8),
-            colorText: Colors.white,
-          );
-        }
-      },
-    );
-
-    // If verification failed, reset loading state and return
-    if (!success) {
+    try {
+      // Clear any previous error messages
       if (mounted) {
         setState(() {
-          _isLoading = false;
+          _errorMessage = null;
         });
       }
-      return;
-    }
 
-    if (mounted) {
-      // Show success message
-      Get.snackbar(
-        'Success',
-        'OTP verified successfully',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.withValues(alpha: 0.8),
-        colorText: Colors.white,
+      final success = await _mfOnboardingService.verifyOTP(
+        token: _token,
+        casDetails: _casDetails!,
+        otp: otp,
+        onLoading: (isLoading) {
+          // OTP layout handles its own loading state
+        },
+        onError: (message) {
+          if (mounted) {
+            setState(() {
+              _errorMessage = message;
+            });
+          }
+        },
       );
 
-      // Update user's mutual fund verification status
-      // await _updateMutualFundVerificationStatus();
+      if (!success) {
+        if (mounted) {
+          setState(() {
+            _errorMessage ??= 'Failed to verify OTP. Please try again.';
+          });
+        }
+        return;
+      }
 
-      // Move to loading layout (step 2)
-      // We keep the loading state true during the transition
-      _goToNextStep();
+      if (mounted) {
+        setState(() {
+          _errorMessage = null;
+        });
 
-      // Wait for exactly 4 seconds and then navigate to dashboard
-      // Future.delayed(const Duration(seconds: 4), () {
-      //   if (mounted) {
-      //     // Navigate to dashboard using Get.offAll
-      //     Get.offAll(() => const Dashboard());
-      //   }
-      // });
+        _goToNextStep();
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _errorMessage = 'An unexpected error occurred. Please try again.';
+        });
+      }
     }
   }
 
   // Resend OTP
-  void _resendOTP() {
-    if (_canResendOTP && !_isLoading && mounted) {
-      setState(() {
-        _isLoading = true;
-      });
-
-      // Simulate OTP resend
-      Future.delayed(const Duration(seconds: 1), () {
+  void _resendOTP() async {
+    if (_canResendOTP && mounted) {
+      try {
+        // Clear any previous error messages
         if (mounted) {
           setState(() {
-            _isLoading = false;
-            // Reset OTP fields
+            _errorMessage = null;
+          });
+        }
+
+        final result = await _mfOnboardingService.sendOTP(
+          onLoading: (isLoading) {
+            // OTP layout handles its own loading state
+          },
+          onError: (message) {
+            if (mounted) {
+              setState(() {
+                _errorMessage = message;
+              });
+            }
+          },
+        );
+
+        if (mounted) {
+          // Update CAS details if available
+          if (result?.data.decryptedcasdetails != null) {
+            setState(() {
+              _casDetails = result?.data.decryptedcasdetails;
+              _token = result?.data.token ?? '';
+            });
+          }
+
+          // Reset OTP fields
+          setState(() {
             for (int i = 0; i < 6; i++) {
               _controllers[i].clear();
               _fieldFilled[i] = false;
             }
             _activeFieldIndex = 0;
           });
+
+          // Start the resend timer
           _startResendTimer();
+
+          // Set up SMS listener again
+          _setupSmsListener();
         }
-      });
+      } catch (e) {
+        if (mounted) {
+          setState(() {
+            _errorMessage = 'An unexpected error occurred. Please try again.';
+          });
+        }
+      }
     }
   }
 
@@ -340,6 +357,12 @@ class _MutualFundHoldingsJourneyScreenState
     }
   }
 
+  // Skip to dashboard
+  void _skipToDashboard() {
+    // Navigate to dashboard using Get.offAll to clear the navigation stack
+    Get.offAll(() => const Dashboard());
+  }
+
   // Go to previous step with animation
   void _goToPreviousStep() {
     if (_currentStep > 0) {
@@ -359,12 +382,12 @@ class _MutualFundHoldingsJourneyScreenState
         return StartingJourneyLayout(
           isAnimating: _isAnimating,
           onNext: _goToNextStep,
+          onSkip: _skipToDashboard,
           onCasDetailsReceived: setCasDetails,
         );
       case 1:
         return OtpVerificationLayout(
           isAnimating: _isAnimating,
-          isLoading: _isLoading,
           canResendOTP: _canResendOTP,
           timeLeft: _timeLeft,
           activeFieldIndex: _activeFieldIndex,
@@ -377,8 +400,8 @@ class _MutualFundHoldingsJourneyScreenState
           onResendOTP: _resendOTP,
           onPrevious: _goToPreviousStep,
           onNext: _goToNextStep,
-          casDetails:
-              _casDetails, // Pass the CAS details to the OTP verification layout
+          errorMessage: _errorMessage,
+          casDetails: _casDetails,
         );
       case 2:
         return LoadingLayout(onPrevious: _goToPreviousStep);
@@ -386,6 +409,7 @@ class _MutualFundHoldingsJourneyScreenState
         return StartingJourneyLayout(
           isAnimating: _isAnimating,
           onNext: _goToNextStep,
+          onSkip: _skipToDashboard,
           onCasDetailsReceived: setCasDetails,
         );
     }

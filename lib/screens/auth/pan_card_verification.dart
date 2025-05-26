@@ -7,6 +7,7 @@ import 'package:nwt_app/screens/fetch-holdings/mf_fetching.dart';
 import 'package:nwt_app/services/auth/auth.dart';
 import 'package:nwt_app/utils/logger.dart';
 import 'package:nwt_app/utils/validators.dart';
+import 'package:nwt_app/widgets/common/animated_error_message.dart';
 import 'package:nwt_app/widgets/common/button_widget.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 
@@ -83,22 +84,16 @@ class _PanCardVerificationState extends State<PanCardVerification> {
         );
 
         if (response.success) {
-          // Show success message and navigate to dashboard
-          Get.snackbar(
-            'Success',
-            'PAN verification successful',
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.green,
-            colorText: Colors.white,
-          );
-
-          // Navigate to dashboard after a short delay
-          Future.delayed(const Duration(seconds: 1), () {
-            Get.to(
-              () => const MutualFundHoldingsJourneyScreen(),
-              transition: Transition.rightToLeft,
-            );
+          // Clear any error messages on success
+          setState(() {
+            _errorMessage = null;
           });
+          
+          // Navigate to dashboard immediately
+          Get.to(
+            () => const MutualFundHoldingsJourneyScreen(),
+            transition: Transition.rightToLeft,
+          );
         } else {
           // Show error message from the server
           setState(() {
@@ -246,16 +241,7 @@ class _PanCardVerificationState extends State<PanCardVerification> {
                   ),
                 ),
               ),
-              if (_errorMessage != null)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
-                  child: AppText(
-                    _errorMessage!,
-                    variant: AppTextVariant.bodyMedium,
-                    colorType: AppTextColorType.error,
-                    weight: AppTextWeight.medium,
-                  ),
-                ),
+              AnimatedErrorMessage(errorMessage: _errorMessage),
             ],
           ),
         ),

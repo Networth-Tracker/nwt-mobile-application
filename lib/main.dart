@@ -11,7 +11,7 @@ import 'package:nwt_app/controllers/theme_controller.dart';
 import 'package:nwt_app/controllers/user_controller.dart';
 import 'package:nwt_app/firebase_options.dart';
 import 'package:nwt_app/notification/firebase_messaging.dart';
-import 'package:nwt_app/screens/dashboard/dashboard.dart';
+import 'package:nwt_app/screens/splash.dart';
 import 'package:nwt_app/services/auth/auth_flow.dart';
 import 'package:nwt_app/services/global_storage.dart';
 import 'package:nwt_app/services/network/connectivity_service.dart';
@@ -85,7 +85,7 @@ Future<void> setupRemoteConfig() async {
 
     // Set default values for remote config parameters
     await remoteConfig.setDefaults({
-      'api_base_url': 'https://app.networthtracker.in/api/v1',
+      'api_base_url': 'https://lab.networthtracker.in/api/v1',
     });
 
     // Fetch and activate the latest remote config values
@@ -128,7 +128,7 @@ class MainEntry extends StatelessWidget {
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: themeController.themeMode,
-        home: Dashboard(),
+        home: SplashScreen(),
         builder: (context, child) {
           return MediaQuery(
             data: MediaQuery.of(

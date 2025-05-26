@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:nwt_app/constants/api.dart';
@@ -14,7 +15,6 @@ import 'package:nwt_app/utils/network_api_helper.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 
 class AuthService {
-
   Future<GenerateOtpResponse?> generateOTP({
     required String phoneNumber,
     required Function(bool isLoading) onLoading,
@@ -24,11 +24,14 @@ class AuthService {
       final appSignature = await SmsAutoFill().getAppSignature;
       final response = await NetworkAPIHelper().post(ApiURLs.GENERATE_OTP, {
         "phonenumber": phoneNumber,
-        'apphash': kIsWeb || Platform.isIOS ? 'nwt-app' : appSignature,
-      }); 
+        'apphash': kIsWeb || Platform.isIOS ? 'PIVOTM-APP' : appSignature,
+      });
       if (response != null) {
         final responseData = jsonDecode(response.body);
-        AppLogger.info('Generate OTP Response: ${responseData.toString()}', tag: 'AuthService');
+        AppLogger.info(
+          'Generate OTP Response: ${responseData.toString()}',
+          tag: 'AuthService',
+        );
 
         if (response.statusCode == 200 || response.statusCode == 201) {
           return GenerateOtpResponse.fromJson(responseData);
@@ -57,7 +60,10 @@ class AuthService {
 
       if (response != null) {
         final responseData = jsonDecode(response.body);
-        AppLogger.info('Verify OTP Response: ${responseData.toString()}', tag: 'AuthService');
+        AppLogger.info(
+          'Verify OTP Response: ${responseData.toString()}',
+          tag: 'AuthService',
+        );
 
         if (response.statusCode == 200 || response.statusCode == 201) {
           final verifyResponse = VerifyOtpResponse.fromJson(responseData);
@@ -68,7 +74,7 @@ class AuthService {
               verifyResponse.data?.token,
             );
           }
- 
+
           return verifyResponse;
         }
       }
@@ -103,62 +109,85 @@ class AuthService {
       final response = await NetworkAPIHelper().get(ApiURLs.GET_USER_PROFILE);
       if (response != null) {
         final responseData = jsonDecode(response.body);
-        AppLogger.info('Get User Profile Response 105: ${responseData.toString()}   ${response.statusCode}', tag: 'AuthService');
+        AppLogger.info(
+          'Get User Profile Response 105: ${responseData.toString()}   ${response.statusCode}',
+          tag: 'AuthService',
+        );
         if (response.statusCode == 200 || response.statusCode == 201) {
           final userDataResponse = UserDataResponse.fromJson(responseData);
           return userDataResponse;
         }
       } else {
-        AppLogger.info('Get User Profile Response 115: ${response?.body.toString()}', tag: 'AuthService');
+        AppLogger.info(
+          'Get User Profile Response 115: ${response?.body.toString()}',
+          tag: 'AuthService',
+        );
       }
       return null;
     } catch (e, stackTrace) {
-      AppLogger.error('Get User Profile Error', error: e, stackTrace: stackTrace, tag: 'AuthService');
+      AppLogger.error(
+        'Get User Profile Error',
+        error: e,
+        stackTrace: stackTrace,
+        tag: 'AuthService',
+      );
       return null;
     } finally {
       onLoading(false);
     }
   }
-  
+
   Future<PanVerificationResponse?> verifyPanCard({
     required String panNumber,
     required Function(bool isLoading) onLoading,
   }) async {
     onLoading(true);
     try {
-      // Make a POST request to the PAN verification endpoint
-      final response = await NetworkAPIHelper().post(ApiURLs.PAN_CARD_VERIFICATION, {
-        "pannumber": panNumber,
-      });
-      
+      final response = await NetworkAPIHelper().post(
+        ApiURLs.PAN_CARD_VERIFICATION,
+        {"pannumber": panNumber},
+      );
+
       if (response != null) {
         final responseData = jsonDecode(response.body);
-        AppLogger.info('PAN Verification Response: ${responseData.toString()}', tag: 'AuthService');
-        
-        // Check if the response status code is successful (200 or 201)
+        AppLogger.info(
+          'PAN Verification Response: ${responseData.toString()}',
+          tag: 'AuthService',
+        );
+
         if (response.statusCode == 200 || response.statusCode == 201) {
-          // Create the PanVerificationResponse object from the JSON
-          final verificationResponse = PanVerificationResponse.fromJson(responseData);
-          
-          // If verification was successful, refresh the user profile
+          final verificationResponse = PanVerificationResponse.fromJson(
+            responseData,
+          );
           if (verificationResponse.success) {
-            AppLogger.info('PAN verification successful, refreshing user profile', tag: 'AuthService');
-            
-            // Fetch updated user profile
-            await getUserProfile(onLoading: (loading) {
-              // Don't update the loading state here to avoid UI flicker
-              // The parent loading state is still active
-            });
+            AppLogger.info(
+              'PAN verification successful, refreshing user profile',
+              tag: 'AuthService',
+            );
+
+            await getUserProfile(
+              onLoading: (loading) {
+                onLoading(loading);
+              },
+            );
           }
-          
+
           return verificationResponse;
         }
       } else {
-        AppLogger.info('PAN Verification Response: ${response?.body.toString()}', tag: 'AuthService');
+        AppLogger.info(
+          'PAN Verification Response: ${response?.body.toString()}',
+          tag: 'AuthService',
+        );
       }
       return null;
     } catch (e, stackTrace) {
-      AppLogger.error('PAN Verification Error', error: e, stackTrace: stackTrace, tag: 'AuthService');
+      AppLogger.error(
+        'PAN Verification Error',
+        error: e,
+        stackTrace: stackTrace,
+        tag: 'AuthService',
+      );
       return null;
     } finally {
       onLoading(false);
