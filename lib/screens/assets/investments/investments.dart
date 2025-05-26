@@ -175,29 +175,29 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
                                 ),
                               ],
                             ),
-                            InkWell(
-                              onTap: () {
-                                onRefresh();
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.all(4),
-                                decoration: BoxDecoration(
-                                  color: AppColors.darkButtonBorder,
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                child: RotationTransition(
-                                  turns: Tween(
-                                    begin: 0.0,
-                                    end: 1.0,
-                                  ).animate(_refreshController),
-                                  child: Icon(
-                                    Icons.refresh,
-                                    size: 22,
-                                    color: AppColors.darkTextMuted,
-                                  ),
-                                ),
-                              ),
-                            ),
+                            // InkWell(
+                            //   onTap: () {
+                            //     onRefresh();
+                            //   },
+                            //   child: Container(
+                            //     padding: const EdgeInsets.all(4),
+                            //     decoration: BoxDecoration(
+                            //       color: AppColors.darkButtonBorder,
+                            //       borderRadius: BorderRadius.circular(15),
+                            //     ),
+                            //     child: RotationTransition(
+                            //       turns: Tween(
+                            //         begin: 0.0,
+                            //         end: 1.0,
+                            //       ).animate(_refreshController),
+                            //       child: Icon(
+                            //         Icons.refresh,
+                            //         size: 22,
+                            //         color: AppColors.darkTextMuted,
+                            //       ),
+                            //     ),
+                            //   ),
+                            // ),
                           ],
                         ),
                         SizedBox(height: 15),
