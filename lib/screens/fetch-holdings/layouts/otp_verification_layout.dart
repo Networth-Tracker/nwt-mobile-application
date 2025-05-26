@@ -73,6 +73,7 @@ class _OtpVerificationLayoutState extends State<OtpVerificationLayout>
   Timer? _resendTimer;
   int _timeLeft = 60;
   bool _canResendOTP = true;
+  String? _previousErrorMessage;
 
   String get _otpCode {
     return _controllers.map((controller) => controller.text).join();
@@ -105,6 +106,26 @@ class _OtpVerificationLayoutState extends State<OtpVerificationLayout>
     SmsAutoFill().getAppSignature.then((signature) {
       print("SMS app signature: $signature");
     });
+  }
+
+  @override
+  void didUpdateWidget(OtpVerificationLayout oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // If an error message appears, immediately stop loading
+    if (widget.errorMessage != null &&
+        widget.errorMessage != _previousErrorMessage) {
+      setState(() {
+        _isLoading = false;
+        _previousErrorMessage = widget.errorMessage;
+      });
+    }
+
+    // If error message is cleared, it might be a successful verification
+    // Don't reset loading state as we want to maintain it during navigation
+    if (oldWidget.errorMessage != null && widget.errorMessage == null) {
+      _previousErrorMessage = null;
+    }
   }
 
   void _startResendTimer() {
@@ -216,20 +237,18 @@ class _OtpVerificationLayoutState extends State<OtpVerificationLayout>
 
     setState(() {
       _isLoading = true;
+      _previousErrorMessage = null; // Reset previous error message
     });
 
     // Call the verification function and let the parent handle navigation
     // The parent will only navigate to the next screen on successful verification
+    // The loading state will be maintained until we get a response (success or error)
     widget.onVerifyOTP(otpCode);
 
-    // Set a timeout to reset loading state if no response after 10 seconds
-    Future.delayed(const Duration(seconds: 10), () {
-      if (mounted && _isLoading) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    });
+    // Note: We're not setting a timeout to reset loading state anymore
+    // The loading state will be maintained until we get a response
+    // It will be reset in didUpdateWidget if there's an error
+    // For successful verification, we want to maintain loading during navigation
   }
 
   @override
@@ -450,10 +469,14 @@ class _OtpVerificationLayoutState extends State<OtpVerificationLayout>
                       ),
                       const SizedBox(width: 4),
                       GestureDetector(
-                        onTap:
-                            (_canResendOTP && !_isLoading)
-                                ? widget.onResendOTP
-                                : null,
+                        onTap: (_canResendOTP && !_isLoading)
+                            ? () {
+                                // Start the timer locally first
+                                _startResendTimer();
+                                // Then call the parent's resend function
+                                widget.onResendOTP();
+                              }
+                            : null,
                         child: AppText(
                           _canResendOTP
                               ? "Resend Code"

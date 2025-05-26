@@ -212,6 +212,17 @@ class _MutualFundHoldingsJourneyScreenState
   Future<void> _verifyOTP(String otp) async {
     if (_casDetails == null) return;
 
+    // Set up a timer to switch to loading layout after 1 second
+    Timer? loadingTimer;
+    loadingTimer = Timer(const Duration(milliseconds: 1000), () {
+      // If we're still verifying after 1 second, switch to loading layout
+      if (mounted && _errorMessage == null) {
+        setState(() {
+          _currentStep = 2; // Loading step
+        });
+      }
+    });
+
     try {
       // Clear any previous error messages
       if (mounted) {
@@ -220,6 +231,7 @@ class _MutualFundHoldingsJourneyScreenState
         });
       }
 
+      // Start verification process
       final success = await _mfOnboardingService.verifyOTP(
         token: _token,
         casDetails: _casDetails!,
@@ -228,34 +240,68 @@ class _MutualFundHoldingsJourneyScreenState
           // OTP layout handles its own loading state
         },
         onError: (message) {
+          // Cancel the loading timer if there's an error
+          if (loadingTimer != null) {
+            loadingTimer.cancel();
+          }
+
           if (mounted) {
             setState(() {
+              // Set error message immediately to trigger UI update
               _errorMessage = message;
+
+              // Ensure we're back on the OTP layout if we switched to loading
+              if (_currentStep == 2) {
+                // If on loading step
+                _currentStep = 1; // Go back to OTP verification step
+              }
             });
           }
         },
       );
 
+      // Cancel the timer as we have a response now
+      loadingTimer.cancel();
+
+      // Handle verification failure
       if (!success) {
         if (mounted) {
           setState(() {
             _errorMessage ??= 'Failed to verify OTP. Please try again.';
+
+            // Ensure we're back on the OTP layout if we switched to loading
+            if (_currentStep == 2) {
+              // If on loading step
+              _currentStep = 1; // Go back to OTP verification step
+            }
           });
         }
         return;
       }
 
+      // Handle verification success - ensure we're on the loading screen
       if (mounted) {
         setState(() {
           _errorMessage = null;
+          _currentStep = 2; // Loading step
         });
 
+        // Continue with the next steps of the flow
         _goToNextStep();
       }
     } catch (e) {
+      // Cancel the timer in case of exception
+      loadingTimer.cancel();
+
       if (mounted) {
         setState(() {
           _errorMessage = 'An unexpected error occurred. Please try again.';
+
+          // Ensure we're back on the OTP layout if we switched to loading
+          if (_currentStep == 2) {
+            // If on loading step
+            _currentStep = 1; // Go back to OTP verification step
+          }
         });
       }
     }
@@ -303,8 +349,8 @@ class _MutualFundHoldingsJourneyScreenState
             _activeFieldIndex = 0;
           });
 
-          // Start the resend timer
-          _startResendTimer();
+          // Note: Timer is now started in the OTP layout itself
+          // No need to call _startResendTimer() here
 
           // Set up SMS listener again
           _setupSmsListener();
