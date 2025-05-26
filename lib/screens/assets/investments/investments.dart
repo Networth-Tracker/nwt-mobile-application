@@ -539,9 +539,11 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
                           children: [
                             AppText(
                               "Speak to advisor for Investment advise",
-                              variant: AppTextVariant.bodySmall,
+                              variant: AppTextVariant.bodyMedium,
                               colorType: AppTextColorType.link,
+                              weight: AppTextWeight.medium,
                               decoration: TextDecoration.underline,
+                              decorationColor: AppColors.linkColor,
                             ),
                           ],
                         ),

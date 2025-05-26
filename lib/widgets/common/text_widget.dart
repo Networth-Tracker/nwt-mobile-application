@@ -93,6 +93,7 @@ TextStyle _getTextStyle(
   Color? customColor,
   double? lineHeight,
   TextDecoration? decoration,
+  Color? decorationColor,
 ) {
   // Resolve color and weight
   final color = _resolveTextColor(context, colorType, customColor);
@@ -206,6 +207,7 @@ TextStyle _getTextStyle(
     color: color,
     height: lineHeight,
     decoration: decoration,
+    decorationColor: decorationColor,
   );
 }
 
@@ -221,6 +223,7 @@ class AppText extends StatelessWidget {
   final int? maxLines;
   final TextOverflow? overflow;
   final TextDecoration? decoration;
+  final Color? decorationColor;
   final bool selectable;
 
   const AppText(
@@ -235,6 +238,7 @@ class AppText extends StatelessWidget {
     this.maxLines,
     this.overflow,
     this.decoration,
+    this.decorationColor,
     this.selectable = false,
   });
 
@@ -248,6 +252,7 @@ class AppText extends StatelessWidget {
       customColor,
       lineHeight,
       decoration,
+      decorationColor,
     );
 
     if (selectable) {
@@ -281,6 +286,7 @@ class AnimatedAppText extends StatelessWidget {
   final int? maxLines;
   final TextOverflow? overflow;
   final TextDecoration? decoration;
+  final Color? decorationColor;
   final Duration duration;
   final Curve curve;
   final Offset? beginOffset;
@@ -298,6 +304,7 @@ class AnimatedAppText extends StatelessWidget {
     this.maxLines,
     this.overflow,
     this.decoration,
+    this.decorationColor,
     this.duration = const Duration(milliseconds: 200),
     this.curve = Curves.easeInOut,
     this.beginOffset,
@@ -314,6 +321,7 @@ class AnimatedAppText extends StatelessWidget {
       customColor,
       lineHeight,
       decoration,
+      decorationColor,
     );
 
     Widget textWidget = AnimatedDefaultTextStyle(
@@ -393,6 +401,8 @@ class BasicText extends StatelessWidget {
   final TextOverflow? overflow;
   final double? lineHeight;
   final BasicTextColor color;
+  final TextDecoration? decoration;
+  final Color? decorationColor;
 
   const BasicText(
     this.text, {
@@ -403,6 +413,8 @@ class BasicText extends StatelessWidget {
     this.overflow,
     this.lineHeight,
     this.color = BasicTextColor.primary,
+    this.decoration,
+    this.decorationColor,
   });
 
   @override
@@ -417,7 +429,9 @@ class BasicText extends StatelessWidget {
         color: _resolveBasicTextColor(context, color),
         height: lineHeight,
         fontFamily: "Montserrat",
-        decorationColor: _resolveBasicTextColor(context, color),
+        decoration: decoration,
+        decorationColor:
+            decorationColor ?? _resolveBasicTextColor(context, color),
       ),
     );
   }
