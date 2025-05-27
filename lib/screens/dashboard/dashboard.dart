@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:nwt_app/constants/colors.dart';
@@ -48,6 +49,7 @@ class _DashboardState extends State<Dashboard>
   bool isZerodhaLoading = false;
 
   final ScrollController _scrollController = ScrollController();
+  final GlobalKey _targetKey = GlobalKey();
   double _lastScrollPosition = 0;
 
   // Networth data
@@ -290,18 +292,34 @@ class _DashboardState extends State<Dashboard>
                                 currentPosition > _lastScrollPosition;
                             _lastScrollPosition = currentPosition;
 
-                            // Adjust these values to control when the snap happens
+                            // Get the SliverGeometry of the target SliverAppBar
+                            final RenderSliver? sliver =
+                                _targetKey.currentContext?.findRenderObject()
+                                    as RenderSliver?;
+                            if (sliver == null) return true;
+
+                            // Get the scroll extents from the SliverGeometry
+                            final SliverGeometry? geometry = sliver.geometry;
+                            if (geometry == null) return true;
+
+                            // Calculate the target position based on the sliver's layout
+                            final double targetPosition =
+                                isScrollingDown
+                                    ? geometry
+                                        .scrollExtent // Scroll to the bottom of the SliverAppBar
+                                    : 0.0; // Scroll to the top
+
                             final snapThreshold =
                                 50.0; // Adjust based on your needs
-                            final shouldSnap =
+
+                            // Only snap if we've scrolled past the threshold
+                            final bool shouldSnap =
                                 isScrollingDown
                                     ? currentPosition > snapThreshold
-                                    : currentPosition < (302.0 - snapThreshold);
+                                    : currentPosition <
+                                        (geometry.scrollExtent - snapThreshold);
 
                             if (shouldSnap) {
-                              final targetPosition =
-                                  isScrollingDown ? 302.0 : 0.0;
-                              // Animate to the target position
                               _scrollController.animateTo(
                                 targetPosition,
                                 duration: const Duration(milliseconds: 300),
@@ -487,6 +505,7 @@ class _DashboardState extends State<Dashboard>
                             ),
 
                             SliverAppBar(
+                              key: _targetKey,
                               backgroundColor: AppColors.darkCardBG,
                               expandedHeight: 302,
                               toolbarHeight: 82,
@@ -1160,79 +1179,6 @@ class _DashboardState extends State<Dashboard>
                             //   ),
                             // ),
                             SliverToBoxAdapter(
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal:
-                                      AppSizing.scaffoldHorizontalPadding,
-                                  vertical: 16,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: AppColors.darkBackground,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const AppText(
-                                      'MF Top 10 Performers',
-                                      variant: AppTextVariant.headline6,
-                                      weight: AppTextWeight.bold,
-                                      colorType: AppTextColorType.primary,
-                                      decoration: TextDecoration.none,
-                                    ),
-                                    const SizedBox(height: 20),
-                                    ...List.generate(
-                                      3,
-                                      (index) => Container(
-                                        margin: const EdgeInsets.only(
-                                          bottom: 10,
-                                        ),
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 12,
-                                          vertical: 14,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: const Color(0xFF1E1E1E),
-                                          borderRadius: BorderRadius.circular(
-                                            12,
-                                          ),
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            CircleAvatar(
-                                              backgroundColor: Colors.grey[800],
-                                              child: Icon(
-                                                Icons.add,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 12),
-                                            Expanded(
-                                              child: AppText(
-                                                "sdfsdfsdfsdfsd",
-                                                variant:
-                                                    AppTextVariant.bodyMedium,
-                                                weight: AppTextWeight.medium,
-                                                colorType:
-                                                    AppTextColorType.primary,
-                                                decoration: TextDecoration.none,
-                                              ),
-                                            ),
-                                            const Icon(
-                                              Icons.arrow_forward_ios,
-                                              color: Colors.white,
-                                              size: 16,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-
-                            SliverToBoxAdapter(
                               child: Material(
                                 color: AppColors.darkBackground,
                                 child: Column(
@@ -1423,6 +1369,88 @@ class _DashboardState extends State<Dashboard>
                                         }),
                                       ),
                                     ),
+                                  ],
+                                ),
+                              ),
+                            ),
+
+                            SliverToBoxAdapter(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal:
+                                      AppSizing.scaffoldHorizontalPadding,
+                                  vertical: 16,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.darkBackground,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const AppText(
+                                      'MF Top 10 Performers',
+                                      variant: AppTextVariant.headline6,
+                                      weight: AppTextWeight.bold,
+                                      colorType: AppTextColorType.primary,
+                                      decoration: TextDecoration.none,
+                                    ),
+                                    const SizedBox(height: 20),
+                                    ...List.generate(
+                                      3,
+                                      (index) => Container(
+                                        margin: const EdgeInsets.only(
+                                          bottom: 10,
+                                        ),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                          vertical: 14,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFF1E1E1E),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            CircleAvatar(
+                                              backgroundColor: Colors.grey[800],
+                                              child: Icon(
+                                                Icons.add,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 12),
+                                            Expanded(
+                                              child: AppText(
+                                                "sdfsdfsdfsdfsd",
+                                                variant:
+                                                    AppTextVariant.bodyMedium,
+                                                weight: AppTextWeight.medium,
+                                                colorType:
+                                                    AppTextColorType.primary,
+                                                decoration: TextDecoration.none,
+                                              ),
+                                            ),
+                                            const Icon(
+                                              Icons.arrow_forward_ios,
+                                              color: Colors.white,
+                                              size: 16,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            SliverToBoxAdapter(
+                              child: Material(
+                                color: AppColors.darkBackground,
+                                child: Column(
+                                  children: [
                                     SizedBox(height: 60),
                                     Padding(
                                       padding: const EdgeInsets.symmetric(
@@ -1446,23 +1474,7 @@ class _DashboardState extends State<Dashboard>
                                         ],
                                       ),
                                     ),
-                                    // SizedBox(height: 20),
-                                    // InkWell(
-                                    //   onTap: _showBottomSheet,
-                                    //   child: Container(
-                                    //     padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                                    //     decoration: BoxDecoration(
-                                    //       color: AppColors.darkPrimary,
-                                    //       borderRadius: BorderRadius.circular(12),
-                                    //     ),
-                                    //     child: AppText(
-                                    //       "Open Dashboard Actions",
-                                    //       variant: AppTextVariant.bodyLarge,
-                                    //       weight: AppTextWeight.bold,
-                                    //       colorType: AppTextColorType.primary,
-                                    //     ),
-                                    //   ),
-                                    // ),
+
                                     SizedBox(height: 20),
                                     Padding(
                                       padding: const EdgeInsets.symmetric(
