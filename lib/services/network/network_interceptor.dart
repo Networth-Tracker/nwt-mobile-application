@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:http/http.dart' as http;
 import 'package:nwt_app/services/network/connectivity_service.dart';
 import 'package:nwt_app/utils/logger.dart';
@@ -20,7 +21,8 @@ class NetworkException implements Exception {
   });
 
   @override
-  String toString() => 'NetworkException: $message (Status: $statusCode, Type: $errorType)';
+  String toString() =>
+      'NetworkException: $message (Status: $statusCode, Type: $errorType)';
 }
 
 /// Types of network errors that can occur
@@ -32,15 +34,16 @@ enum NetworkErrorType {
   unauthorized,
   forbidden,
   notFound,
-  unknown
+  unknown,
 }
 
 /// HTTP client with network interceptor functionality
 class NetworkInterceptor {
   final ConnectivityService _connectivityService = ConnectivityService.to;
   final Duration _timeout;
-  
-  NetworkInterceptor({Duration? timeout}) : _timeout = timeout ?? const Duration(seconds: 30);
+
+  NetworkInterceptor({Duration? timeout})
+    : _timeout = timeout ?? const Duration(seconds: 30);
 
   /// Perform a GET request with network interceptor
   Future<http.Response> get(String url, {Map<String, String>? headers}) async {
@@ -49,45 +52,67 @@ class NetworkInterceptor {
 
   /// Perform a POST request with network interceptor
   Future<http.Response> post(
-    String url, 
-    dynamic body, 
-    {Map<String, String>? headers}
-  ) async {
-    return _executeRequest(() => http.post(
-      Uri.parse(url),
-      headers: headers,
-      body: body is String ? body : jsonEncode(body),
-    ));
+    String url,
+    dynamic body, {
+    Map<String, String>? headers,
+  }) async {
+    return _executeRequest(
+      () => http.post(
+        Uri.parse(url),
+        headers: headers,
+        body: body is String ? body : jsonEncode(body),
+      ),
+    );
   }
 
   /// Perform a PUT request with network interceptor
   Future<http.Response> put(
-    String url, 
-    dynamic body, 
-    {Map<String, String>? headers}
-  ) async {
-    return _executeRequest(() => http.put(
-      Uri.parse(url),
-      headers: headers,
-      body: body is String ? body : jsonEncode(body),
-    ));
+    String url,
+    dynamic body, {
+    Map<String, String>? headers,
+  }) async {
+    return _executeRequest(
+      () => http.put(
+        Uri.parse(url),
+        headers: headers,
+        body: body is String ? body : jsonEncode(body),
+      ),
+    );
   }
 
   /// Perform a DELETE request with network interceptor
   Future<http.Response> delete(
-    String url, 
-    {Map<String, String>? headers, dynamic body}
-  ) async {
-    return _executeRequest(() => http.delete(
-      Uri.parse(url),
-      headers: headers,
-      body: body != null ? (body is String ? body : jsonEncode(body)) : null,
-    ));
+    String url, {
+    Map<String, String>? headers,
+    dynamic body,
+  }) async {
+    return _executeRequest(
+      () => http.delete(
+        Uri.parse(url),
+        headers: headers,
+        body: body != null ? (body is String ? body : jsonEncode(body)) : null,
+      ),
+    );
+  }
+
+  /// Perform a PATCH request with network interceptor
+  Future<http.Response> patch(
+    String url,
+    dynamic body, {
+    Map<String, String>? headers,
+  }) async {
+    return _executeRequest(
+      () => http.patch(
+        Uri.parse(url),
+        headers: headers,
+        body: body is String ? body : jsonEncode(body),
+      ),
+    );
   }
 
   /// Execute the HTTP request with error handling and connectivity check
   Future<http.Response> _executeRequest(
-    Future<http.Response> Function() requestFunction
+    Future<http.Response> Function() requestFunction,
   ) async {
     // Check network connectivity before making the request
     if (!_connectivityService.isConnected) {
@@ -101,18 +126,20 @@ class NetworkInterceptor {
     try {
       // Execute the request with timeout
       final response = await requestFunction().timeout(_timeout);
-      
+
       // Log the response
       AppLogger.info(
         'Response: ${response.statusCode} - ${response.body.length} bytes',
-        tag: 'NetworkInterceptor'
+        tag: 'NetworkInterceptor',
       );
-      
+
       // Handle HTTP error status codes
       if (response.statusCode >= 400) {
         final errorType = _getErrorTypeFromStatusCode(response.statusCode);
-        final errorMessage = _getErrorMessageFromStatusCode(response.statusCode);
-        
+        final errorMessage = _getErrorMessageFromStatusCode(
+          response.statusCode,
+        );
+
         throw NetworkException(
           message: errorMessage,
           statusCode: response.statusCode,
@@ -120,7 +147,7 @@ class NetworkInterceptor {
           errorType: errorType,
         );
       }
-      
+
       return response;
     } on TimeoutException {
       AppLogger.error('Request timeout', tag: 'NetworkInterceptor');
@@ -129,9 +156,13 @@ class NetworkInterceptor {
         errorType: NetworkErrorType.timeout,
       );
     } on SocketException catch (e) {
-      AppLogger.error('Socket exception: ${e.message}', tag: 'NetworkInterceptor');
+      AppLogger.error(
+        'Socket exception: ${e.message}',
+        tag: 'NetworkInterceptor',
+      );
       throw NetworkException(
-        message: 'Network connection error. Please check your internet connection.',
+        message:
+            'Network connection error. Please check your internet connection.',
         errorType: NetworkErrorType.noInternet,
       );
     } on NetworkException {

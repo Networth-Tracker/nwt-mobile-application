@@ -33,7 +33,7 @@ class AppInputField extends StatefulWidget {
   final Color? fillColor;
 
   const AppInputField({
-    Key? key,
+    super.key,
     required this.controller,
     this.hintText,
     this.labelText,
@@ -58,7 +58,7 @@ class AppInputField extends StatefulWidget {
     this.contentPadding,
     this.enabled = true,
     this.fillColor,
-  }) : super(key: key);
+  });
 
   @override
   State<AppInputField> createState() => _AppInputFieldState();
@@ -93,7 +93,7 @@ class _AppInputFieldState extends State<AppInputField> {
 
   List<TextInputFormatter> _getInputFormatters() {
     final formatters = <TextInputFormatter>[];
-    
+
     if (widget.inputFormatters != null) {
       formatters.addAll(widget.inputFormatters!);
       return formatters;
@@ -125,20 +125,11 @@ class _AppInputFieldState extends State<AppInputField> {
 
     switch (widget.size) {
       case AppInputFieldSize.small:
-        return const EdgeInsets.symmetric(
-          vertical: 12,
-          horizontal: 16,
-        );
+        return const EdgeInsets.symmetric(vertical: 12, horizontal: 16);
       case AppInputFieldSize.large:
-        return const EdgeInsets.symmetric(
-          vertical: 18,
-          horizontal: 16,
-        );
+        return const EdgeInsets.symmetric(vertical: 16, horizontal: 16);
       case AppInputFieldSize.medium:
-        return const EdgeInsets.symmetric(
-          vertical: 16,
-          horizontal: 16,
-        );
+        return const EdgeInsets.symmetric(vertical: 16, horizontal: 16);
     }
   }
 
@@ -167,16 +158,19 @@ class _AppInputFieldState extends State<AppInputField> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (widget.showLabel && widget.labelText != null) ...[          
+        if (widget.showLabel && widget.labelText != null) ...[
           AppText(
             widget.labelText!,
             variant: AppTextVariant.bodySmall,
             weight: AppTextWeight.medium,
-            colorType: isDarkMode ? AppTextColorType.primary : AppTextColorType.secondary,
+            colorType:
+                isDarkMode
+                    ? AppTextColorType.primary
+                    : AppTextColorType.secondary,
           ),
           const SizedBox(height: 4),
         ],

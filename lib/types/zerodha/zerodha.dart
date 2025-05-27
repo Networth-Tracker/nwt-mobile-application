@@ -1,39 +1,41 @@
 class ZerodhaResponse {
     int status;
     String message;
-    Data data;
+    ZerodhaData? data;
+    bool get success => status == 200 || status == 201;
+
 
     ZerodhaResponse({
         required this.status,
         required this.message,
-        required this.data,
+        this.data,
     });
 
     factory ZerodhaResponse.fromJson(Map<String, dynamic> json) => ZerodhaResponse(
         status: json["status"],
         message: json["message"],
-        data: Data.fromJson(json["data"]),
+        data: json["data"] != null ? ZerodhaData.fromJson(json["data"]) : null,
     );
 
     Map<String, dynamic> toJson() => {
         "status": status,
         "message": message,
-        "data": data.toJson(),
+        "data": data?.toJson(),
     };
 }
 
-class Data {
-    String loginUrl;
+class ZerodhaData {
+    String loginurl;
 
-    Data({
-        required this.loginUrl,
+    ZerodhaData({
+        required this.loginurl,
     });
 
-    factory Data.fromJson(Map<String, dynamic> json) => Data(
-        loginUrl: json["loginURL"],
+    factory ZerodhaData.fromJson(Map<String, dynamic> json) => ZerodhaData(
+        loginurl: json["loginurl"],
     );
 
     Map<String, dynamic> toJson() => {
-        "loginURL": loginUrl,
+        "loginurl": loginurl,
     };
 }

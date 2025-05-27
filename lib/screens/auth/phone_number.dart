@@ -6,6 +6,7 @@ import 'package:nwt_app/controllers/theme_controller.dart';
 import 'package:nwt_app/screens/auth/otp_verify.dart';
 import 'package:nwt_app/services/auth/auth.dart';
 import 'package:nwt_app/utils/validators.dart';
+import 'package:nwt_app/widgets/common/animated_error_message.dart';
 import 'package:nwt_app/widgets/common/app_input_field.dart';
 import 'package:nwt_app/widgets/common/button_widget.dart';
 import 'package:nwt_app/widgets/common/key_pad.dart';
@@ -21,6 +22,7 @@ class PhoneNumberInputScreen extends StatefulWidget {
 class _PhoneNumberInputScreenState extends State<PhoneNumberInputScreen> {
   final TextEditingController _phoneController = TextEditingController();
   bool _isLoading = false;
+  String? _errorMessage;
 
   void _onKeyPressed(int digit) {
     if (_phoneController.text.length < 10) {
@@ -42,6 +44,19 @@ class _PhoneNumberInputScreenState extends State<PhoneNumberInputScreen> {
   }
 
   Future<void> _generateOTP() async {
+    // Clear any previous error messages
+    setState(() {
+      _errorMessage = null;
+    });
+
+    // Validate phone number
+    if (_phoneController.text.length != 10) {
+      setState(() {
+        _errorMessage = "Please enter a valid 10-digit phone number";
+      });
+      return;
+    }
+
     final response = await AuthService().generateOTP(
       phoneNumber: _phoneController.text,
       onLoading: (isLoading) {
@@ -50,19 +65,23 @@ class _PhoneNumberInputScreenState extends State<PhoneNumberInputScreen> {
         });
       },
     );
+
     if (response != null) {
-      Get.to(
-        () => PhoneOTPVerifyScreen(phoneNumber: _phoneController.text),
-        transition: Transition.rightToLeft,
-      );
+      if (response.success) {
+        Get.to(
+          () => PhoneOTPVerifyScreen(phoneNumber: _phoneController.text),
+          transition: Transition.rightToLeft,
+        );
+      } else {
+        // Show error message from the server
+        setState(() {
+          _errorMessage = response.message;
+        });
+      }
     } else {
-      Get.snackbar(
-        'Error',
-        'Failed to connect to server',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.1),
-        colorText: Colors.red,
-      );
+      setState(() {
+        _errorMessage = "Failed to connect to server. Please try again.";
+      });
     }
   }
 
@@ -103,7 +122,7 @@ class _PhoneNumberInputScreenState extends State<PhoneNumberInputScreen> {
                             height: MediaQuery.of(context).size.height * 0.15,
                           ),
                           AppText(
-                            "Welcome to \nNetworth Tracker",
+                            "Welcome to \npivot.money",
                             variant: AppTextVariant.headline1,
                             lineHeight: 1.3,
                             weight: AppTextWeight.bold,
@@ -148,6 +167,7 @@ class _PhoneNumberInputScreenState extends State<PhoneNumberInputScreen> {
                                     AutovalidateMode.onUserInteraction,
                               ),
                               const SizedBox(height: 20),
+                              AnimatedErrorMessage(errorMessage: _errorMessage),
                               Row(
                                 children: [
                                   Expanded(
@@ -157,6 +177,9 @@ class _PhoneNumberInputScreenState extends State<PhoneNumberInputScreen> {
                                       size: AppButtonSize.large,
                                       onPressed: _generateOTP,
                                       isLoading: _isLoading,
+                                      isDisabled:
+                                          _isLoading ||
+                                          _phoneController.text.length != 10,
                                     ),
                                   ),
                                 ],

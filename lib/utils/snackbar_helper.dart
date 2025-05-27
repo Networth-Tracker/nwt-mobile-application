@@ -3,9 +3,7 @@ import 'package:get/get.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 
-/// A utility class for showing customized snackbars that match the app theme
 class SnackbarHelper {
-  /// Shows a success snackbar with a green background
   static void showSuccess({
     required String title,
     required String message,
@@ -32,10 +30,7 @@ class SnackbarHelper {
           offset: const Offset(0, 2),
         ),
       ],
-      icon: const Icon(
-        Icons.check_circle_outline,
-        color: Colors.white,
-      ),
+      icon: const Icon(Icons.check_circle_outline, color: Colors.white),
       shouldIconPulse: true,
       titleText: AppText(
         title,
@@ -59,7 +54,6 @@ class SnackbarHelper {
     );
   }
 
-  /// Shows an error snackbar with a red background
   static void showError({
     required String title,
     required String message,
@@ -86,10 +80,7 @@ class SnackbarHelper {
           offset: const Offset(0, 2),
         ),
       ],
-      icon: const Icon(
-        Icons.error_outline,
-        color: Colors.white,
-      ),
+      icon: const Icon(Icons.error_outline, color: Colors.white),
       shouldIconPulse: true,
       titleText: AppText(
         title,
@@ -113,7 +104,6 @@ class SnackbarHelper {
     );
   }
 
-  /// Shows an info snackbar with a blue background
   static void showInfo({
     required String title,
     required String message,
@@ -140,10 +130,7 @@ class SnackbarHelper {
           offset: const Offset(0, 2),
         ),
       ],
-      icon: const Icon(
-        Icons.info_outline,
-        color: Colors.white,
-      ),
+      icon: const Icon(Icons.info_outline, color: Colors.white),
       shouldIconPulse: true,
       titleText: AppText(
         title,
@@ -167,7 +154,6 @@ class SnackbarHelper {
     );
   }
 
-  /// Shows a warning snackbar with an orange background
   static void showWarning({
     required String title,
     required String message,
@@ -194,10 +180,7 @@ class SnackbarHelper {
           offset: const Offset(0, 2),
         ),
       ],
-      icon: const Icon(
-        Icons.warning_amber_outlined,
-        color: Colors.white,
-      ),
+      icon: const Icon(Icons.warning_amber_outlined, color: Colors.white),
       shouldIconPulse: true,
       titleText: AppText(
         title,

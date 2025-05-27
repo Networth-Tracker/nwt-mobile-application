@@ -7,8 +7,8 @@ import 'package:nwt_app/constants/data/categories/categories.dart';
 import 'package:nwt_app/constants/data/categories/categories.types.dart';
 import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/controllers/transactions/banks/transactions.dart';
-import 'package:nwt_app/screens/transactions/banks/widgets/transaction_card.dart';
 import 'package:nwt_app/screens/transactions/banks/types/transaction.dart';
+import 'package:nwt_app/screens/transactions/banks/widgets/transaction_card.dart';
 import 'package:nwt_app/widgets/common/app_input_field.dart';
 import 'package:nwt_app/widgets/common/button_widget.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
@@ -442,7 +442,7 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
                                   },
                                 ),
                               );
-                            }).toList(),
+                            }),
                             const SizedBox(height: 16),
                           ],
                         );
@@ -928,27 +928,33 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
     );
   }
 
-
   // Group transactions by date
-  Map<String, List<Banktransation>> _groupTransactionsByDate(List<Banktransation>? transactions) {
+  Map<String, List<Banktransation>> _groupTransactionsByDate(
+    List<Banktransation>? transactions,
+  ) {
     final Map<String, List<Banktransation>> grouped = {};
-    
+
     if (transactions == null || transactions.isEmpty) {
       return grouped;
     }
 
     // Sort transactions by date (newest first)
-    transactions.sort((a, b) => b.transactiontimestamp.compareTo(a.transactiontimestamp));
-    
+    transactions.sort(
+      (a, b) => b.transactiontimestamp.compareTo(a.transactiontimestamp),
+    );
+
     for (var transaction in transactions) {
-      final dateKey = DateFormat('MMMM yyyy').format(transaction.transactiontimestamp);
+      final dateKey = DateFormat(
+        'MMMM yyyy',
+      ).format(transaction.transactiontimestamp);
       final transactionsForDate = grouped[dateKey] ?? [];
       transactionsForDate.add(transaction);
       grouped[dateKey] = transactionsForDate;
     }
-    
+
     return grouped;
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -978,10 +984,14 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
       body: SafeArea(
         child: GetBuilder<BankTransactionController>(
           builder: (bankTransactionController) {
-            final transactions = bankTransactionController.transactionData?.banktransations ?? [];
+            final transactions =
+                bankTransactionController.transactionData?.banktransations ??
+                [];
             final groupedTransactions = _groupTransactionsByDate(transactions);
-            final sortedMonths = groupedTransactions.keys.toList()..sort((a, b) => b.compareTo(a));
-            
+            final sortedMonths =
+                groupedTransactions.keys.toList()
+                  ..sort((a, b) => b.compareTo(a));
+
             return Column(
               children: [
                 Padding(
@@ -1001,81 +1011,91 @@ class _BankTransactionListScreenState extends State<BankTransactionListScreen> {
                 ),
                 const SizedBox(height: 8),
                 Expanded(
-                  child: isTransactionsLoading
-                      ? const Center(child: CircularProgressIndicator())
-                      : transactions.isEmpty
+                  child:
+                      isTransactionsLoading
+                          ? const Center(child: CircularProgressIndicator())
+                          : transactions.isEmpty
                           ? Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.receipt_long_outlined,
-                                    size: 64,
-                                    color: AppColors.darkTextMuted.withOpacity(0.5),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.receipt_long_outlined,
+                                  size: 64,
+                                  color: AppColors.darkTextMuted.withValues(
+                                    alpha: 0.5,
                                   ),
-                                  const SizedBox(height: 16),
-                                  AppText(
-                                    'No transactions found',
-                                    variant: AppTextVariant.bodyLarge,
-                                    weight: AppTextWeight.medium,
-                                    colorType: AppTextColorType.secondary,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  AppText(
-                                    'Your transactions will appear here',
-                                    variant: AppTextVariant.bodySmall,
-                                    colorType: AppTextColorType.muted,
-                                  ),
-                                ],
-                              ),
-                            )
-                          : ListView.builder(
-                              padding: const EdgeInsets.only(bottom: 20),
-                              physics: const BouncingScrollPhysics(),
-                              itemCount: sortedMonths.length,
-                              itemBuilder: (context, monthIndex) {
-                                final month = sortedMonths[monthIndex];
-                                final monthTransactions = groupedTransactions[month]!;
-                                
-                                return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: AppSizing.scaffoldHorizontalPadding,
-                                        vertical: 12,
-                                      ),
-                                      child: AppText(
-                                        month,
-                                        variant: AppTextVariant.bodyMedium,
-                                        weight: AppTextWeight.semiBold,
-                                        colorType: AppTextColorType.primary,
-                                      ),
-                                    ),
-                                    ListView.builder(
-                                      shrinkWrap: true,
-                                      physics: const BouncingScrollPhysics(),
-                                      itemCount: monthTransactions.length,
-                                      itemBuilder: (context, index) {
-                                        final transaction = monthTransactions[index];
-                                        return Padding(
-                                          padding: const EdgeInsets.only(
-                                            bottom: 8,
-                                            left: AppSizing.scaffoldHorizontalPadding,
-                                            right: AppSizing.scaffoldHorizontalPadding,
-                                          ),
-                                          child: BankTransactionCardWidget(
-                                            transaction: transaction,
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                    if (monthIndex < sortedMonths.length - 1)
-                                      const SizedBox(height: 16),
-                                  ],
-                                );
-                              },
+                                ),
+                                const SizedBox(height: 16),
+                                AppText(
+                                  'No transactions found',
+                                  variant: AppTextVariant.bodyLarge,
+                                  weight: AppTextWeight.medium,
+                                  colorType: AppTextColorType.secondary,
+                                ),
+                                const SizedBox(height: 8),
+                                AppText(
+                                  'Your transactions will appear here',
+                                  variant: AppTextVariant.bodySmall,
+                                  colorType: AppTextColorType.muted,
+                                ),
+                              ],
                             ),
+                          )
+                          : ListView.builder(
+                            padding: const EdgeInsets.only(bottom: 20),
+                            physics: const BouncingScrollPhysics(),
+                            itemCount: sortedMonths.length,
+                            itemBuilder: (context, monthIndex) {
+                              final month = sortedMonths[monthIndex];
+                              final monthTransactions =
+                                  groupedTransactions[month]!;
+
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal:
+                                          AppSizing.scaffoldHorizontalPadding,
+                                      vertical: 12,
+                                    ),
+                                    child: AppText(
+                                      month,
+                                      variant: AppTextVariant.bodyMedium,
+                                      weight: AppTextWeight.semiBold,
+                                      colorType: AppTextColorType.primary,
+                                    ),
+                                  ),
+                                  ListView.builder(
+                                    shrinkWrap: true,
+                                    physics: const BouncingScrollPhysics(),
+                                    itemCount: monthTransactions.length,
+                                    itemBuilder: (context, index) {
+                                      final transaction =
+                                          monthTransactions[index];
+                                      return Padding(
+                                        padding: const EdgeInsets.only(
+                                          bottom: 10,
+                                          left:
+                                              AppSizing
+                                                  .scaffoldHorizontalPadding,
+                                          right:
+                                              AppSizing
+                                                  .scaffoldHorizontalPadding,
+                                        ),
+                                        child: BankTransactionCardWidget(
+                                          transaction: transaction,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  if (monthIndex < sortedMonths.length - 1)
+                                    const SizedBox(height: 16),
+                                ],
+                              );
+                            },
+                          ),
                 ),
               ],
             );

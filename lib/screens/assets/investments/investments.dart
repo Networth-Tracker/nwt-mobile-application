@@ -1,24 +1,26 @@
+import 'dart:async';
+import 'dart:math' as math;
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:nwt_app/screens/assets/investments/types/holdings.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/sizing.dart';
-import 'package:nwt_app/screens/mf_switch/mf_switch.dart';
-import 'package:nwt_app/widgets/common/dot_indicator.dart';
-import 'package:shimmer/shimmer.dart';
-import 'package:nwt_app/widgets/common/animated_amount.dart';
-import 'dart:async';
 import 'package:nwt_app/controllers/assets/investments.dart';
+import 'package:nwt_app/screens/assets/investments/types/holdings.dart';
 import 'package:nwt_app/screens/assets/investments/types/portfolio.dart';
 import 'package:nwt_app/screens/assets/investments/widgets/holding_card.dart';
+import 'package:nwt_app/screens/mf_switch/mf_switch.dart';
 import 'package:nwt_app/utils/currency_formatter.dart';
+import 'package:nwt_app/widgets/common/animated_amount.dart';
 import 'package:nwt_app/widgets/common/app_input_field.dart';
 import 'package:nwt_app/widgets/common/button_widget.dart';
+import 'package:nwt_app/widgets/common/dot_indicator.dart';
 import 'package:nwt_app/widgets/common/graph_legend.dart';
-import 'dart:math' as math;
+import 'package:nwt_app/widgets/common/shimmer_text.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
+import 'package:shimmer/shimmer.dart';
 
 class AssetInvestmentScreen extends StatefulWidget {
   const AssetInvestmentScreen({super.key});
@@ -69,6 +71,7 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
   bool _isAmountVisible = true;
   final _scrollController = ScrollController();
   late AnimationController _animationController;
+  // Removed animation controllers for progress bars
   bool showFullHeader = true;
   final InvestmentController investmentController = Get.put(
     InvestmentController(),
@@ -100,22 +103,15 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Icon(
-                        Icons.arrow_back,
-                        color: Colors.white,
-                        size: 24,
-                      ),
+                      onTap: () => Navigator.pop(context),
+                      child: const Icon(Icons.chevron_left),
                     ),
                     AppText(
                       "Investments",
-                      variant: AppTextVariant.bodyLarge,
-                      weight: AppTextWeight.bold,
-                      colorType: AppTextColorType.primary,
+                      variant: AppTextVariant.headline6,
+                      weight: AppTextWeight.semiBold,
                     ),
-                    const SizedBox(width: 24),
+                    const Opacity(opacity: 0, child: Icon(Icons.chevron_left)),
                   ],
                 ),
               ),
@@ -179,47 +175,53 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
                                 ),
                               ],
                             ),
-                            InkWell(
-                              onTap: () {
-                                onRefresh();
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.all(4),
-                                decoration: BoxDecoration(
-                                  color: AppColors.darkButtonBorder,
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                child: RotationTransition(
-                                  turns: Tween(
-                                    begin: 0.0,
-                                    end: 1.0,
-                                  ).animate(_refreshController),
-                                  child: Icon(
-                                    Icons.refresh,
-                                    size: 22,
-                                    color: AppColors.darkTextMuted,
-                                  ),
-                                ),
-                              ),
-                            ),
+                            // InkWell(
+                            //   onTap: () {
+                            //     onRefresh();
+                            //   },
+                            //   child: Container(
+                            //     padding: const EdgeInsets.all(4),
+                            //     decoration: BoxDecoration(
+                            //       color: AppColors.darkButtonBorder,
+                            //       borderRadius: BorderRadius.circular(15),
+                            //     ),
+                            //     child: RotationTransition(
+                            //       turns: Tween(
+                            //         begin: 0.0,
+                            //         end: 1.0,
+                            //       ).animate(_refreshController),
+                            //       child: Icon(
+                            //         Icons.refresh,
+                            //         size: 22,
+                            //         color: AppColors.darkTextMuted,
+                            //       ),
+                            //     ),
+                            //   ),
+                            // ),
                           ],
                         ),
                         SizedBox(height: 15),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            AnimatedAmount(
-                              isAmountVisible: _isAmountVisible,
-                              amount: CurrencyFormatter.formatRupee(
-                                portfolio?.value ?? 0,
-                              ),
-                              hiddenText: '₹••••••',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 36,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                            isPortfolioLoading
+                                ? ShimmerTextPlaceholder(
+                                  width: 220,
+                                  height: 50,
+                                  borderRadius: BorderRadius.circular(8),
+                                )
+                                : AnimatedAmount(
+                                  isAmountVisible: _isAmountVisible,
+                                  amount: CurrencyFormatter.formatRupee(
+                                    portfolio?.value ?? 0,
+                                  ),
+                                  hiddenText: '₹••••••',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 36,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                             InkWell(
                               onTap: () {
                                 setState(() {
@@ -288,79 +290,159 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
                         SizedBox(
                           width: double.infinity,
                           height: 8,
-                          child: Row(
-                            spacing: 5,
-                            children: [
-                              if ((portfolio?.coverage.stocks ?? 0) > 0)
-                                Expanded(
-                                  flex:
-                                      (portfolio?.coverage.stocks ?? 0).round(),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
-                                      gradient: LinearGradient(
-                                        colors: [
-                                          Color(0xFFC172FF),
-                                          Color(0xFF993A3A),
-                                        ],
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                              // Minimum flex value to ensure visibility of small percentages
+                              final int minFlex = 1;
+
+                              // Get individual coverage values
+                              final int stocksFlex =
+                                  (portfolio?.coverage.stocks ?? 0) > 0
+                                      ? math.max(
+                                        (portfolio?.coverage.stocks ?? 0)
+                                            .round(),
+                                        minFlex,
+                                      )
+                                      : 0;
+                              final int mfFlex =
+                                  (portfolio?.coverage.mutualfunds ?? 0) > 0
+                                      ? math.max(
+                                        (portfolio?.coverage.mutualfunds ?? 0)
+                                            .round(),
+                                        minFlex,
+                                      )
+                                      : 0;
+                              final int commoditiesFlex =
+                                  (portfolio?.coverage.commodities ?? 0) > 0
+                                      ? math.max(
+                                        (portfolio?.coverage.commodities ?? 0)
+                                            .round(),
+                                        minFlex,
+                                      )
+                                      : 0;
+                              final int foFlex =
+                                  (portfolio?.coverage.fo ?? 0) > 0
+                                      ? math.max(
+                                        (portfolio?.coverage.fo ?? 0).round(),
+                                        minFlex,
+                                      )
+                                      : 0;
+
+                              // Determine which segments are visible for border radius
+                              final bool hasStocks = stocksFlex > 0;
+                              final bool hasMF = mfFlex > 0;
+                              final bool hasCommodities = commoditiesFlex > 0;
+                              final bool hasFO = foFlex > 0;
+
+                              return Row(
+                                spacing: 8,
+                                children: [
+                                  // Stocks bar
+                                  if (hasStocks)
+                                    Expanded(
+                                      flex: stocksFlex,
+                                      child: Container(
+                                        // Add small spacing between segments
+                                        padding: EdgeInsets.only(
+                                          right:
+                                              hasMF || hasCommodities || hasFO
+                                                  ? 1
+                                                  : 0,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(8),
+                                          ),
+                                          gradient: const LinearGradient(
+                                            colors: [
+                                              Color(0xFFC172FF),
+                                              Color(0xFF993A3A),
+                                            ],
+                                          ),
+                                        ),
+                                        height: 8,
                                       ),
                                     ),
-                                    height: 8,
-                                  ),
-                                ),
-                              if ((portfolio?.coverage.mutualfunds ?? 0) > 0)
-                                Expanded(
-                                  flex:
-                                      (portfolio?.coverage.mutualfunds ?? 0)
-                                          .round(),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
-                                      gradient: LinearGradient(
-                                        colors: [
-                                          Color(0xFFFF6393),
-                                          Color(0xFFBD1448),
-                                        ],
+
+                                  // Mutual Funds bar
+                                  if (hasMF)
+                                    Expanded(
+                                      flex: mfFlex,
+                                      child: Container(
+                                        padding: EdgeInsets.only(
+                                          left: hasStocks ? 1 : 0,
+                                          right:
+                                              hasCommodities || hasFO ? 1 : 0,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(8),
+                                          ),
+                                          gradient: const LinearGradient(
+                                            colors: [
+                                              Color(0xFFFF6393),
+                                              Color(0xFFBD1448),
+                                            ],
+                                          ),
+                                        ),
+                                        height: 8,
                                       ),
                                     ),
-                                    height: 8,
-                                  ),
-                                ),
-                              if ((portfolio?.coverage.commodities ?? 0) > 0)
-                                Expanded(
-                                  flex:
-                                      (portfolio?.coverage.commodities ?? 0)
-                                          .round(),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
-                                      gradient: LinearGradient(
-                                        colors: [
-                                          Color(0xFFFFCA63),
-                                          Color(0xFFFF8F6E),
-                                        ],
+
+                                  // Commodities bar
+                                  if (hasCommodities)
+                                    Expanded(
+                                      flex: commoditiesFlex,
+                                      child: Container(
+                                        padding: EdgeInsets.only(
+                                          left: hasStocks || hasMF ? 1 : 0,
+                                          right: hasFO ? 1 : 0,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(8),
+                                          ),
+                                          gradient: const LinearGradient(
+                                            colors: [
+                                              Color(0xFFFFCA63),
+                                              Color(0xFFFF8F6E),
+                                            ],
+                                          ),
+                                        ),
+                                        height: 8,
                                       ),
                                     ),
-                                    height: 8,
-                                  ),
-                                ),
-                              if ((portfolio?.coverage.fo ?? 0) > 0)
-                                Expanded(
-                                  flex: (portfolio?.coverage.fo ?? 0).round(),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
-                                      gradient: LinearGradient(
-                                        colors: [
-                                          Color(0xFFC1FFC8),
-                                          Color(0xFF47DDC2),
-                                        ],
+
+                                  // F&O bar
+                                  if (hasFO)
+                                    Expanded(
+                                      flex: foFlex,
+                                      child: Container(
+                                        padding: EdgeInsets.only(
+                                          left:
+                                              hasStocks ||
+                                                      hasMF ||
+                                                      hasCommodities
+                                                  ? 1
+                                                  : 0,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(8),
+                                          ),
+                                          gradient: const LinearGradient(
+                                            colors: [
+                                              Color(0xFFC1FFC8),
+                                              Color(0xFF47DDC2),
+                                            ],
+                                          ),
+                                        ),
+                                        height: 8,
                                       ),
                                     ),
-                                    height: 8,
-                                  ),
-                                ),
-                            ],
+                                ],
+                              );
+                            },
                           ),
                         ),
                         SizedBox(height: 8),
@@ -457,9 +539,11 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
                           children: [
                             AppText(
                               "Speak to advisor for Investment advise",
-                              variant: AppTextVariant.bodySmall,
+                              variant: AppTextVariant.bodyMedium,
                               colorType: AppTextColorType.link,
+                              weight: AppTextWeight.medium,
                               decoration: TextDecoration.underline,
+                              decorationColor: AppColors.linkColor,
                             ),
                           ],
                         ),
@@ -527,6 +611,8 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     );
+    // Removed progress bar animation initialization
+
     // Start the initial animation
     _animationController.forward();
     fetchPortfolio();
@@ -534,90 +620,48 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
 
   @override
   void dispose() {
-    _scrollController.dispose();
     _animationController.dispose();
+    _refreshController.dispose();
     super.dispose();
   }
 
   Future<void> fetchPortfolio() async {
-    // Only show loading if we don't have any data yet
-    final bool shouldShowPortfolioLoading =
-        investmentController.portfolio == null;
-    final bool shouldShowHoldingsLoading =
-        investmentController.holdings == null;
-
-    if (mounted) {
-      setState(() {
-        isPortfolioLoading = shouldShowPortfolioLoading;
-        isHoldingLoading = shouldShowHoldingsLoading;
-      });
-      if (isPortfolioLoading || isHoldingLoading) {
-        _refreshController.repeat();
-      }
-    }
+    setState(() {
+      isPortfolioLoading = true;
+      isHoldingLoading = true;
+    });
 
     try {
+      _refreshController.reset();
+      _refreshController.repeat();
+
       await investmentController.getPortfolio(
         onLoading: (isLoading) {
-          if (mounted) {
-            setState(() {
-              isPortfolioLoading = isLoading;
-            });
-            if (isLoading) {
-              _refreshController.repeat();
-            } else if (!isHoldingLoading) {
-              _refreshController.stop();
-              _refreshController.reset();
-            }
-          }
+          setState(() {
+            isPortfolioLoading = isLoading;
+          });
         },
       );
 
       await investmentController.getHoldings(
         onLoading: (isLoading) {
-          if (mounted) {
-            setState(() {
-              isHoldingLoading = isLoading;
-            });
-            if (isLoading) {
-              _refreshController.repeat();
-            } else if (!isPortfolioLoading) {
-              _refreshController.stop();
-              _refreshController.reset();
-            }
-          }
+          setState(() {
+            isHoldingLoading = isLoading;
+          });
         },
       );
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          isPortfolioLoading = false;
-          isHoldingLoading = false;
-        });
-        _refreshController.stop();
-        _refreshController.reset();
-      }
-      rethrow;
-    }
-  }
 
-  Widget _buildLoadingState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(AppColors.darkPrimary),
-          ),
-          SizedBox(height: 16),
-          AppText(
-            'Loading your investments...',
-            variant: AppTextVariant.bodyLarge,
-            colorType: AppTextColorType.primary,
-          ),
-        ],
-      ),
-    );
+      // No animation to start
+
+      _refreshController.stop();
+    } catch (e) {
+      setState(() {
+        isPortfolioLoading = false;
+        isHoldingLoading = false;
+      });
+
+      _refreshController.stop();
+    }
   }
 
   @override
@@ -627,9 +671,7 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
       body: GetBuilder<InvestmentController>(
         builder: (investmentController) {
           // Show loading state when portfolio is null and we're loading
-          if (isPortfolioLoading && investmentController.portfolio == null) {
-            return _buildLoadingState();
-          }
+          // Use shimmer placeholders throughout the UI instead of a separate loading screen
 
           return SafeArea(
             child: CustomScrollView(
@@ -699,9 +741,18 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
                   sliver: SliverList(
                     delegate: SliverChildBuilderDelegate(
                       (context, index) {
+                        // Show shimmer placeholders when loading
+                        if (isPortfolioLoading &&
+                            investmentController.portfolio == null) {
+                          if (index < 5) {
+                            return _buildShimmerInvestmentCard();
+                          } else {
+                            return null;
+                          }
+                        }
+
                         final investments = _filteredInvestments();
 
-                        // Show loading or empty state if no investments
                         if (investments.isEmpty) {
                           return SizedBox(
                             height: MediaQuery.of(context).size.height * 0.4,
@@ -709,18 +760,17 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
                           );
                         }
 
-                        // Return investment card for valid index
                         final investment = investments[index];
 
-                        // Show red container if this is the first item and Mutual Funds is selected
                         if (index == 0 && _selectedCategory == 'Mutual Funds') {
                           return Column(
                             children: [
                               InkWell(
-                                onTap: () => Get.to(
-                                  () => MutualFundSwitchScreen(),
-                                  transition: Transition.rightToLeft,
-                                ),
+                                onTap:
+                                    () => Get.to(
+                                      () => MutualFundSwitchScreen(),
+                                      transition: Transition.rightToLeft,
+                                    ),
                                 child: Container(
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(12),
@@ -752,22 +802,26 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
                                               'Switch to save up to 1.4%',
                                               variant: AppTextVariant.bodyLarge,
                                               weight: AppTextWeight.semiBold,
-                                              colorType: AppTextColorType.success,
+                                              colorType:
+                                                  AppTextColorType.success,
                                             ),
                                             const SizedBox(height: 8),
                                             AppText(
                                               "Say goodbye to high commissions. Easily switch plans in less than 5 minute for free.",
                                               variant: AppTextVariant.bodySmall,
-                                              colorType: AppTextColorType.primary,
+                                              colorType:
+                                                  AppTextColorType.primary,
                                             ),
                                             GestureDetector(
                                               onTap:
                                                   _showSwitchToDirectBottomSheet,
                                               child: AppText(
                                                 'Know More',
-                                                variant: AppTextVariant.bodySmall,
+                                                variant:
+                                                    AppTextVariant.bodySmall,
                                                 weight: AppTextWeight.bold,
-                                                colorType: AppTextColorType.link,
+                                                colorType:
+                                                    AppTextColorType.link,
                                                 decoration:
                                                     TextDecoration.underline,
                                               ),
@@ -1074,30 +1128,73 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
     );
   }
 
+  // Build shimmer placeholders for investment cards
+  Widget _buildShimmerInvestmentCard() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: AppColors.darkCardBG,
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Logo placeholder
+          ShimmerTextPlaceholder(
+            width: 50,
+            height: 50,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          const SizedBox(width: 16),
+
+          // Content placeholders
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Title placeholder
+                ShimmerTextPlaceholder(
+                  width: 180,
+                  height: 22,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                const SizedBox(height: 7),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Amount placeholder
+                    ShimmerTextPlaceholder(
+                      width: 100,
+                      height: 16,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+
+                    // Percentage placeholder
+                    ShimmerTextPlaceholder(
+                      width: 60,
+                      height: 16,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildNoHoldingsMessage() {
     if (isHoldingLoading) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: 48,
-              height: 48,
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  AppColors.darkPrimary,
-                ),
-                strokeWidth: 3,
-              ),
-            ),
-            const SizedBox(height: 16),
-            AppText(
-              'Fetching your investments...',
-              variant: AppTextVariant.bodyLarge,
-              colorType: AppTextColorType.primary,
-            ),
-          ],
-        ),
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const SizedBox(height: 24),
+          // Display multiple shimmer placeholders to indicate loading
+          for (int i = 0; i < 5; i++) _buildShimmerInvestmentCard(),
+        ],
       );
     }
 

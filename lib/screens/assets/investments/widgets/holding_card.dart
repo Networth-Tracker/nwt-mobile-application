@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nwt_app/constants/colors.dart';
+import 'package:nwt_app/utils/currency_formatter.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 
 class HoldingCard extends StatelessWidget {
@@ -11,14 +12,14 @@ class HoldingCard extends StatelessWidget {
   final IconData? icon;
 
   const HoldingCard({
-    Key? key,
+    super.key,
     required this.fundName,
     required this.navValue,
     required this.investedAmount,
     required this.currentAmount,
     required this.gainAmount,
     this.icon = Icons.account_balance_outlined,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +27,7 @@ class HoldingCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.darkCardBG,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppColors.darkButtonBorder,
-        ),
+        border: Border.all(color: AppColors.darkButtonBorder),
       ),
       padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
       child: Column(
@@ -41,11 +40,7 @@ class HoldingCard extends StatelessWidget {
                   color: AppColors.darkButtonBorder,
                   borderRadius: BorderRadius.circular(15),
                 ),
-                child: Icon(
-                  icon,
-                  size: 20,
-                  color: AppColors.darkTextMuted,
-                ),
+                child: Icon(icon, size: 20, color: AppColors.darkTextMuted),
               ),
               SizedBox(width: 15),
               Flexible(
@@ -86,13 +81,13 @@ class HoldingCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     AppText(
-                      "Invested: ₹$investedAmount",
+                      "Invested: ${CurrencyFormatter.formatRupee(num.parse(investedAmount))}",
                       variant: AppTextVariant.bodyMedium,
                       weight: AppTextWeight.semiBold,
                       colorType: AppTextColorType.primary,
                     ),
                     AppText(
-                      "Current: ₹$currentAmount",
+                      "Current: ${CurrencyFormatter.formatRupee(num.parse(currentAmount))}",
                       variant: AppTextVariant.bodyMedium,
                       weight: AppTextWeight.semiBold,
                       colorType: AppTextColorType.primary,
@@ -104,7 +99,7 @@ class HoldingCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     AppText(
-                      "Gain: ₹$gainAmount",
+                      "Gain: ${CurrencyFormatter.formatRupee(num.parse(gainAmount))}",
                       variant: AppTextVariant.bodyMedium,
                       weight: AppTextWeight.semiBold,
                       colorType: AppTextColorType.primary,

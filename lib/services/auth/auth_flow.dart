@@ -4,6 +4,7 @@ import 'package:nwt_app/controllers/user_controller.dart';
 import 'package:nwt_app/screens/auth/pan_card_verification.dart';
 import 'package:nwt_app/screens/auth/phone_number.dart';
 import 'package:nwt_app/screens/dashboard/dashboard.dart';
+import 'package:nwt_app/screens/fetch-holdings/mf_fetching.dart';
 import 'package:nwt_app/screens/onboarding/onboarding.dart';
 import 'package:nwt_app/services/auth/auth.dart';
 import 'package:nwt_app/services/global_storage.dart';
@@ -13,25 +14,22 @@ import 'package:nwt_app/utils/logger.dart';
 class AuthFlow {
   final AuthService _authService = AuthService();
   final UserController _userController = Get.find<UserController>();
-  
-  /// Handles the flow after successful OTP verification
-  /// Fetches the latest user profile and redirects based on verification status
+
   Future<void> handlePostOtpVerification() async {
     AppLogger.info('Handling post-OTP verification flow', tag: 'AuthFlow');
-    
-    // Fetch the latest user profile
+
     await _userController.fetchUserProfile(
       onLoading: (loading) {
         // Handle loading silently
       },
     );
-    
+
     // Check if user data is available
     if (_userController.userData != null) {
       final user = _userController.userData!;
-      
+
       // Check all verification statuses at once
-      if (user.isverified && user.ispanverified) {
+      if (user.isverified && user.ispanverified && user.ismfverified) {
         // All verifications are complete, go directly to dashboard
         AppLogger.info(
           'User is fully verified, redirecting to dashboard',
@@ -69,17 +67,13 @@ class AuthFlow {
         // Handle loading silently for initial fetch
       },
     );
-    AppLogger.info(userData?.message ?? "", tag: 'AuthFlow===================');
-    // Check if user data is available in the controller
     if (userData != null) {
-      print("adasdasdasda======================");
       AppLogger.info(
         'User data found, handling verification status',
         tag: 'AuthFlow',
       );
       _handleUserVerificationStatus(userData.data.user);
     } else {
-      print("adasdasdasda=====================1312312312t361278656387126378126783612873687123687=");
       AppLogger.info(
         'Failed to fetch user data, redirecting to onboarding',
         tag: 'AuthFlow',
@@ -104,6 +98,16 @@ class AuthFlow {
         tag: 'AuthFlow',
       );
       _navigateToPanVerification();
+      return;
+    }
+
+    // After PAN is verified, check if mutual funds have been fetched
+    if (!user.ismfverified) {
+      AppLogger.info(
+        'Mutual Fund not verified, redirecting to Mutual Fund verification',
+        tag: 'AuthFlow',
+      );
+      _navigateToMutualFundVerification();
       return;
     }
 
@@ -140,6 +144,13 @@ class AuthFlow {
   void _navigateToPanVerification() {
     Get.offAll(
       () => const PanCardVerification(),
+      transition: Transition.rightToLeft,
+    );
+  }
+
+  void _navigateToMutualFundVerification() {
+    Get.offAll(
+      () => const MutualFundHoldingsJourneyScreen(),
       transition: Transition.rightToLeft,
     );
   }

@@ -3,11 +3,11 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:nwt_app/firebase_options.dart';
-import 'package:nwt_app/main.dart' show flutterLocalNotificationsPlugin;
 import 'package:nwt_app/utils/logger.dart';
 
 class FirebaseMessagingAPI {
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  // Lazy initialize FirebaseMessaging to prevent automatic permission prompts
+  late final FirebaseMessaging _firebaseMessaging;
   final AndroidNotificationChannel _androidChannel =
       const AndroidNotificationChannel(
         "high_importance_channel",
@@ -22,10 +22,21 @@ class FirebaseMessagingAPI {
       );
 
   // Using the plugin instance from main.dart
-  final FlutterLocalNotificationsPlugin _localNotifications = flutterLocalNotificationsPlugin;
+  late final FlutterLocalNotificationsPlugin _localNotifications;
+  
+  // Constructor to prevent automatic initialization
+  FirebaseMessagingAPI() {
+    // We'll initialize _localNotifications and _firebaseMessaging only when needed
+  }
 
   void localNotificationsApp(RemoteNotification? notification) {
     if (notification != null) {
+      // Ensure _localNotifications is initialized
+      if (!_isLocalNotificationsInitialized()) {
+        AppLogger.warning('Local notifications not initialized', tag: 'FirebaseMessaging');
+        return;
+      }
+      
       _localNotifications.show(
         0,
         notification.title,
@@ -45,9 +56,37 @@ class FirebaseMessagingAPI {
       );
     }
   }
+  
+  // Helper method to check if local notifications are initialized
+  bool _isLocalNotificationsInitialized() {
+    try {
+      // Access a property to check if it throws
+      var _ = _localNotifications.pendingNotificationRequests();
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
 
   Future<void> initPushNotifications() async {
     try {
+      // Initialize Firebase Messaging instance
+      _firebaseMessaging = FirebaseMessaging.instance;
+      
+      // Initialize local notifications plugin
+      _localNotifications = FlutterLocalNotificationsPlugin();
+      
+      // Initialize local notifications
+      const AndroidInitializationSettings initializationSettingsAndroid =
+          AndroidInitializationSettings('@drawable/ic_notification');
+      const DarwinInitializationSettings initializationSettingsDarwin =
+          DarwinInitializationSettings();
+      const InitializationSettings initializationSettings = InitializationSettings(
+        android: initializationSettingsAndroid,
+        iOS: initializationSettingsDarwin,
+      );
+      await _localNotifications.initialize(initializationSettings);
+      
       // Request notification permissions
       await _firebaseMessaging.requestPermission(
         alert: true,
@@ -114,6 +153,12 @@ class FirebaseMessagingAPI {
   }
 
   Future<void> setupNotificationChannels() async {
+    // Ensure _localNotifications is initialized
+    if (!_isLocalNotificationsInitialized()) {
+      AppLogger.warning('Local notifications not initialized for channel setup', tag: 'FirebaseMessaging');
+      return;
+    }
+    
     // Set up iOS notification details
     _iosNotificationDetails = const DarwinNotificationDetails();
 
@@ -127,8 +172,25 @@ class FirebaseMessagingAPI {
 
   Future<String?> initNotifications() async {
     try {
+      // Initialize local notifications plugin
+      _localNotifications = FlutterLocalNotificationsPlugin();
+      
+      // Initialize local notifications
+      const AndroidInitializationSettings initializationSettingsAndroid =
+          AndroidInitializationSettings('@drawable/ic_notification');
+      const DarwinInitializationSettings initializationSettingsDarwin =
+          DarwinInitializationSettings();
+      const InitializationSettings initializationSettings = InitializationSettings(
+        android: initializationSettingsAndroid,
+        iOS: initializationSettingsDarwin,
+      );
+      await _localNotifications.initialize(initializationSettings);
+      
       // Set up notification channels
       await setupNotificationChannels();
+      
+      // Initialize Firebase Messaging instance
+      _firebaseMessaging = FirebaseMessaging.instance;
 
       // Request permission
       await _firebaseMessaging.requestPermission(

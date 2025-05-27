@@ -2,7 +2,7 @@ name: nwt_app
 description: "A new Flutter project."
 publish_to: 'none'
 
-version: 0.1.4+8
+version: 0.1.4+10
 
 environment:
   sdk: ^3.7.2
@@ -49,7 +49,9 @@ flutter:
     - assets/svgs/assets/mutual_funds/
     - assets/svgs/connections/
     - assets/svgs/assets/investments/
-    
+    - assets/svgs/mf_switch/
+    - assets/svgs/products/
+    - assets/svgs/advisory/
     
   uses-material-design: true
   fonts:

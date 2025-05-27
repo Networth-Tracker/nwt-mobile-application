@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 enum AppButtonVariant { primary, secondary, outlined, text, destructive }
 
@@ -51,7 +52,7 @@ class AppButton extends StatelessWidget {
     return SizedBox(
       width: isFullWidth ? double.infinity : null,
       child: SizedBox(
-        height: 60,
+        height: 60.h,
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: buttonStyle.backgroundColor,
@@ -64,7 +65,9 @@ class AppButton extends StatelessWidget {
               side: BorderSide(
                 color: buttonStyle.borderColor,
                 width:
-                    buttonStyle.variant == AppButtonVariant.outlined ? 2.0 : 1.0,
+                    buttonStyle.variant == AppButtonVariant.outlined
+                        ? 2.0.w
+                        : 1.0.w,
               ),
             ),
             elevation: buttonStyle.variant == AppButtonVariant.text ? 0 : 0,
@@ -83,12 +86,12 @@ class AppButton extends StatelessWidget {
   Widget _buildLoadingIndicator(BuildContext context) {
     final double size = _getLoaderSize();
     final buttonStyle = _getButtonStyle(context);
-    
+
     return SizedBox(
       height: size,
       width: size,
       child: CircularProgressIndicator(
-        strokeWidth: 3.0, 
+        strokeWidth: 3.0.w,
         color: loadingIndicatorColor ?? buttonStyle.textColor,
         strokeCap: StrokeCap.round,
       ),
@@ -103,7 +106,7 @@ class AppButton extends StatelessWidget {
       children: [
         if (leadingIcon != null) ...[
           Icon(leadingIcon, size: _getIconSize()),
-          SizedBox(width: 8),
+          SizedBox(width: 8.w),
         ],
         Text(
           text,
@@ -114,7 +117,7 @@ class AppButton extends StatelessWidget {
           ),
         ),
         if (trailingIcon != null) ...[
-          SizedBox(width: 8),
+          SizedBox(width: 8.w),
           Icon(trailingIcon, size: _getIconSize()),
         ],
       ],
@@ -125,11 +128,11 @@ class AppButton extends StatelessWidget {
   double _getLoaderSize() {
     switch (size) {
       case AppButtonSize.small:
-        return 16.0;
+        return 16.0.w;
       case AppButtonSize.medium:
-        return 14.0;
+        return 14.0.w;
       case AppButtonSize.large:
-        return 22.0;
+        return 22.0.w;
     }
   }
 
@@ -137,11 +140,11 @@ class AppButton extends StatelessWidget {
   EdgeInsets _getButtonPadding() {
     switch (size) {
       case AppButtonSize.small:
-        return const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0);
+        return EdgeInsets.symmetric(horizontal: 12.0.w, vertical: 8.0.h);
       case AppButtonSize.medium:
-        return const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0);
+        return EdgeInsets.symmetric(horizontal: 16.0.w, vertical: 12.0.h);
       case AppButtonSize.large:
-        return const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0);
+        return EdgeInsets.symmetric(horizontal: 24.0.w, vertical: 16.0.h);
     }
   }
 
@@ -149,11 +152,11 @@ class AppButton extends StatelessWidget {
   double _getTextSize() {
     switch (size) {
       case AppButtonSize.small:
-        return 14.0;
+        return 14.0.sp;
       case AppButtonSize.medium:
-        return 16.0;
+        return 16.0.sp;
       case AppButtonSize.large:
-        return 16.0;
+        return 16.0.sp;
     }
   }
 
@@ -161,11 +164,11 @@ class AppButton extends StatelessWidget {
   double _getIconSize() {
     switch (size) {
       case AppButtonSize.small:
-        return 16.0;
+        return 16.0.sp;
       case AppButtonSize.medium:
-        return 20.0;
+        return 20.0.sp;
       case AppButtonSize.large:
-        return 24.0;
+        return 24.0.sp;
     }
   }
 
@@ -255,7 +258,7 @@ class AppButton extends StatelessWidget {
           );
       }
     }
-  }
+   }
 
   // Light theme color helper
   _ThemeColors _getLightThemeColors(BuildContext context) {

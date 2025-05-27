@@ -12,19 +12,34 @@ class BankTransactionService {
   }) async {
     onLoading(true);
     try {
-      final response = await NetworkAPIHelper().get("${ApiURLs.GET_BANK_TRANSACTION}/$bankGUID");
+      final response = await NetworkAPIHelper().get(
+        "${ApiURLs.GET_BANK_TRANSACTION}/$bankGUID",
+      );
       if (response != null) {
         final responseData = jsonDecode(response.body);
-        AppLogger.info('Get Bank Transactions Response: ${responseData.toString()}', tag: 'BankTransactionService');
-
+        AppLogger.info(
+          'Get Bank Transactions Response: ${responseData.toString()}',
+          tag: 'BankTransactionService',
+        );
+        final parsedResponse = BankTransactionResponse.fromJson(responseData);
         if (response.statusCode == 200 || response.statusCode == 201) {
-          return BankTransactionResponse.fromJson(responseData);
+          return parsedResponse;
+        } else {
+          return parsedResponse;
         }
       }
       return null;
     } catch (e) {
-      AppLogger.error('Get Bank Transactions Error', error: e, tag: 'BankTransactionService');
-      return null;
+      AppLogger.error(
+        'Get Bank Transactions Error',
+        error: e,
+        tag: 'BankTransactionService',
+      );
+      return BankTransactionResponse(
+        status: 0,
+        message: 'An unexpected error occurred',
+        data: null,
+      );
     } finally {
       onLoading(false);
     }

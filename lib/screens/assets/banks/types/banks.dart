@@ -2,6 +2,7 @@ class BankSummaryResponse {
     int status;
     String message;
     BankSummaryData? data;
+    bool get success => status == 200 || status == 201;
 
     BankSummaryResponse({
         required this.status,

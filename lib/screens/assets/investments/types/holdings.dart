@@ -2,6 +2,7 @@ class InvestmentHoldingsResponse {
   int status;
   String message;
   HoldingsData data;
+  bool get success => status == 200 || status == 201;
 
   InvestmentHoldingsResponse({
     required this.status,
