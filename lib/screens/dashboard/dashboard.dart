@@ -715,7 +715,7 @@ class _DashboardState extends State<Dashboard>
                                                     children: [
                                                       AnimatedAmount(
                                                         amount:
-                                                            CurrencyFormatter.formatRupeeWithCommas(
+                                                            CurrencyFormatter.formatRupee(
                                                               _networthAmount,
                                                             ),
                                                         isAmountVisible:
@@ -815,112 +815,120 @@ class _DashboardState extends State<Dashboard>
                                         ),
                                       ),
                                       SizedBox(height: 12),
-                                      SingleChildScrollView(
-                                        padding: EdgeInsets.only(
-                                          left:
-                                              AppSizing
-                                                  .scaffoldHorizontalPadding,
-                                        ),
-                                        physics: const BouncingScrollPhysics(),
-                                        scrollDirection: Axis.horizontal,
-                                        child: Row(
-                                          spacing: 12,
-                                          children: [
-                                            InkWell(
-                                              onTap:
-                                                  () => Get.to(
-                                                    const ConnectionsScreen(),
-                                                    transition:
-                                                        Transition.rightToLeft,
-                                                  ),
-                                              child: ConstrainedBox(
-                                                constraints: BoxConstraints(
-                                                  minHeight:
-                                                      105, // Set a minimum height to match AssetCard
-                                                ),
-                                                child: Container(
-                                                  width: 50,
-                                                  decoration: BoxDecoration(
-                                                    color: AppColors.darkCardBG,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          12,
+                                      NotificationListener<ScrollNotification>(
+                                        onNotification: (notification) {
+                                          // Prevent scroll events from bubbling up to parent
+                                          return true;
+                                        },
+                                        child: SingleChildScrollView(
+                                          padding: EdgeInsets.only(
+                                            left:
+                                                AppSizing
+                                                    .scaffoldHorizontalPadding,
+                                            right:
+                                                AppSizing
+                                                    .scaffoldHorizontalPadding,
+                                          ),
+                                          physics:
+                                              const ClampingScrollPhysics(),
+                                          scrollDirection: Axis.horizontal,
+                                          child: GetBuilder<
+                                            DashboardAssetController
+                                          >(
+                                            builder: (controller) {
+                                              final assets =
+                                                  controller
+                                                      .dashboardAssets
+                                                      ?.data
+                                                      ?.assetdata ??
+                                                  [];
+                                              return Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  // Add button
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                          right: 12,
                                                         ),
-                                                    border: Border.all(
-                                                      color:
-                                                          AppColors
-                                                              .darkButtonBorder,
-                                                    ),
-                                                  ),
-                                                  child: Center(
-                                                    child: Icon(
-                                                      Icons.add_rounded,
-                                                      size: 26,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            GetBuilder<
-                                              DashboardAssetController
-                                            >(
-                                              builder: (controller) {
-                                                if (controller
-                                                        .dashboardAssets
-                                                        ?.data !=
-                                                    null) {
-                                                  return Row(
-                                                    spacing: 12,
-                                                    children:
-                                                        controller
-                                                            .dashboardAssets!
-                                                            .data!
-                                                            .assetdata
-                                                            .map(
-                                                              (
-                                                                asset,
-                                                              ) => InkWell(
-                                                                onTap:
-                                                                    () => Get.to(
-                                                                      asset.name ==
-                                                                              "Banks"
-                                                                          ? const AssetBankScreen()
-                                                                          : const AssetInvestmentScreen(),
-                                                                      transition:
-                                                                          Transition
-                                                                              .rightToLeft,
-                                                                    ),
-                                                                child: AssetCard(
-                                                                  title:
-                                                                      asset
-                                                                          .name,
-                                                                  amount:
-                                                                      CurrencyFormatter.formatRupee(
-                                                                        asset
-                                                                            .value,
-                                                                      ),
-                                                                  delta:
-                                                                      "${asset.deltapercentage}%",
-                                                                  deltaType:
-                                                                      asset.deltavalue >=
-                                                                              0
-                                                                          ? DeltaType
-                                                                              .positive
-                                                                          : DeltaType
-                                                                              .negative,
-                                                                  icon:
-                                                                      Icons
-                                                                          .account_balance_outlined,
-                                                                ),
+                                                    child: InkWell(
+                                                      onTap:
+                                                          () => Get.to(
+                                                            const ConnectionsScreen(),
+                                                            transition:
+                                                                Transition
+                                                                    .rightToLeft,
+                                                          ),
+                                                      child: Container(
+                                                        width: 50,
+                                                        height: 105,
+                                                        decoration: BoxDecoration(
+                                                          color:
+                                                              AppColors
+                                                                  .darkCardBG,
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                12,
                                                               ),
-                                                            )
-                                                            .toList(),
-                                                  );
-                                                }
-                                                return const SizedBox.shrink();
-                                              },
-                                            ),
-                                          ],
+                                                          border: Border.all(
+                                                            color:
+                                                                AppColors
+                                                                    .darkButtonBorder,
+                                                          ),
+                                                        ),
+                                                        child: const Center(
+                                                          child: Icon(
+                                                            Icons.add_rounded,
+                                                            size: 26,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  // Asset cards
+                                                  ...assets.map(
+                                                    (asset) => Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                            right: 12,
+                                                          ),
+                                                      child: InkWell(
+                                                        onTap:
+                                                            () => Get.to(
+                                                              asset.name ==
+                                                                      "Banks"
+                                                                  ? const AssetBankScreen()
+                                                                  : const AssetInvestmentScreen(),
+                                                              transition:
+                                                                  Transition
+                                                                      .rightToLeft,
+                                                            ),
+                                                        child: AssetCard(
+                                                          title: asset.name,
+                                                          amount:
+                                                              CurrencyFormatter.formatRupee(
+                                                                asset.value,
+                                                              ),
+                                                          delta:
+                                                              "${asset.deltapercentage}%",
+                                                          deltaType:
+                                                              asset.deltavalue >=
+                                                                      0
+                                                                  ? DeltaType
+                                                                      .positive
+                                                                  : DeltaType
+                                                                      .negative,
+                                                          icon:
+                                                              Icons
+                                                                  .account_balance_outlined,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          ),
                                         ),
                                       ),
                                     ],
