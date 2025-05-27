@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:nwt_app/screens/profile/resetPin.dart';
+import 'package:nwt_app/screens/profile/reset_pin.dart';
 import 'package:lottie/lottie.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nwt_app/screens/profile/editprofile.dart';
-import 'package:nwt_app/screens/profile/setPin.dart';
+import 'package:nwt_app/screens/profile/edit_profile.dart';
+import 'package:nwt_app/screens/profile/set_pin.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 
 class UserProfile extends StatefulWidget {
