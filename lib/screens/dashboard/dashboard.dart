@@ -18,6 +18,7 @@ import 'package:nwt_app/screens/dashboard/zerodha_webview.dart';
 import 'package:nwt_app/screens/explore/explore.dart';
 import 'package:nwt_app/screens/mf_switch/mf_switch.dart';
 import 'package:nwt_app/screens/notifications/notification_list.dart';
+import 'package:nwt_app/screens/profile/userProfile.dart';
 import 'package:nwt_app/screens/products/products.dart';
 import 'package:nwt_app/services/auth/auth_flow.dart';
 import 'package:nwt_app/services/dashboard/total_networth.dart';
