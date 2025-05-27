@@ -88,7 +88,7 @@ class _PanCardVerificationState extends State<PanCardVerification> {
           setState(() {
             _errorMessage = null;
           });
-          
+
           // Navigate to dashboard immediately
           Get.to(
             () => const MutualFundHoldingsJourneyScreen(),
@@ -135,9 +135,12 @@ class _PanCardVerificationState extends State<PanCardVerification> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            GestureDetector(
-              onTap: () => Navigator.pop(context),
-              child: const Icon(Icons.chevron_left),
+            Opacity(
+              opacity: 0,
+              child: GestureDetector(
+                // onTap: () => Navigator.pop(context),
+                child: const Icon(Icons.chevron_left),
+              ),
             ),
             AppText(
               "PAN Verification",
@@ -153,7 +156,7 @@ class _PanCardVerificationState extends State<PanCardVerification> {
           padding: EdgeInsets.only(
             left: AppSizing.scaffoldHorizontalPadding,
             right: AppSizing.scaffoldHorizontalPadding,
-            bottom: MediaQuery.of(context).padding.bottom,
+            // bottom: MediaQuery.of(context).padding.bottom,
           ),
           child: Column(
             children: [

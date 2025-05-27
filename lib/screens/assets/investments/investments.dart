@@ -905,9 +905,9 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
     return investments.where((investment) {
       switch (_selectedCategory) {
         case 'Stocks':
-          return investment.type == Type.STOCKS;
+          return investment.type == AssetType.STOCKS;
         case 'Mutual Funds':
-          return investment.type == Type.MF;
+          return investment.type == AssetType.MF;
         case 'Commodity':
           return investment.assettype?.toLowerCase().contains('commodity') ??
               false;

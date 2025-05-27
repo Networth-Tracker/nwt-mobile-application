@@ -228,7 +228,7 @@ class _MutualFundSwitchScreenState extends State<MutualFundSwitchScreen> {
         verticalLines: [
           VerticalLine(
             x: currentMarkerPosition,
-            color: Colors.white.withOpacity(0.7),
+            color: Colors.white.withValues(alpha: 0.7),
             strokeWidth: 1.5,
             dashArray: [5, 5],
             label: VerticalLineLabel(show: false),
@@ -238,7 +238,6 @@ class _MutualFundSwitchScreenState extends State<MutualFundSwitchScreen> {
     );
   }
 
-  final bool _selectAllFunds = false;
   bool _selectedFund = true;
   @override
   Widget build(BuildContext context) {
@@ -891,9 +890,7 @@ class _MutualFundSwitchScreenState extends State<MutualFundSwitchScreen> {
                                                 text: TextSpan(
                                                   children: [
                                                     TextSpan(
-                                                      text:
-                                                          plan.regfundname ??
-                                                          "Regular Fund",
+                                                      text: plan.regfundname,
                                                       style: TextStyle(
                                                         color:
                                                             AppColors
@@ -907,7 +904,7 @@ class _MutualFundSwitchScreenState extends State<MutualFundSwitchScreen> {
                                                     ),
                                                     TextSpan(
                                                       text:
-                                                          " (${plan.regexpratio ?? 0}% expense ratio) ",
+                                                          " (${plan.regexpratio}% expense ratio) ",
                                                       style: TextStyle(
                                                         color:
                                                             AppColors
@@ -1040,9 +1037,7 @@ class _MutualFundSwitchScreenState extends State<MutualFundSwitchScreen> {
                                                 text: TextSpan(
                                                   children: [
                                                     TextSpan(
-                                                      text:
-                                                          plan.dirfundname ??
-                                                          "Direct Fund",
+                                                      text: plan.dirfundname,
                                                       style: TextStyle(
                                                         color:
                                                             AppColors
@@ -1056,7 +1051,7 @@ class _MutualFundSwitchScreenState extends State<MutualFundSwitchScreen> {
                                                     ),
                                                     TextSpan(
                                                       text:
-                                                          " (${plan.direxpratio ?? 0}% expense ratio) ",
+                                                          " (${plan.direxpratio}% expense ratio) ",
                                                       style: TextStyle(
                                                         color:
                                                             AppColors
