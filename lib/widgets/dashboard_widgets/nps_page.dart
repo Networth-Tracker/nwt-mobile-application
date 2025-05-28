@@ -16,6 +16,62 @@ class _NpsPageState extends State<NpsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomSheet: Container(
+          height: 600,
+          width: double.infinity,
+          color: Colors.black,
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const AppText(
+                'NPS Terms',
+                variant: AppTextVariant.headline3,
+                weight: AppTextWeight.bold,
+                colorType: AppTextColorType.primary,
+              ),
+              // IconButton(
+              //   icon: const Icon(Icons.close, color: Colors.white,size: 16,),
+              //   onPressed: () {
+              //     // Handle info button press
+              //   },
+              // ),
+            ],
+          ),
+            const SizedBox(height:16),
+            Wrap(
+              spacing: 16,
+              runSpacing: 16,
+              children: [
+                _npsInfoCard(
+                  title: 'Moderate',
+                  description:
+                      'The Moderate option in NPS is a Life Cycle Fund with a 50% equity cap until age 35, which decreases with age.',
+                ),
+                _npsInfoCard(
+                  title: 'Conservative',
+                  description:
+                      'The Conservative caps equity at 25% until age 35, then reduces it to 5% by age 55, prioritizing safer investments like bonds.',
+                ),
+                _npsInfoCard(
+                  title: 'Aggressive',
+                  description:
+                      ' The Aggressive NPS option invests 75% in equity until age 35, then reduces equity by 4% each year, moving to safer assets like bonds.',
+                ),
+                _npsInfoCard(
+                  title: 'Corporate',
+                  description:
+                      'Corporate NPS is tailored for employer-employee collaboration, offering joint contributions and tax benefits.',
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.black,
@@ -247,4 +303,37 @@ Widget _pensionCard(String title, String units, String value, String change, Col
     ),
   );
 }
+}
+
+Widget _npsInfoCard({required String title, required String description}) {
+  return Container(
+    height: 98,
+    padding: const EdgeInsets.all(12),
+    decoration: BoxDecoration(
+      color: Colors.black,
+      border: Border.all(
+        color: const Color(0xFF242424),
+        width: 2,
+      ),
+      borderRadius: BorderRadius.circular(8),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AppText(
+          title,
+          variant: AppTextVariant.bodySmall,
+          weight: AppTextWeight.bold,
+          colorType: AppTextColorType.primary,
+        ),
+        const SizedBox(height: 4),
+        AppText(
+          description,
+          variant: AppTextVariant.bodySmall,
+          weight: AppTextWeight.regular,
+          colorType: AppTextColorType.primary,
+        ),
+      ],
+    ),
+  );
 }
