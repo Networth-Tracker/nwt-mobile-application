@@ -338,6 +338,7 @@ class _DashboardState extends State<Dashboard>
                           physics: const ClampingScrollPhysics(),
                           slivers: [
                             SliverAppBar(
+                              automaticallyImplyLeading: false,
                               floating: false,
                               backgroundColor: AppColors.darkCardBG,
                               flexibleSpace: FlexibleSpaceBar(
@@ -504,6 +505,7 @@ class _DashboardState extends State<Dashboard>
                             ),
 
                             SliverAppBar(
+                              automaticallyImplyLeading: false,
                               key: _targetKey,
                               backgroundColor: AppColors.darkCardBG,
                               expandedHeight: 302,
