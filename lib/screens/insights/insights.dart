@@ -49,22 +49,16 @@ class _InsightsScreenState extends State<InsightsScreen> {
             children: [
               const SizedBox(height: 16),
               FundDetailsWidget(
-                invested: '₹1,50,000',
-                current: '₹1,65,000',
-                gain: '₹15,000',
-                gainPercentage: '+10%',
                 expenseRatio: '1.10%',
-                folioNo: '123456789',
-                turnover: '0.45%',
+                churnValue: '10%',
                 investmentStyle: 'Large Growth',
                 fundManager: 'R. Janakiraman',
                 aum: '₹1,70,50,000',
                 exitLoad: '1% (90 days)',
-                investedSince: '12 Jan, 2022',
               ),
               const SipDetailsWidget(
-                sipAmount: '₹1,000',
-                sipDates: '1st',
+                minimumSip: '₹1,000',
+                maximumSip: '₹1,000',
                 frequency: 'Monthly, Quarterly',
                 lockInPeriod: 'None',
               ),
@@ -104,11 +98,8 @@ class _InsightsScreenState extends State<InsightsScreen> {
               ),
               DividendHistoryWidget(
                 dividendItems: [
-                  DividendItem(
-                    plan: 'IDCW',
-                    recordDate: '25, May 2025',
-                    dividend: '13.480',
-                  ),
+                  DividendItem(recordDate: '25, May 2025', dividend: '13.480'),
+                  DividendItem(recordDate: '25, May 2025', dividend: '13.480'),
                 ],
               ),
               TopHoldingsWidget(

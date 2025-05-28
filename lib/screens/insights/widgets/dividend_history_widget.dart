@@ -4,15 +4,10 @@ import 'package:nwt_app/widgets/common/custom_accordion.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 
 class DividendItem {
-  final String plan;
   final String recordDate;
   final String dividend;
 
-  const DividendItem({
-    required this.plan,
-    required this.recordDate,
-    required this.dividend,
-  });
+  const DividendItem({required this.recordDate, required this.dividend});
 }
 
 class DividendHistoryWidget extends StatelessWidget {
@@ -38,16 +33,6 @@ class DividendHistoryWidget extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 12.0),
             child: Row(
               children: [
-                Expanded(
-                  flex: 1,
-                  child: AppText(
-                    'Plan',
-                    variant: AppTextVariant.bodyMedium,
-                    customColor: textColor,
-                    weight: AppTextWeight.medium,
-                    colorType: AppTextColorType.secondary,
-                  ),
-                ),
                 Expanded(
                   flex: 2,
                   child: AppText(
@@ -90,15 +75,6 @@ class DividendHistoryWidget extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            flex: 1,
-            child: AppText(
-              item.plan,
-              variant: AppTextVariant.bodyLarge,
-              weight: AppTextWeight.semiBold,
-              customColor: valueColor,
-            ),
-          ),
-          Expanded(
             flex: 2,
             child: AppText(
               item.recordDate,
@@ -111,7 +87,7 @@ class DividendHistoryWidget extends StatelessWidget {
             flex: 2,
             child: AppText(
               item.dividend,
-              variant: AppTextVariant.bodyLarge,
+              variant: AppTextVariant.bodyMedium,
               weight: AppTextWeight.semiBold,
               customColor: valueColor,
             ),
