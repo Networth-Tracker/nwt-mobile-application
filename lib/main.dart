@@ -10,7 +10,7 @@ import 'package:nwt_app/constants/theme.dart';
 import 'package:nwt_app/controllers/theme_controller.dart';
 import 'package:nwt_app/controllers/user_controller.dart';
 import 'package:nwt_app/firebase_options.dart';
-import 'package:nwt_app/screens/insights/insights.dart';
+import 'package:nwt_app/screens/splash.dart';
 import 'package:nwt_app/services/app_notificationpermission/notification_permission.dart';
 import 'package:nwt_app/services/auth/auth_flow.dart';
 import 'package:nwt_app/services/global_storage.dart';
@@ -44,14 +44,14 @@ void main() async {
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // Initialize Firebase Remote Config
-  await FirebaseRemoteConfig.instance.setConfigSettings(
-    RemoteConfigSettings(
-      fetchTimeout: const Duration(minutes: 1),
-      minimumFetchInterval: const Duration(hours: 1),
-    ),
-  );
-  await FirebaseRemoteConfig.instance.fetchAndActivate();
+  // // Initialize Firebase Remote Config
+  // await FirebaseRemoteConfig.instance.setConfigSettings(
+  //   RemoteConfigSettings(
+  //     fetchTimeout: const Duration(minutes: 1),
+  //     minimumFetchInterval: const Duration(hours: 1),
+  //   ),
+  // );
+  // await FirebaseRemoteConfig.instance.fetchAndActivate();
 
   // Initialize controllers and services
   await Get.putAsync(() => ConnectivityService().init());
@@ -126,7 +126,7 @@ class MainEntry extends StatelessWidget {
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: themeController.themeMode,
-        home: InsightsScreen(),
+        home: SplashScreen(),
         builder: (context, child) {
           return MediaQuery(
             data: MediaQuery.of(
