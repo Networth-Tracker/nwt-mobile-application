@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/sizing.dart';
+import 'package:nwt_app/screens/insights/widgets/asset_allocation_widget.dart';
 import 'package:nwt_app/screens/insights/widgets/dividend_history_widget.dart';
 import 'package:nwt_app/screens/insights/widgets/fund_details_widget.dart';
+import 'package:nwt_app/screens/insights/widgets/riskometer_widget.dart';
 import 'package:nwt_app/screens/insights/widgets/sector_allocation_widget.dart';
 import 'package:nwt_app/screens/insights/widgets/sip_details_widget.dart';
 import 'package:nwt_app/screens/insights/widgets/top_holdings_widget.dart';
@@ -61,6 +63,26 @@ class _InsightsScreenState extends State<InsightsScreen> {
                 maximumSip: '₹1,000',
                 frequency: 'Monthly, Quarterly',
                 lockInPeriod: 'None',
+              ),
+              const RiskometerWidget(riskLevel: 'Very High', riskValue: 30),
+              AssetAllocationWidget(
+                assetItems: [
+                  AssetItem(
+                    name: 'Equity',
+                    percentage: 65,
+                    color: const Color(0xFF36D399),
+                  ),
+                  AssetItem(
+                    name: 'Debt',
+                    percentage: 20,
+                    color: const Color(0xFF8B5CF6),
+                  ),
+                  AssetItem(
+                    name: 'Hybrid',
+                    percentage: 15,
+                    color: const Color(0xFFFFC000),
+                  ),
+                ],
               ),
               SectorAllocationWidget(
                 sectorItems: [
