@@ -6,6 +6,7 @@ import 'package:nwt_app/constants/storage_keys.dart';
 import 'package:nwt_app/screens/dashboard/dashboard.dart';
 import 'package:nwt_app/screens/fetch-holdings/layouts/layouts.dart';
 import 'package:nwt_app/screens/fetch-holdings/types/mf_fetching.dart';
+import 'package:nwt_app/services/assets/investments/investments.dart';
 import 'package:nwt_app/services/global_storage.dart';
 import 'package:nwt_app/services/mf_onboarding/mf_onboarding_service.dart';
 import 'package:sms_autofill/sms_autofill.dart';
@@ -24,44 +25,44 @@ class _MutualFundHoldingsJourneyScreenState
   // Services
   final MFOnboardingService _mfOnboardingService = MFOnboardingService();
 
-  // CAS details from API response
+  // State variables
   DecryptedCASDetails? _casDetails;
   String _token = '';
-
-  // Current step in the journey
   int _currentStep = 0;
   bool _isAnimating = false;
   String? _errorMessage;
 
-  // OTP related variables
+  // OTP related
   final List<TextEditingController> _controllers = List.generate(
     6,
     (index) => TextEditingController(),
   );
-
   final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
-  int _activeFieldIndex = 0;
   final List<bool> _fieldFilled = List.generate(6, (index) => false);
+  int _activeFieldIndex = 0;
+  String get _otpCode => _controllers.map((c) => c.text).join();
 
-  // Animation controllers for OTP fields
+  // Animation
   late List<AnimationController> _animationControllers;
   late List<Animation<double>> _scaleAnimations;
 
-  // Timer for resend OTP
+  // Timers
   Timer? _resendTimer;
+  Timer? _startingJourneyTimer;
+  Timer? _loadingMinimumTimer;
+
+  // Timing control
   int _timeLeft = 60;
   bool _canResendOTP = false;
-
-  // Get the complete OTP code
-  String get _otpCode {
-    return _controllers.map((controller) => controller.text).join();
-  }
 
   @override
   void initState() {
     super.initState();
+    _initializeAnimations();
+    _startInitialJourney();
+  }
 
-    // Initialize animation controllers for OTP fields
+  void _initializeAnimations() {
     _animationControllers = List.generate(
       6,
       (index) => AnimationController(
@@ -71,47 +72,56 @@ class _MutualFundHoldingsJourneyScreenState
     );
 
     _scaleAnimations =
-        _animationControllers.map((controller) {
-          return Tween<double>(begin: 1.0, end: 1.1).animate(
-            CurvedAnimation(parent: controller, curve: Curves.easeInOut),
-          );
-        }).toList();
+        _animationControllers
+            .map(
+              (controller) => Tween<double>(begin: 1.0, end: 1.2).animate(
+                CurvedAnimation(parent: controller, curve: Curves.easeInOut),
+              ),
+            )
+            .toList();
+  }
 
-    // Set up SMS listener for OTP step when it's shown
-    if (_currentStep == 1) {
-      _setupSmsListener();
-      _startResendTimer();
-    }
+  void _startInitialJourney() {
+    // Show starting layout for 5 seconds
+    _startingJourneyTimer = Timer(const Duration(seconds: 5), () {
+      if (mounted) {
+        _navigateToStep(1); // Move to OTP layout
+      }
+    });
   }
 
   @override
   void dispose() {
-    // Dispose controllers and focus nodes
-    for (var controller in _controllers) {
-      controller.dispose();
-    }
-    for (var node in _focusNodes) {
-      node.dispose();
-    }
-    for (var controller in _animationControllers) {
-      controller.dispose();
-    }
-    _resendTimer?.cancel();
-    cancel(); // Cancel SMS auto-fill
+    _cleanupResources();
     super.dispose();
   }
 
-  // Method to set up SMS listener for OTP auto-fill
-  void _setupSmsListener() async {
-    try {
-      await SmsAutoFill().getAppSignature;
-      listenForCode();
-    } catch (e) {
-      debugPrint('Error setting up SMS listener: $e');
+  void _cleanupResources() {
+    // Dispose all text editing controllers
+    for (final controller in _controllers) {
+      controller.dispose();
     }
+
+    // Dispose all focus nodes
+    for (final node in _focusNodes) {
+      node.dispose();
+    }
+
+    // Dispose all animation controllers
+    for (final controller in _animationControllers) {
+      controller.dispose();
+    }
+
+    // Cancel all timers
+    _resendTimer?.cancel();
+    _startingJourneyTimer?.cancel();
+    _loadingMinimumTimer?.cancel();
+
+    // Cancel any pending auto-fill operations
+    cancel();
   }
 
-  // Called when SMS code is received
+  // OTP Auto-fill
   @override
   void codeUpdated() {
     if (code != null && code!.length == 6) {
@@ -119,318 +129,203 @@ class _MutualFundHoldingsJourneyScreenState
     }
   }
 
-  // Auto-fill OTP fields with animation - without auto-verification
   void _autoFillOtp(String otp) {
-    if (otp.length == 6) {
-      for (int i = 0; i < 6; i++) {
-        _controllers[i].clear();
-        _fieldFilled[i] = false;
-      }
+    if (otp.length != 6) return;
 
-      for (int i = 0; i < 6; i++) {
-        Future.delayed(Duration(milliseconds: 200 * i), () {
-          if (mounted) {
-            setState(() {
-              _controllers[i].text = otp[i];
-              _fieldFilled[i] = true;
-              _activeFieldIndex = i;
+    // Clear existing OTP
+    for (int i = 0; i < 6; i++) {
+      _controllers[i].clear();
+      _fieldFilled[i] = false;
+    }
 
-              _animationControllers[i].forward().then((_) {
-                if (mounted) {
-                  _animationControllers[i].reverse();
-                }
-              });
-            });
-          }
+    // Fill OTP with animation
+    for (int i = 0; i < 6; i++) {
+      Future.delayed(Duration(milliseconds: 100 * i), () {
+        if (!mounted) return;
 
-          if (i == 5) {
-            Future.delayed(const Duration(milliseconds: 300), () {
-              if (mounted) {
-                for (var controller in _animationControllers) {
-                  controller.forward().then((_) {
-                    if (mounted) {
-                      controller.reverse();
-                    }
-                  });
-                }
-              }
-              // Removed auto-verification
-              // User must click the verify button manually
-            });
-          }
+        setState(() {
+          _controllers[i].text = otp[i];
+          _fieldFilled[i] = true;
+          _activeFieldIndex = i;
+          _animationControllers[i].forward().then(
+            (_) => _animationControllers[i].reverse(),
+          );
         });
-      }
-    }
-  }
 
-  // Start resend timer for OTP
-  void _startResendTimer() {
-    if (mounted) {
-      setState(() {
-        _canResendOTP = false;
-        _timeLeft = 60;
-      });
-    }
-    _resendTimer?.cancel();
-    if (mounted) {
-      _resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-        if (mounted) {
-          setState(() {
-            if (_timeLeft > 0) {
-              _timeLeft--;
-            } else {
-              _canResendOTP = true;
-              timer.cancel();
-            }
-          });
-        } else {
-          timer.cancel();
+        // Auto-submit when all fields are filled
+        if (i == 5) {
+          _verifyOTP(otp);
         }
       });
     }
   }
 
-  // Method to receive CAS details from StartingJourneyLayout
-  void setCasDetails(DecryptedCASDetails? details, String token) {
-    if (mounted) {
-      setState(() {
-        _casDetails = details;
-        _token = token;
-      });
-
-      if (details != null) {
-        if (mounted) {
-          Future.delayed(const Duration(milliseconds: 5000), () {
-            if (mounted) {
-              _goToNextStep();
-            }
-          });
-        }
-      }
-    }
-  }
-
-  // Handle OTP verification
+  // OTP Verification
   Future<void> _verifyOTP(String otp) async {
-    if (_casDetails == null) return;
+    if (_casDetails == null || otp.length != 6) return;
 
-    // Show loading layout immediately
-    if (mounted) {
-      setState(() {
-        _currentStep = 2; // Show loading layout
-        _errorMessage = null;
-      });
-    }
-
-    // Start the 7-second timer immediately
-    // We'll use a Completer to track when the timer is done
-    final timerCompleter = Completer<void>();
-    Future.delayed(const Duration(seconds: 7), () {
-      if (!timerCompleter.isCompleted) {
-        timerCompleter.complete();
-      }
-    });
-
-    // Variable to track if we have a successful response
-    bool hasSuccessfulResponse = false;
+    setState(() => _errorMessage = null);
 
     try {
-      // Start verification process
-      final response = await _mfOnboardingService.verifyOTP(
+      final result = await _mfOnboardingService.verifyOTP(
         token: _token,
         casDetails: _casDetails!,
         otp: otp,
-        onLoading: (isLoading) {
-          // Already showing loading layout
-        },
-        onError: (message) {
-          if (mounted) {
-            setState(() {
-              // Set error message immediately to trigger UI update
-              _errorMessage = message;
-
-              // Go back to OTP layout to show the error
-              _currentStep = 1; // Go back to OTP verification step
-            });
-          }
-        },
+        onLoading: (_) {},
+        onError: (message) => _handleVerificationError(message),
       );
 
-      // Process the response
-      if (response != null) {
-        // Check if response was successful using the success getter
-        if (response.success) {
-          // Store savings value from response
-          StorageService.write(
-            StorageKeys.MF_SAVINGS_KEY,
-            response.data?.switchsavings ?? 0,
-          );
-
-          // Mark that we have a successful response
-          hasSuccessfulResponse = true;
-        } else {
-          // Handle unsuccessful response (status not 200/201)
-          if (mounted) {
-            setState(() {
-              _errorMessage =
-                  response.message.isNotEmpty
-                      ? response.message
-                      : 'Verification failed. Please try again.';
-
-              // Go back to OTP layout to show the error
-              _currentStep = 1; // Go back to OTP verification step
-            });
-          }
-        }
+      if (result?.success == true) {
+        _handleVerificationSuccess(result!);
       } else {
-        // Handle null response
-        if (mounted) {
-          setState(() {
-            _errorMessage = 'Failed to verify OTP. Please try again.';
-
-            // Go back to OTP layout to show the error
-            _currentStep = 1; // Go back to OTP verification step
-          });
-        }
+        _handleVerificationError(result?.message);
       }
     } catch (e) {
-      if (mounted) {
-        setState(() {
-          _errorMessage = 'An unexpected error occurred. Please try again.';
-
-          // Go back to OTP layout to show the error
-          _currentStep = 1; // Go back to OTP verification step
-        });
-      }
-    }
-
-    // If we have a successful response, wait for the timer to complete
-    // before navigating to the dashboard
-    if (hasSuccessfulResponse) {
-      // Wait for the timer to complete
-      Future.delayed(const Duration(seconds: 7), () {
-        if (mounted) {
-          Get.offAll(() => const Dashboard());
-        }
-      });
+      _handleVerificationError('An unexpected error occurred');
     }
   }
 
-  // Resend OTP
-  void _resendOTP() async {
-    if (_canResendOTP && mounted) {
-      try {
-        // Clear any previous error messages
-        if (mounted) {
-          setState(() {
-            _errorMessage = null;
-          });
-        }
+  Future<void> _handleVerificationSuccess(
+    MfCentralVerifyOtpResponse result,
+  ) async {
+    if (!mounted) return;
 
-        final result = await _mfOnboardingService.sendOTP(
-          onLoading: (isLoading) {
-            // OTP layout handles its own loading state
-          },
-          onError: (message) {
-            if (mounted) {
-              setState(() {
-                _errorMessage = message;
-              });
-            }
-          },
-        );
+    setState(() {
+      _currentStep = 2; // Show loading layout
+    });
 
-        if (mounted) {
-          // Update CAS details if available
-          if (result?.data.decryptedcasdetails != null) {
-            setState(() {
-              _casDetails = result?.data.decryptedcasdetails;
-              _token = result?.data.token ?? '';
-            });
-          }
+    // Store savings data if available
+    if (result.data != null) {
+      StorageService.write(
+        StorageKeys.MF_SAVINGS_KEY,
+        result.data!.switchsavings ?? 0,
+      );
+    }
 
-          // Reset OTP fields
-          setState(() {
-            for (int i = 0; i < 6; i++) {
-              _controllers[i].clear();
-              _fieldFilled[i] = false;
-            }
-            _activeFieldIndex = 0;
-          });
+    // Start the minimum loading timer (7 seconds)
+    await Future.delayed(const Duration(seconds: 7));
 
-          // Note: Timer is now started in the OTP layout itself
-          // No need to call _startResendTimer() here
-
-          // Set up SMS listener again
-          _setupSmsListener();
-        }
-      } catch (e) {
-        if (mounted) {
-          setState(() {
-            _errorMessage = 'An unexpected error occurred. Please try again.';
-          });
-        }
-      }
+    if (mounted) {
+      // Navigate to dashboard after minimum wait time
+      Get.offAll(() => const Dashboard());
     }
   }
 
-  // Navigate to a specific step with animation
+  void _handleVerificationError(String? message) {
+    if (!mounted) return;
+
+    setState(() {
+      _errorMessage = message ?? 'Failed to verify OTP. Please try again.';
+      _currentStep = 1; // Go back to OTP screen
+    });
+  }
+
+  // Navigation
   void _navigateToStep(int step) {
     if (_isAnimating ||
         step == _currentStep ||
         step < 0 ||
         step > 2 ||
-        !mounted)
+        !mounted) {
       return;
-
-    if (mounted) {
-      setState(() {
-        _isAnimating = true;
-      });
     }
 
-    Future.delayed(const Duration(milliseconds: 500), () {
-      if (mounted) {
-        setState(() {
-          _currentStep = step;
-          _isAnimating = false;
-        });
+    setState(() => _isAnimating = true);
 
-        // If we're now on the OTP step, set up the SMS listener
-        if (_currentStep == 1) {
-          _setupSmsListener();
-          _startResendTimer();
-        }
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (!mounted) return;
+
+      setState(() {
+        _currentStep = step;
+        _isAnimating = false;
+      });
+
+      if (step == 1) {
+        _setupSmsListener();
+        _startResendTimer();
       }
     });
   }
 
-  // Go to next step with animation
+  // SMS Listener
+  Future<void> _setupSmsListener() async {
+    try {
+      await SmsAutoFill().getAppSignature;
+      listenForCode();
+    } catch (e) {
+      debugPrint('SMS Listener Error: $e');
+    }
+  }
+
+  // OTP Resend
+  void _startResendTimer() {
+    if (!mounted) return;
+
+    setState(() {
+      _timeLeft = 60;
+      _canResendOTP = false;
+    });
+
+    _resendTimer?.cancel();
+    _resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+
+      setState(() {
+        if (_timeLeft > 0) {
+          _timeLeft--;
+        } else {
+          _canResendOTP = true;
+          timer.cancel();
+        }
+      });
+    });
+  }
+
+  Future<void> _resendOTP() async {
+    if (!_canResendOTP || !mounted) return;
+
+    setState(() => _errorMessage = null);
+
+    try {
+      final result = await _mfOnboardingService.sendOTP(
+        onLoading: (_) {},
+        onError: (message) => setState(() => _errorMessage = message),
+      );
+
+      if (mounted && result?.data.decryptedcasdetails != null) {
+        setState(() {
+          _casDetails = result!.data.decryptedcasdetails;
+          _token = result.data.token ?? '';
+        });
+        _startResendTimer();
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _errorMessage = 'Failed to resend OTP');
+      }
+    }
+  }
+
+  // Step Navigation Helpers
   void _goToNextStep() {
-    if (_currentStep < 2) {
-      _navigateToStep(_currentStep + 1);
-    }
+    if (_currentStep < 2) _navigateToStep(_currentStep + 1);
   }
 
-  // Skip to dashboard
-  void _skipToDashboard() {
-    // Navigate to dashboard using Get.offAll to clear the navigation stack
-    Get.offAll(() => const Dashboard());
-  }
-
-  // Go to previous step with animation
   void _goToPreviousStep() {
-    if (_currentStep > 0) {
-      _navigateToStep(_currentStep - 1);
-    }
+    if (_currentStep > 0) _navigateToStep(_currentStep - 1);
   }
 
+  void _skipToDashboard() => Get.offAll(() => const Dashboard());
+
+  // UI Builders
   @override
   Widget build(BuildContext context) {
     return Scaffold(body: SafeArea(child: _buildCurrentStep()));
   }
 
-  // Build the current step based on _currentStep
   Widget _buildCurrentStep() {
     switch (_currentStep) {
       case 0:
@@ -438,7 +333,14 @@ class _MutualFundHoldingsJourneyScreenState
           isAnimating: _isAnimating,
           onNext: _goToNextStep,
           onSkip: _skipToDashboard,
-          onCasDetailsReceived: setCasDetails,
+          onCasDetailsReceived: (details, token) {
+            if (details != null) {
+              setState(() {
+                _casDetails = details;
+                _token = token;
+              });
+            }
+          },
         );
       case 1:
         return OtpVerificationLayout(
@@ -465,7 +367,7 @@ class _MutualFundHoldingsJourneyScreenState
           isAnimating: _isAnimating,
           onNext: _goToNextStep,
           onSkip: _skipToDashboard,
-          onCasDetailsReceived: setCasDetails,
+          onCasDetailsReceived: (_, __) {},
         );
     }
   }

@@ -588,6 +588,7 @@ class _PhoneOTPVerifyScreenState extends State<PhoneOTPVerifyScreen>
           mainAxisSize: MainAxisSize.min,
           children: [
             AnimatedErrorMessage(errorMessage: _errorMessage),
+            SizedBox(height: 10),
             Row(
               children: [
                 Expanded(

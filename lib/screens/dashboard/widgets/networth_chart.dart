@@ -135,121 +135,88 @@ class NetworthChart extends StatelessWidget {
               ),
             ),
 
-            // Date range
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  AppText(
-                    "Mar 2024",
-                    variant: AppTextVariant.tiny,
-                    weight: AppTextWeight.medium,
-                    colorType: AppTextColorType.gray,
-                  ),
-                  AppText(
-                    "May 2026",
-                    variant: AppTextVariant.tiny,
-                    weight: AppTextWeight.medium,
-                    colorType: AppTextColorType.gray,
-                  ),
-                ],
-              ),
-            ),
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            //   child: Row(
+            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //     children: [
+            //       AppText(
+            //         "Mar 2024",
+            //         variant: AppTextVariant.tiny,
+            //         weight: AppTextWeight.medium,
+            //         colorType: AppTextColorType.gray,
+            //       ),
+            //       AppText(
+            //         "May 2026",
+            //         variant: AppTextVariant.tiny,
+            //         weight: AppTextWeight.medium,
+            //         colorType: AppTextColorType.gray,
+            //       ),
+            //     ],
+            //   ),
+            // ),
           ],
         );
       },
     );
   }
 
-  // Calculate the position of the "Today" indicator based on the current date
   double _getTodayPosition(BuildContext context) {
-    // Get current date
     final now = DateTime.now();
 
-    // Define start and end dates (from Mar 2024 to May 2026)
     final startDate = DateTime(2024, 3, 1);
     final endDate = DateTime(2026, 5, 31);
 
-    // Calculate total duration in days
     final totalDuration = endDate.difference(startDate).inDays;
-
-    // Calculate days elapsed since start date
     final daysElapsed = now.difference(startDate).inDays;
 
-    // Calculate position as a percentage of the total duration
     final percentage = daysElapsed / totalDuration;
 
-    // Calculate the chart width (accounting for padding)
-    final chartWidth =
-        MediaQuery.of(context).size.width - 40; // Subtract horizontal padding
-
-    // Calculate the position from right
-    // The chart area is drawn from left to right, but we position from right
-    // We need to convert the X position (0-10 scale) to screen coordinates
-    final xPosition = percentage * 10; // Same calculation as in mainData()
+    final chartWidth = MediaQuery.of(context).size.width - 40;
+    final xPosition = percentage * 10;
     final rightPosition = chartWidth * (0.9 - (xPosition / 11));
 
     return rightPosition;
   }
 
   LineChartData mainData() {
-    // Calculate current position on X-axis based on current date
     final now = DateTime.now();
 
-    // Define default start and end dates if projection data is not available
     DateTime startDate;
     DateTime endDate;
 
-    // Determine actual date range from projection data
     if (currentprojection != null &&
         currentprojection!.isNotEmpty &&
         futureprojection != null &&
         futureprojection!.isNotEmpty) {
-      // Sort current projection by date
       final sortedCurrentProjection = List<Currentprojection>.from(
         currentprojection!,
       );
       sortedCurrentProjection.sort((a, b) => a.date.compareTo(b.date));
-
-      // Sort future projection by date
       final sortedFutureProjection = List<Futureprojection>.from(
         futureprojection!,
       );
       sortedFutureProjection.sort((a, b) => a.date.compareTo(b.date));
 
-      // Use actual start and end dates from data
       startDate = sortedCurrentProjection.first.date;
       endDate = sortedFutureProjection.last.date;
     } else {
-      // Default date range if no projection data
       startDate = DateTime.now().subtract(const Duration(days: 365));
       endDate = DateTime.now().add(const Duration(days: 365 * 2));
     }
 
-    // Calculate total duration for X-axis scaling
     final totalDuration = endDate.difference(startDate).inDays;
 
-    // Find position of today on the X-axis
     final daysElapsed = now.difference(startDate).inDays;
     final todayPercentage = daysElapsed / totalDuration;
-
-    // Map today's position to X-axis (0-10 scale)
     var currentValueX = todayPercentage * 10;
 
-    // Default Y value if no projection data available
-    double currentValueY =
-        currentNetworth / 1000000; // Convert to millions for better scale
+    double currentValueY = currentNetworth / 1000000;
 
-    // Set fixed min and max values for the chart
-    // This ensures consistent scaling regardless of data values
     const double minY = 68;
     const double maxY = 84;
 
-    // We'll normalize values to fit within our chart range
-    // First, find the maximum value across both datasets for proper scaling
-    double maxDataValue =
-        currentNetworth / 1000000; // Start with current networth
+    double maxDataValue = currentNetworth / 1000000;
 
     if (currentprojection != null && currentprojection!.isNotEmpty) {
       for (var point in currentprojection!) {
@@ -259,25 +226,20 @@ class NetworthChart extends StatelessWidget {
 
     if (futureprojection != null && futureprojection!.isNotEmpty) {
       for (var point in futureprojection!) {
-        if (point.projectedValue > maxDataValue)
+        if (point.projectedValue > maxDataValue) {
           maxDataValue = point.projectedValue;
+        }
       }
     }
 
-    // Add 10% padding to max value for better visualization
     maxDataValue = maxDataValue * 1.1;
 
-    // Generate data points for the chart
     final List<FlSpot> actualSpots = [];
     final List<FlSpot> projectionSpots = [];
-
-    // Find the point closest to today to ensure a smooth transition between actual and projected data
     FlSpot? todaySpot;
 
-    // Combine and sort all projection data by date for proper timeline plotting
     List<Map<String, dynamic>> allProjections = [];
 
-    // Add current projections (with type identifier)
     if (currentprojection != null && currentprojection!.isNotEmpty) {
       for (var point in currentprojection!) {
         allProjections.add({
@@ -288,7 +250,6 @@ class NetworthChart extends StatelessWidget {
       }
     }
 
-    // Add future projections (with type identifier)
     if (futureprojection != null && futureprojection!.isNotEmpty) {
       for (var point in futureprojection!) {
         allProjections.add({
@@ -299,34 +260,26 @@ class NetworthChart extends StatelessWidget {
       }
     }
 
-    // Sort all projections by date
     allProjections.sort(
       (a, b) => (a['date'] as DateTime).compareTo(b['date'] as DateTime),
     );
 
-    // Find the point closest to today to ensure a smooth transition
     Map<String, dynamic>? closestToToday;
     int closestDayDifference = 999999;
 
-    // Process all projections and add to appropriate spots list
     for (var point in allProjections) {
       final date = point['date'] as DateTime;
       final value = point['value'] as double;
       final type = point['type'] as String;
 
-      // Calculate position on chart
       final daysSinceStart = date.difference(startDate).inDays;
       final xPosition = (daysSinceStart / totalDuration) * 10;
-      // Map the actual value to our chart's Y range
       final yValue = minY + ((value / maxDataValue) * (maxY - minY));
 
-      // Determine which list to add to based on date and type
       if (date.isBefore(now)) {
-        // Only use current projection data for dates before today
         if (type == 'current') {
           actualSpots.add(FlSpot(xPosition, yValue));
 
-          // Check if this point is closest to today
           final dayDifference = now.difference(date).inDays.abs();
           if (dayDifference < closestDayDifference) {
             closestDayDifference = dayDifference;
@@ -336,14 +289,12 @@ class NetworthChart extends StatelessWidget {
           }
         }
       } else {
-        // Only use future projection data for dates after today
         if (type == 'future') {
           projectionSpots.add(FlSpot(xPosition, yValue));
         }
       }
     }
 
-    // If we found a point closest to today, use it as the transition point
     if (closestToToday != null) {
       final date = closestToToday['date'] as DateTime;
       final value = closestToToday['value'] as double;
@@ -353,7 +304,6 @@ class NetworthChart extends StatelessWidget {
       final yValue = minY + ((value / maxDataValue) * (maxY - minY));
       todaySpot = FlSpot(xPosition, yValue);
     } else {
-      // Fallback to generated data if no projection data available
       final pointCount = (currentValueX / 10 * 6).round() + 1;
       for (int i = 0; i < pointCount; i++) {
         final x = i * (currentValueX / (pointCount - 1));
@@ -364,7 +314,6 @@ class NetworthChart extends StatelessWidget {
         actualSpots.add(FlSpot(x, y));
       }
 
-      // Use the last actual point as today's spot
       if (actualSpots.isNotEmpty) {
         todaySpot = actualSpots.last;
       } else {
@@ -373,15 +322,9 @@ class NetworthChart extends StatelessWidget {
       }
     }
 
-    // Make sure we have a today spot for transition
-    todaySpot ??= FlSpot(currentValueX, currentValueY);
-
-    // Start projection spots with today's spot for a smooth transition
     projectionSpots.add(todaySpot);
 
-    // If we have no future projection points from the data, generate some
     if (projectionSpots.length <= 1) {
-      // Fallback to generated projection if no future projection data available
       final remainingPoints = 5;
       final remainingXRange = 10 - currentValueX;
       for (int i = 1; i <= remainingPoints; i++) {
@@ -391,7 +334,6 @@ class NetworthChart extends StatelessWidget {
       }
     }
 
-    // Format dates for X-axis display
     String formatDateForAxis(DateTime date) {
       final months = [
         'Jan',
@@ -419,13 +361,13 @@ class NetworthChart extends StatelessWidget {
         horizontalInterval: 4,
         getDrawingVerticalLine:
             (value) => FlLine(
-              color: Colors.grey.withOpacity(0.15),
+              color: Colors.grey.withValues(alpha: 0.15),
               strokeWidth: 1,
               dashArray: [5, 5],
             ),
         getDrawingHorizontalLine:
             (value) => FlLine(
-              color: Colors.grey.withOpacity(0.15),
+              color: Colors.grey.withValues(alpha: 0.15),
               strokeWidth: 1,
               dashArray: [5, 5],
             ),
@@ -441,9 +383,7 @@ class NetworthChart extends StatelessWidget {
             reservedSize: 22,
             interval: 2,
             getTitlesWidget: (value, meta) {
-              // Only show labels at specific intervals
               if (value == 0 || value == 5 || value == 10) {
-                // Calculate the date for this X position
                 final percentage = value / 10;
                 final days = (percentage * totalDuration).round();
                 final date = startDate.add(Duration(days: days));
@@ -473,7 +413,7 @@ class NetworthChart extends StatelessWidget {
       maxX: 10,
       minY: minY,
       maxY: maxY,
-      clipData: FlClipData.all(), // Ensure chart is properly clipped
+      clipData: FlClipData.all(),
       lineTouchData: LineTouchData(
         enabled: true,
         handleBuiltInTouches: true,
@@ -482,15 +422,12 @@ class NetworthChart extends StatelessWidget {
           fitInsideVertically: true,
           getTooltipItems: (touchedSpots) {
             return touchedSpots.map((touchedSpot) {
-              // Calculate the date for this X position
               final percentage = touchedSpot.x / 10;
               final days = (percentage * totalDuration).round();
               final date = startDate.add(Duration(days: days));
-
-              // Format the date and value
               final formattedDate = formatDateForAxis(date);
               final formattedValue = CurrencyFormatter.formatRupee(
-                touchedSpot.y * 1000000, // Convert back to actual value
+                touchedSpot.y * 1000000,
               );
 
               return LineTooltipItem(
@@ -505,18 +442,17 @@ class NetworthChart extends StatelessWidget {
         ),
       ),
       lineBarsData: [
-        // Actual growth line
         LineChartBarData(
           spots: actualSpots,
           isCurved: true,
-          curveSmoothness: 0.35, // Smoother curve
+          curveSmoothness: 0.35,
           color: AppColors.darkPrimary,
           barWidth: 3.5,
           isStrokeCapRound: true,
           dotData: FlDotData(show: false),
           belowBarData: BarAreaData(
             show: true,
-            cutOffY: 0, // Ensure the fill extends to the bottom
+            cutOffY: 0,
             applyCutOffY: true,
             gradient: LinearGradient(
               begin: Alignment.topCenter,
@@ -534,7 +470,6 @@ class NetworthChart extends StatelessWidget {
           ),
         ),
 
-        // Projection line
         if (showProjection)
           LineChartBarData(
             spots: projectionSpots,
@@ -544,7 +479,7 @@ class NetworthChart extends StatelessWidget {
             barWidth: 2.5,
             isStrokeCapRound: true,
             dotData: FlDotData(show: false),
-            dashArray: const [5, 5], // Dashed line for projection
+            dashArray: const [5, 5],
             belowBarData: BarAreaData(
               show: true,
               gradient: LinearGradient(

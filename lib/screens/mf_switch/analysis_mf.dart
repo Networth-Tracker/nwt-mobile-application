@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/sizing.dart';
+import 'package:nwt_app/controllers/assets/investments.dart';
+import 'package:nwt_app/screens/assets/investments/types/holdings.dart';
+import 'package:nwt_app/screens/mf_switch/mf_switch.dart';
+import 'package:nwt_app/utils/currency_formatter.dart';
 import 'package:nwt_app/widgets/common/button_widget.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 
@@ -16,6 +21,28 @@ class AnalysisMutualFund extends StatefulWidget {
 }
 
 class _AnalysisMutualFundState extends State<AnalysisMutualFund> {
+  @override
+  void initState() {
+    super.initState();
+    _fetchMutualFundAnalysis();
+  }
+
+  final InvestmentController investmentController = Get.put(
+    InvestmentController(),
+  );
+  bool isHoldingLoading = true;
+  Future<void> _fetchMutualFundAnalysis() async {
+    await investmentController.getHoldings(
+      onLoading: (isLoading) {
+        if (mounted) {
+          setState(() {
+            isHoldingLoading = isLoading;
+          });
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,178 +67,191 @@ class _AnalysisMutualFundState extends State<AnalysisMutualFund> {
         ),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.only(
-              left: AppSizing.scaffoldHorizontalPadding,
-              right: AppSizing.scaffoldHorizontalPadding,
-              bottom: MediaQuery.of(context).padding.bottom,
-            ),
-            child: Column(
-              spacing: 16,
-              children: [
-                Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: AppColors.darkInputBackground,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.darkButtonBorder),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 20,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      AppText(
-                        "Mutual fund analysis",
-                        variant: AppTextVariant.headline5,
-                        weight: AppTextWeight.bold,
-                        colorType: AppTextColorType.primary,
-                      ),
-                      const SizedBox(height: 8),
-                      AppText(
-                        "We saw that you have two regular mutual fund plans. Just so you know, regular plans come with distributor commissions, while direct fund plans don’t have any commissions.",
-                        variant: AppTextVariant.headline6,
-                        weight: AppTextWeight.regular,
-                        colorType: AppTextColorType.primary,
-                      ),
-                    ],
-                  ),
+        child: GetBuilder<InvestmentController>(
+          builder: (investmentController) {
+            return SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.only(
+                  left: AppSizing.scaffoldHorizontalPadding,
+                  right: AppSizing.scaffoldHorizontalPadding,
+                  bottom: MediaQuery.of(context).padding.bottom,
                 ),
-                Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: AppColors.darkInputBackground,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.linkColor),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 20,
-                  ),
-                  child: Row(
-                    children: [
-                      SvgPicture.asset("assets/svgs/mf_switch/mf_advice.svg"),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            RichText(
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: "Mutual fund",
-                                    style: TextStyle(
-                                      color: AppColors.linkColor,
-                                      fontSize: 14.sp,
-                                      fontWeight: FontWeight.w600,
-                                      fontFamily: 'Montserrat',
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text: " advice!",
-                                    style: TextStyle(
-                                      color: AppColors.darkPrimary,
-                                      fontSize: 14.sp,
-                                      fontWeight: FontWeight.w600,
-                                      fontFamily: 'Montserrat',
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            RichText(
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text:
-                                        "How about switching to direct mutual fund plans to ",
-                                    style: TextStyle(
-                                      color: AppColors.darkPrimary,
-                                      fontSize: 12.sp,
-                                      fontWeight: FontWeight.w400,
-                                      fontFamily: 'Montserrat',
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text: "Save up to 1.45%",
-                                    style: TextStyle(
-                                      color: AppColors.success,
-                                      fontSize: 14.sp,
-                                      fontWeight: FontWeight.w400,
-                                      fontFamily: 'Montserrat',
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text: ". It could be a smart move!",
-                                    style: TextStyle(
-                                      color: AppColors.darkPrimary,
-                                      fontSize: 14.sp,
-                                      fontWeight: FontWeight.w400,
-                                      fontFamily: 'Montserrat',
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+                child: Column(
+                  spacing: 16,
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: AppColors.darkInputBackground,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: AppColors.darkButtonBorder),
                       ),
-                    ],
-                  ),
-                ),
-                Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: AppColors.darkCardBG,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.darkButtonBorder),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 14,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      AppText(
-                        "Mutual Fund Holdings",
-                        variant: AppTextVariant.headline5,
-                        weight: AppTextWeight.bold,
-                        colorType: AppTextColorType.primary,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 20,
                       ),
-                      const SizedBox(height: 16),
-
-                      Column(
-                        spacing: 12,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          MutualFundAnalysisCard(
-                            logoUrl:
-                                "https://s3-symbol-logo.tradingview.com/kotak-mahindra-bank--big.svg",
-                            schemeName: "Kotak Emerging Equity Scheme",
-                            fundType: "Regular Fund",
-                            investedAmount: "₹45,000",
+                          AppText(
+                            "Mutual fund analysis",
+                            variant: AppTextVariant.headline5,
+                            weight: AppTextWeight.bold,
+                            colorType: AppTextColorType.primary,
                           ),
-                          MutualFundAnalysisCard(
-                            logoUrl:
-                                "https://s3-symbol-logo.tradingview.com/kotak-mahindra-bank--big.svg",
-                            schemeName: "Kotak Emerging Equity Scheme",
-                            fundType: "Direct Fund",
-                            investedAmount: "₹45,000",
+                          const SizedBox(height: 8),
+                          AppText(
+                            "We saw that you have two regular mutual fund plans. Just so you know, regular plans come with distributor commissions, while direct fund plans don't have any commissions.",
+                            variant: AppTextVariant.headline6,
+                            weight: AppTextWeight.regular,
+                            colorType: AppTextColorType.primary,
                           ),
                         ],
                       ),
-                    ],
-                  ),
+                    ),
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: AppColors.darkInputBackground,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: AppColors.linkColor),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 20,
+                      ),
+                      child: Row(
+                        children: [
+                          SvgPicture.asset(
+                            "assets/svgs/mf_switch/mf_advice.svg",
+                            height: 40,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                RichText(
+                                  text: TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text: "Mutual fund",
+                                        style: TextStyle(
+                                          color: AppColors.linkColor,
+                                          fontSize: 14.sp,
+                                          fontWeight: FontWeight.w600,
+                                          fontFamily: 'Montserrat',
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: " advice!",
+                                        style: TextStyle(
+                                          color: AppColors.darkPrimary,
+                                          fontSize: 14.sp,
+                                          fontWeight: FontWeight.w600,
+                                          fontFamily: 'Montserrat',
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                RichText(
+                                  text: TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text:
+                                            "How about switching to direct mutual fund plans to ",
+                                        style: TextStyle(
+                                          color: AppColors.darkPrimary,
+                                          fontSize: 14.sp,
+                                          fontWeight: FontWeight.w400,
+                                          fontFamily: 'Montserrat',
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: "Save up to 1.45%",
+                                        style: TextStyle(
+                                          color: AppColors.success,
+                                          fontSize: 14.sp,
+                                          fontWeight: FontWeight.w400,
+                                          fontFamily: 'Montserrat',
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: ". It could be a smart move!",
+                                        style: TextStyle(
+                                          color: AppColors.darkPrimary,
+                                          fontSize: 14.sp,
+                                          fontWeight: FontWeight.w400,
+                                          fontFamily: 'Montserrat',
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AppText(
+                            "Mutual Fund Holdings",
+                            variant: AppTextVariant.headline5,
+                            weight: AppTextWeight.bold,
+                            colorType: AppTextColorType.primary,
+                          ),
+                          const SizedBox(height: 16),
+                          Column(
+                            spacing: 12,
+                            children: [
+                              if (isHoldingLoading)
+                                ...List.generate(
+                                  5,
+                                  (index) => ShimmerInvestmentCard(),
+                                ),
+                              if (!isHoldingLoading)
+                                ...(investmentController.holdings?.investments
+                                            .where(
+                                              (investment) =>
+                                                  (investment.type ==
+                                                      AssetType.MF) &&
+                                                  (investment.planmode == 'R'),
+                                            ) ??
+                                        [])
+                                    .map((investment) {
+                                      return MutualFundAnalysisCard(
+                                        logoUrl:
+                                            "https://s3-symbol-logo.tradingview.com/kotak-mahindra-bank--big.svg",
+                                        schemeName: investment.name,
+                                        fundType:
+                                            investment.schemeoption ?? 'Direct',
+                                        investedAmount:
+                                            CurrencyFormatter.formatRupee(
+                                              investment.costvalue,
+                                            ),
+                                      );
+                                    }),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-        ),
+              ),
+            );
+          },
+      ),
       ),
       bottomNavigationBar: Container(
         width: double.infinity,
@@ -229,7 +269,12 @@ class _AnalysisMutualFundState extends State<AnalysisMutualFund> {
                 isLoading: false,
                 variant: AppButtonVariant.primary,
                 size: AppButtonSize.large,
-                onPressed: () {},
+                onPressed: () {
+                  Get.to(
+                    () => const MutualFundSwitchScreen(),
+                    transition: Transition.rightToLeft,
+                  );
+                },
               ),
             ),
           ],

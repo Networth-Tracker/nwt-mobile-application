@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/storage_keys.dart';
+import 'package:nwt_app/screens/mf_switch/analysis_mf.dart';
 import 'package:nwt_app/services/global_storage.dart';
+import 'package:nwt_app/utils/currency_formatter.dart';
 import 'package:nwt_app/widgets/common/button_widget.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 
-/// A custom bottom sheet for the dashboard that shows mutual fund data is ready
 class MutualFundBottomSheet extends StatelessWidget {
   const MutualFundBottomSheet({super.key});
 
@@ -26,7 +28,6 @@ class MutualFundBottomSheet extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Handle bar at the top
             Container(
               margin: const EdgeInsets.only(top: 4, bottom: 16),
               width: 40,
@@ -103,7 +104,9 @@ class MutualFundBottomSheet extends StatelessWidget {
                     ),
                   ),
                   TextSpan(
-                    text: StorageService.read(StorageKeys.MF_SAVINGS_KEY).toString(),
+                    text: CurrencyFormatter.formatRupee(
+                      StorageService.read(StorageKeys.MF_SAVINGS_KEY) ?? 0,
+                    ),
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
@@ -127,6 +130,7 @@ class MutualFundBottomSheet extends StatelessWidget {
                 text: 'Check Now',
                 onPressed: () {
                   Navigator.pop(context);
+                  Get.to(() => const AnalysisMutualFund());
                 },
               ),
             ),

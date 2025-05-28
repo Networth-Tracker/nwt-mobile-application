@@ -89,7 +89,7 @@ class Investment {
   double quantity;
   double deltavalue;
   double deltapercentage;
-  Type type;
+  AssetType type;
   String? stockaccountguid;
   String? isin;
   String? symbol;
@@ -296,9 +296,9 @@ class Investment {
   };
 }
 
-enum Type { MF, STOCKS }
+enum AssetType { MF, STOCKS }
 
-final typeValues = EnumValues({"mf": Type.MF, "stocks": Type.STOCKS});
+final typeValues = EnumValues({"mf": AssetType.MF, "stocks": AssetType.STOCKS});
 
 class EnumValues<T> {
   Map<String, T> map;

@@ -78,6 +78,10 @@ class MFOnboardingService {
         ApiURLs.MF_HOLDINGS_VERIFY,
         body,
       );
+      AppLogger.info(
+        'MF OTP Verification Response: ${response?.body.toString()}',
+        tag: 'MFOnboardingService',
+      );
 
       if (response != null) {
         final responseData = jsonDecode(response.body);

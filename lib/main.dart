@@ -16,7 +16,6 @@ import 'package:nwt_app/services/auth/auth_flow.dart';
 import 'package:nwt_app/services/global_storage.dart';
 import 'package:nwt_app/services/network/connectivity_service.dart';
 import 'package:nwt_app/utils/logger.dart';
-import 'package:nwt_app/widgets/dashboard_widgets/top_performers.dart';
 import 'package:nwt_app/widgets/dashboard_widgets/insurance_page.dart';
 import 'package:nwt_app/widgets/network/network_sensitive.dart';
 
