@@ -3,15 +3,15 @@ import 'package:nwt_app/widgets/common/custom_accordion.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 
 class SipDetailsWidget extends StatelessWidget {
-  final String sipAmount;
-  final String sipDates;
+  final String minimumSip;
+  final String maximumSip;
   final String frequency;
   final String lockInPeriod;
 
   const SipDetailsWidget({
     super.key,
-    required this.sipAmount,
-    required this.sipDates,
+    required this.minimumSip,
+    required this.maximumSip,
     required this.frequency,
     required this.lockInPeriod,
   });
@@ -34,10 +34,10 @@ class SipDetailsWidget extends StatelessWidget {
         physics: const NeverScrollableScrollPhysics(),
         children: [
           // SIP Amount
-          _buildGridItem(label: 'SIP Amount', value: sipAmount),
+          _buildGridItem(label: 'Minimum SIP ', value: minimumSip),
 
           // SIP Dates
-          _buildGridItem(label: 'SIP Dates', value: sipDates),
+          _buildGridItem(label: 'Maximum SIP ', value: maximumSip),
 
           // Frequency
           _buildGridItem(label: 'Frequency', value: frequency),
@@ -71,7 +71,7 @@ class SipDetailsWidget extends StatelessWidget {
         const SizedBox(height: 4),
         AppText(
           value,
-          variant: AppTextVariant.bodyLarge,
+          variant: AppTextVariant.bodyMedium,
           weight: AppTextWeight.semiBold,
           colorType: AppTextColorType.primary,
         ),

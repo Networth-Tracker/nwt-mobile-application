@@ -1,36 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:nwt_app/constants/colors.dart';
+import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/widgets/common/custom_accordion.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 
 class FundDetailsWidget extends StatelessWidget {
-  final String invested;
-  final String current;
-  final String gain;
-  final String gainPercentage;
   final String expenseRatio;
-  final String folioNo;
-  final String turnover;
   final String investmentStyle;
   final String fundManager;
   final String aum;
   final String exitLoad;
-  final String investedSince;
+  final String churnValue;
 
   const FundDetailsWidget({
     super.key,
-    required this.invested,
-    required this.current,
-    required this.gain,
-    required this.gainPercentage,
     required this.expenseRatio,
-    required this.folioNo,
-    required this.turnover,
     required this.investmentStyle,
     required this.fundManager,
     required this.aum,
     required this.exitLoad,
-    required this.investedSince,
+    required this.churnValue,
   });
 
   @override
@@ -46,49 +35,49 @@ class FundDetailsWidget extends StatelessWidget {
         children: [
           // Invested
           _buildGridItem(label: 'Expense Ratio', value: expenseRatio),
-          _buildGridItem(label: 'Invested', value: invested),
+          _buildGridItem(label: 'Churn (%)', value: churnValue),
 
           // Current
-          _buildGridItem(label: 'Current', value: current),
-
-          // Expense Ratio
-
-          // Folio No
-          _buildGridItem(label: 'Folio No', value: folioNo),
-
-          // Turnover
-          _buildGridItem(label: 'Turnover', value: turnover),
-
-          // Investment Style
           _buildGridItem(label: 'Investment Style', value: investmentStyle),
 
-          // Fund Manager
+          // Expense Ratio
           _buildGridItem(
             label: 'Fund Manager',
             value: fundManager,
-            suffix: const Icon(
-              Icons.info_outline,
-              size: 16,
-              color: AppColors.darkTextSecondary,
+            suffix: GestureDetector(
+              onTap:
+                  () => _showInfoBottomSheet(
+                    context,
+                    'Fund Manager',
+                    'R. Janakiraman is a seasoned fund manager with over 15 years of experience in equity markets. He specializes in large-cap growth stocks and has consistently delivered above-market returns.',
+                  ),
+              child: const Icon(
+                Icons.info_outline,
+                size: 12,
+                color: AppColors.darkTextSecondary,
+              ),
             ),
           ),
-
           // AUM
           _buildGridItem(label: 'AUM', value: aum),
-
           // Exit Load
           _buildGridItem(
             label: 'Exit Load',
             value: exitLoad,
-            suffix: const Icon(
-              Icons.info_outline,
-              size: 16,
-              color: AppColors.darkTextSecondary,
+            suffix: GestureDetector(
+              onTap:
+                  () => _showInfoBottomSheet(
+                    context,
+                    'Exit Load',
+                    'Exit load of 1% is applicable if units are redeemed within 90 days of purchase. This is to discourage short-term trading and encourage long-term investment in the fund.',
+                  ),
+              child: const Icon(
+                Icons.info_outline,
+                size: 12,
+                color: AppColors.darkTextSecondary,
+              ),
             ),
           ),
-
-          // Invested Since
-          _buildGridItem(label: 'Invested Since', value: investedSince),
         ],
       ),
     );
@@ -113,7 +102,7 @@ class FundDetailsWidget extends StatelessWidget {
           children: [
             AppText(
               value,
-              variant: AppTextVariant.bodyLarge,
+              variant: AppTextVariant.bodyMedium,
               weight: AppTextWeight.semiBold,
               colorType: AppTextColorType.primary,
             ),
@@ -121,6 +110,263 @@ class FundDetailsWidget extends StatelessWidget {
           ],
         ),
       ],
+    );
+  }
+
+  void _showInfoBottomSheet(
+    BuildContext context,
+    String title,
+    String description,
+  ) {
+    if (title == 'Fund Manager') {
+      _showFundManagerBottomSheet(context);
+    } else if (title == 'Exit Load') {
+      _showSimpleBottomSheet(context, title, description);
+    }
+  }
+
+  void _showSimpleBottomSheet(
+    BuildContext context,
+    String title,
+    String description,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      showDragHandle: true,
+      useSafeArea: true,
+      isScrollControlled: true,
+      backgroundColor: AppColors.darkInputBackground,
+      builder:
+          (context) => Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: AppSizing.scaffoldHorizontalPadding,
+              vertical: 16,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AppText(
+                  title,
+                  variant: AppTextVariant.headline4,
+                  weight: AppTextWeight.bold,
+                  colorType: AppTextColorType.primary,
+                ),
+                const SizedBox(height: 24),
+                AppText(
+                  description,
+                  variant: AppTextVariant.bodyMedium,
+                  colorType: AppTextColorType.primary,
+                ),
+                const SizedBox(height: 32),
+              ],
+            ),
+          ),
+    );
+  }
+
+  void _showFundManagerBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      showDragHandle: true,
+      useSafeArea: true,
+      isScrollControlled: true,
+      backgroundColor: AppColors.darkInputBackground,
+      builder:
+          (context) => Container(
+            height: MediaQuery.of(context).size.height * 0.95,
+            padding: EdgeInsets.only(
+              left: AppSizing.scaffoldHorizontalPadding,
+              right: AppSizing.scaffoldHorizontalPadding,
+              top: 16,
+              bottom: 24,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AppText(
+                  'Fund Manager',
+                  variant: AppTextVariant.headline4,
+                  weight: AppTextWeight.bold,
+                  colorType: AppTextColorType.primary,
+                ),
+                const SizedBox(height: 16),
+                const Divider(color: AppColors.darkInputBorder),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // First Fund Manager - Kiran Sebastian
+                        _buildManagerCard(
+                          name: 'Kiran Sebastian',
+                          since: 'Since 07, Feb 2022',
+                          education:
+                              'Mr. Sebastian is a MBA, University of Oxford. B.Tech, University of Calicut.',
+                          experience:
+                              'Prior to joining Franklin Templeton Mutual Fund, he has worked with ARCA Investment Management (India) Pvt. Ltd.',
+                          fundsList: [
+                            _buildFundItem(
+                              'Franklin India Smaller Companies Fund - Regular Plan',
+                              'since Feb 2008',
+                              'Invest Online',
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+    );
+  }
+
+  Widget _buildManagerCard({
+    required String name,
+    required String since,
+    required String education,
+    required String experience,
+    required List<Widget> fundsList,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.darkCardBG,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Manager name and since date
+          Row(
+            children: [
+              AppText(
+                name,
+                variant: AppTextVariant.bodyLarge,
+                weight: AppTextWeight.semiBold,
+                colorType: AppTextColorType.primary,
+              ),
+              const SizedBox(width: 8),
+              AppText(
+                since,
+                variant: AppTextVariant.caption,
+                colorType: AppTextColorType.secondary,
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+
+          // Education
+          AppText(
+            'Education:',
+            variant: AppTextVariant.bodyMedium,
+            weight: AppTextWeight.medium,
+            colorType: AppTextColorType.primary,
+          ),
+          const SizedBox(height: 4),
+          AppText(
+            education,
+            variant: AppTextVariant.bodyMedium,
+            colorType: AppTextColorType.gray,
+          ),
+          const SizedBox(height: 12),
+
+          // Experience
+          AppText(
+            'Experience:',
+            variant: AppTextVariant.bodyMedium,
+            weight: AppTextWeight.medium,
+            colorType: AppTextColorType.primary,
+          ),
+          const SizedBox(height: 4),
+          AppText(
+            experience,
+            variant: AppTextVariant.bodyMedium,
+            colorType: AppTextColorType.secondary,
+          ),
+          const SizedBox(height: 12),
+          // Funds managed
+          AppText(
+            'Funds Managed:',
+            variant: AppTextVariant.bodyMedium,
+            weight: AppTextWeight.medium,
+            colorType: AppTextColorType.primary,
+          ),
+          const SizedBox(height: 8),
+          ...fundsList,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFundItem(String fundName, String since, String investLink) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('• ', style: TextStyle(color: Colors.white)),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Fund name with since date inline
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: '$fundName - ',
+                            style: const TextStyle(
+                              color: AppColors.darkTextPrimary,
+                              fontFamily: 'Poppins',
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                          TextSpan(
+                            text: since,
+                            style: const TextStyle(
+                              color: AppColors.darkTextPrimary,
+                              fontFamily: 'Poppins',
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          const TextSpan(
+                            text: ' | ',
+                            style: TextStyle(
+                              color: AppColors.darkTextPrimary,
+                              fontFamily: 'Poppins',
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          TextSpan(
+                            text: investLink,
+                            style: const TextStyle(
+                              color: AppColors.darkTextPrimary,
+                              fontFamily: 'Poppins',
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
