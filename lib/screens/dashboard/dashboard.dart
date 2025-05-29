@@ -11,12 +11,11 @@ import 'package:nwt_app/screens/Advisory/advisory.dart';
 import 'package:nwt_app/screens/assets/banks/banks.dart';
 import 'package:nwt_app/screens/assets/investments/investments.dart';
 import 'package:nwt_app/screens/connections/connections.dart';
-import 'package:nwt_app/screens/dashboard/data/networth_chart_dummy_data.dart';
 import 'package:nwt_app/screens/dashboard/widgets/asset_card.dart';
 import 'package:nwt_app/screens/dashboard/widgets/mutual_fund_bottom_sheet.dart';
-import 'package:nwt_app/screens/dashboard/widgets/networth_chart.dart';
 import 'package:nwt_app/screens/dashboard/zerodha_webview.dart';
 import 'package:nwt_app/screens/explore/explore.dart';
+import 'package:nwt_app/screens/insights/insights.dart';
 import 'package:nwt_app/screens/mf_switch/mf_switch.dart';
 import 'package:nwt_app/screens/notifications/notification_list.dart';
 import 'package:nwt_app/screens/products/products.dart';
@@ -550,7 +549,6 @@ class _DashboardState extends State<Dashboard>
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              const SizedBox(height: 24),
                                               Column(
                                                 spacing: 5,
                                                 crossAxisAlignment:
@@ -637,17 +635,18 @@ class _DashboardState extends State<Dashboard>
                                                         AppTextColorType
                                                             .secondary,
                                                   ),
-                                                  NetworthChart(
-                                                    showProjection: true,
-                                                    currentNetworth:
-                                                        NetworthChartDummyData.getTotalNetworth(),
-                                                    projectedNetworth:
-                                                        NetworthChartDummyData.getProjectedNetworth(),
-                                                    currentprojection:
-                                                        NetworthChartDummyData.getCurrentProjection(),
-                                                    futureprojection:
-                                                        NetworthChartDummyData.getFutureProjection(),
-                                                  ),
+
+                                                  // NetworthChart(
+                                                  //   showProjection: true,
+                                                  //   currentNetworth:
+                                                  //       NetworthChartDummyData.getTotalNetworth(),
+                                                  //   projectedNetworth:
+                                                  //       NetworthChartDummyData.getProjectedNetworth(),
+                                                  //   currentprojection:
+                                                  //       NetworthChartDummyData.getCurrentProjection(),
+                                                  //   futureprojection:
+                                                  //       NetworthChartDummyData.getFutureProjection(),
+                                                  // ),
                                                   // NetworthChart(
                                                   //   currentNetworth: _networthAmount,
                                                   //   projectedNetworth: _networthAmount,
@@ -1405,7 +1404,7 @@ class _DashboardState extends State<Dashboard>
                                         children: [
                                           const AppText(
                                             'MF Top 10 Performers',
-                                            variant: AppTextVariant.headline6,
+                                            variant: AppTextVariant.headline5,
                                             weight: AppTextWeight.bold,
                                             colorType: AppTextColorType.primary,
                                             decoration: TextDecoration.none,
@@ -1429,12 +1428,15 @@ class _DashboardState extends State<Dashboard>
                                               ),
                                               child: Row(
                                                 children: [
-                                                  CircleAvatar(
-                                                    backgroundColor:
-                                                        Colors.grey[800],
-                                                    child: Icon(
-                                                      Icons.add,
-                                                      color: Colors.white,
+                                                  InkWell(
+                                                    onTap: ()=> Get.to(() => InsightsScreen()),
+                                                    child: CircleAvatar(
+                                                      backgroundColor:
+                                                          Colors.grey[800],
+                                                      child: Icon(
+                                                        Icons.add,
+                                                        color: Colors.white,
+                                                      ),
                                                     ),
                                                   ),
                                                   const SizedBox(width: 12),

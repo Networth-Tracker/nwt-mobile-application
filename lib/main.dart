@@ -46,14 +46,14 @@ void main() async {
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // Initialize Firebase Remote Config
-  await FirebaseRemoteConfig.instance.setConfigSettings(
-    RemoteConfigSettings(
-      fetchTimeout: const Duration(minutes: 1),
-      minimumFetchInterval: const Duration(hours: 1),
-    ),
-  );
-  await FirebaseRemoteConfig.instance.fetchAndActivate();
+  // // Initialize Firebase Remote Config
+  // await FirebaseRemoteConfig.instance.setConfigSettings(
+  //   RemoteConfigSettings(
+  //     fetchTimeout: const Duration(minutes: 1),
+  //     minimumFetchInterval: const Duration(hours: 1),
+  //   ),
+  // );
+  // await FirebaseRemoteConfig.instance.fetchAndActivate();
 
   // Initialize controllers and services
   await Get.putAsync(() => ConnectivityService().init());
