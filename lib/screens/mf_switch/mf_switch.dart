@@ -196,7 +196,7 @@ class _MutualFundSwitchScreenState extends State<MutualFundSwitchScreen> {
         ),
 
         // Direct plan line (white, dotted)
-        LineChartBarData(
+        LineChartBarData   (
           spots: directPlanSpots,
           isCurved: true,
           curveSmoothness: 0.35,
