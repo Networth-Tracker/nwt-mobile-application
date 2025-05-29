@@ -19,7 +19,7 @@ class NetworkAPIHelper {
       Get.find<ConnectivityService>();
 
   Map<String, String> _getHeaders({bool requiresAuth = true}) {
-    final headers = {
+    final headers = {   
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     };
@@ -83,6 +83,8 @@ class NetworkAPIHelper {
       AppLogger.info('POST Body: ${jsonEncode(body)}', tag: 'NetworkAPIHelper');
 
       final response = await _interceptor.post(url, body, headers: headers);
+      AppLogger.info('POST Response: ${response.body}', tag: 'NetworkAPIHelper');
+      AppLogger.info('POST Response Code: ${response.statusCode}', tag: 'NetworkAPIHelper');
       return response;
     } on NetworkException catch (e) {
       _handleNetworkException(e);
@@ -112,6 +114,8 @@ class NetworkAPIHelper {
 
       AppLogger.info('PUT Request: $url', tag: 'NetworkAPIHelper');
       final response = await _interceptor.put(url, body, headers: headers);
+      AppLogger.info('PUT Response: ${response.body}', tag: 'NetworkAPIHelper');
+      AppLogger.info('PUT Response Code: ${response.statusCode}', tag: 'NetworkAPIHelper');
       return response;
     } on NetworkException catch (e) {
       _handleNetworkException(e);
@@ -146,7 +150,9 @@ class NetworkAPIHelper {
       );
 
       final response = await _interceptor.patch(url, body, headers: headers);
-      return response;
+      AppLogger.info('PATCH Response: ${response.body}', tag: 'NetworkAPIHelper');
+      AppLogger.info('PATCH Response Code: ${response.statusCode}', tag: 'NetworkAPIHelper');
+        return response;
     } on NetworkException catch (e) {
       _handleNetworkException(e);
       return null;
@@ -179,6 +185,8 @@ class NetworkAPIHelper {
         headers: headers,
         body: body,
       );
+      AppLogger.info('DELETE Response: ${response.body}', tag: 'NetworkAPIHelper');
+      AppLogger.info('DELETE Response Code: ${response.statusCode}', tag: 'NetworkAPIHelper');
       return response;
     } on NetworkException catch (e) {
       _handleNetworkException(e);

@@ -844,10 +844,11 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
                                     ) ??
                                     "0.00",
                                 currentAmount: investment.currentmktvalue
-                                    .toStringAsFixed(2),
-                                gainAmount: investment.gainloss.toStringAsFixed(
+                                    ?.toStringAsFixed(2) ??
+                                    "0.00",
+                                gainAmount: investment.gainloss?.toStringAsFixed(
                                   2,
-                                ),
+                                ) ?? "0.00",
                               ),
                             ],
                           );
@@ -863,8 +864,8 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
                                 investment.closingbalance?.toStringAsFixed(2) ??
                                 "0.00",
                             currentAmount: investment.currentmktvalue
-                                .toStringAsFixed(2),
-                            gainAmount: investment.gainloss.toStringAsFixed(2),
+                                ?.toStringAsFixed(2) ?? "0.00",
+                            gainAmount: investment.gainloss?.toStringAsFixed(2) ?? "0.00",
                           ),
                         );
                       },

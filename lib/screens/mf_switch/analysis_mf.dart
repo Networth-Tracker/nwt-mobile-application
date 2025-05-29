@@ -237,7 +237,7 @@ class _AnalysisMutualFundState extends State<AnalysisMutualFund> {
                                             investment.schemeoption ?? 'Direct',
                                         investedAmount:
                                             CurrencyFormatter.formatRupee(
-                                              investment.costvalue,
+                                              investment.costvalue ?? 0,
                                             ),
                                       );
                                     }),
@@ -251,7 +251,7 @@ class _AnalysisMutualFundState extends State<AnalysisMutualFund> {
               ),
             );
           },
-      ),
+        ),
       ),
       bottomNavigationBar: Container(
         width: double.infinity,

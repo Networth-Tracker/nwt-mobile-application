@@ -61,9 +61,9 @@ class Investment {
   String? navdate;
   double? closingbalance;
   bool? isdemat;
-  double currentmktvalue;
-  double costvalue;
-  double gainloss;
+  double? currentmktvalue;
+  double? costvalue;
+  double? gainloss;
   double? gainlosspercentage;
   bool? lienunitsflag;
   double? decimalunit;
@@ -86,9 +86,9 @@ class Investment {
   double? lienavailableunits;
   String? investorname;
   String guid;
-  double quantity;
-  double deltavalue;
-  double deltapercentage;
+  double? quantity;
+  double? deltavalue;
+  double? deltapercentage;
   AssetType type;
   String? stockaccountguid;
   String? isin;
@@ -124,9 +124,9 @@ class Investment {
     this.navdate,
     this.closingbalance,
     this.isdemat,
-    required this.currentmktvalue,
-    required this.costvalue,
-    required this.gainloss,
+    this.currentmktvalue,
+    this.costvalue,
+    this.gainloss,
     this.gainlosspercentage,
     this.lienunitsflag,
     this.decimalunit,
@@ -149,9 +149,9 @@ class Investment {
     this.lienavailableunits,
     this.investorname,
     required this.guid,
-    required this.quantity,
-    required this.deltavalue,
-    required this.deltapercentage,
+    this.quantity,
+    this.deltavalue,
+    this.deltapercentage,
     required this.type,
     this.stockaccountguid,
     this.isin,
@@ -184,18 +184,18 @@ class Investment {
     schemeoption: json["schemeoption"],
     assettype: json["assettype"],
     schemetype: json["schemetype"],
-    nav: (json["nav"] as num?)?.toDouble(),
+    nav: json["nav"] != null ? (json["nav"] as num).toDouble() : null,
     navdate: json["navdate"],
-    closingbalance: (json["closingbalance"] as num?)?.toDouble(),
+    closingbalance: json["closingbalance"] != null ? (json["closingbalance"] as num).toDouble() : null,
     isdemat: json["isdimat"],
-    currentmktvalue: (json["currentmktvalue"] as num).toDouble(),
-    costvalue: (json["costvalue"] as num).toDouble(),
-    gainloss: (json["gainloss"] as num).toDouble(),
-    gainlosspercentage: (json["gainlosspercentage"] as num?)?.toDouble(),
+    currentmktvalue: json["currentmktvalue"] != null ? (json["currentmktvalue"] as num).toDouble() : null,
+    costvalue: json["costvalue"] != null ? (json["costvalue"] as num).toDouble() : null,
+    gainloss: json["gainloss"] != null ? (json["gainloss"] as num).toDouble() : null,
+    gainlosspercentage: json["gainlosspercentage"] != null ? (json["gainlosspercentage"] as num).toDouble() : null,
     lienunitsflag: json["lienunitsflag"],
-    decimalunit: (json["decimalunit"] as num?)?.toDouble(),
-    decimalamount: (json["decimalamount"] as num?)?.toDouble(),
-    decimalnav: (json["decimalnav"] as num?)?.toDouble(),
+    decimalunit: json["decimalunit"] != null ? (json["decimalunit"] as num).toDouble() : null,
+    decimalamount: json["decimalamount"] != null ? (json["decimalamount"] as num).toDouble() : null,
+    decimalnav: json["decimalnav"] != null ? (json["decimalnav"] as num).toDouble() : null,
     brokercode: json["brokercode"],
     brokername: json["brokername"],
     purallow: json["purallow"],
@@ -210,12 +210,12 @@ class Investment {
     emailrelationship: json["emailrelationship"],
     newfolio: json["newfolio"],
     nomineestatus: json["nomineestatus"],
-    lienavailableunits: (json["lienavailableunits"] as num?)?.toDouble(),
+    lienavailableunits: json["lienavailableunits"] != null ? (json["lienavailableunits"] as num).toDouble() : null,
     investorname: json["investorname"],
     guid: json["guid"],
-    quantity: (json["quantity"] as num).toDouble(),
-    deltavalue: (json["deltavalue"] as num).toDouble(),
-    deltapercentage: (json["deltapercentage"] as num).toDouble(),
+    quantity: json["quantity"] != null ? (json["quantity"] as num).toDouble() : null,
+    deltavalue: json["deltavalue"] != null ? (json["deltavalue"] as num).toDouble() : null,
+    deltapercentage: json["deltapercentage"] != null ? (json["deltapercentage"] as num).toDouble() : null,
     type: typeValues.map[json["type"]]!,
     stockaccountguid: json["stockaccountguid"],
     isin: json["isin"],
@@ -224,7 +224,7 @@ class Investment {
     status: json["status"],
     buydate: json["buydate"],
     selldate: json["selldate"],
-    averageprice: (json["averageprice"] as num?)?.toDouble(),
+    averageprice: json["averageprice"] != null ? (json["averageprice"] as num).toDouble() : null,
     currency: json["currency"],
     exchangename: json["exchangename"],
     tradedate: json["tradedate"],
