@@ -25,12 +25,22 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
           _buildTabs(),
           const SizedBox(height: 24),
 
-          // Size Breakup section
-          _buildSizeBreakup(),
-          const SizedBox(height: 24),
+          // Show different content based on selected tab
+          if (_selectedTabIndex == 0) ...[
+            // Size Breakup section for Equity
+            _buildSizeBreakup(),
+            const SizedBox(height: 24),
 
-          // Size categories with percentages
-          _buildSizeCategories(),
+            // Size categories with percentages for Equity
+            _buildSizeCategories(),
+          ] else ...[
+            // Credit Rating Breakup for Debt & Cash
+            _buildCreditRatingBreakup(),
+            const SizedBox(height: 24),
+
+            // Credit Rating categories for Debt & Cash
+            _buildCreditRatingCategories(),
+          ],
           const SizedBox(height: 16),
         ],
       ),
@@ -91,16 +101,16 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
             Text(
               'Size Breakup',
               style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Colors.white.withOpacity(0.7),
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.white.withValues(alpha: 0.7),
               ),
             ),
             const SizedBox(width: 8),
             Text(
               '100%',
               style: const TextStyle(
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: FontWeight.w600,
                 color: Color(0xFF3ABFF8), // Light blue color
               ),
@@ -179,7 +189,7 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
         Text(
           name,
           style: const TextStyle(
-            fontSize: 16,
+            fontSize: 14,
             fontWeight: FontWeight.w500,
             color: Colors.white,
           ),
@@ -188,7 +198,82 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
         Text(
           percentage,
           style: const TextStyle(
-            fontSize: 16,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Credit Rating Breakup for Debt & Cash tab
+  Widget _buildCreditRatingBreakup() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              'Credit Rating Breakup',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.white.withValues(alpha: 0.7),
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Text(
+              '2.1%',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF3ABFF8),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        // Single progress bar for AAA rating (100%)
+        ClipRRect(
+          borderRadius: BorderRadius.circular(4),
+          child: const LinearProgressIndicator(
+            value: 1.0, // 100%
+            backgroundColor: Color(0xFF2A2A2A),
+            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF3ABFF8)),
+            minHeight: 8,
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Credit Rating Categories for Debt & Cash tab
+  Widget _buildCreditRatingCategories() {
+    return Row(
+      children: [
+        Container(
+          width: 16,
+          height: 8,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(4),
+            color: const Color(0xFF3ABFF8),
+          ),
+        ),
+        const SizedBox(width: 12),
+        const Text(
+          'AAA',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
+        const Spacer(),
+        const Text(
+          '100%',
+          style: TextStyle(
+            fontSize: 14,
             fontWeight: FontWeight.w600,
             color: Colors.white,
           ),
