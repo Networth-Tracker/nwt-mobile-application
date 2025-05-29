@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nwt_app/widgets/common/custom_accordion.dart';
+import 'package:nwt_app/widgets/common/text_widget.dart';
 
 class FundsDistributionWidget extends StatefulWidget {
   const FundsDistributionWidget({super.key});
@@ -18,15 +19,17 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
     return CustomAccordion(
       title: 'Funds Distribution',
       initiallyExpanded: true,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Tabs for Equity and Debt & Cash
-          _buildTabs(),
-          const SizedBox(height: 24),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Tabs for Equity and Debt & Cash
+            _buildTabs(),
+            const SizedBox(height: 24),
 
-          // Show different content based on selected tab
-          if (_selectedTabIndex == 0) ...[
+            // Show different content based on selected tab
+            if (_selectedTabIndex == 0) ...[
             // Size Breakup section for Equity
             _buildSizeBreakup(),
             const SizedBox(height: 24),
@@ -44,13 +47,14 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
           const SizedBox(height: 16),
         ],
       ),
+    ),
     );
   }
 
   Widget _buildTabs() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.3),
+        color: Colors.black.withOpacity(0.3),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -66,23 +70,19 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
-                  color:
-                      _selectedTabIndex == index
-                          ? Colors.white
-                          : Colors.transparent,
+                  color: _selectedTabIndex == index
+                      ? Colors.white
+                      : Colors.transparent,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 alignment: Alignment.center,
-                child: Text(
+                child: AppText(
                   _tabs[index],
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color:
-                        _selectedTabIndex == index
-                            ? Colors.black
-                            : Colors.white,
-                  ),
+                  variant: AppTextVariant.bodySmall,
+                  weight: AppTextWeight.bold,
+                  colorType: _selectedTabIndex == index
+                      ? AppTextColorType.primary
+                      : AppTextColorType.secondary,
                 ),
               ),
             ),
@@ -97,23 +97,20 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
+            AppText(
               'Size Breakup',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Colors.white.withValues(alpha: 0.7),
-              ),
+              variant: AppTextVariant.bodyMedium,
+              weight: AppTextWeight.semiBold,
+              colorType: AppTextColorType.secondary,
             ),
-            const SizedBox(width: 8),
-            Text(
+            AppText(
               '100%',
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF3ABFF8), // Light blue color
-              ),
+              variant: AppTextVariant.bodyMedium,
+              weight: AppTextWeight.semiBold,
+              colorType: AppTextColorType.primary,
+              customColor: const Color(0xFF3ABFF8), // Light blue color
             ),
           ],
         ),
@@ -129,7 +126,7 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
                 // Background
                 Container(
                   width: double.infinity,
-                  color: Colors.grey.withOpacity(0.2),
+                  color: const Color(0xFF2A2A2A),
                 ),
                 // Mid Cap (Light blue) - 48.2%
                 FractionallySizedBox(
@@ -146,9 +143,9 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
                         flex: 405, // 40.5%
                         child: Container(color: const Color(0xFFD926AA)),
                       ),
-                      // Small Cap - 5.8%
+                      // Small Cap - 11.3%
                       Expanded(
-                        flex: 113, // 5.8%
+                        flex: 113, // 11.3%
                         child: Container(color: const Color(0xFFFBBD23)),
                       ),
                     ],
@@ -186,22 +183,18 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
           ),
         ),
         const SizedBox(width: 12),
-        Text(
+        AppText(
           name,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: Colors.white,
-          ),
+          variant: AppTextVariant.bodyMedium,
+          weight: AppTextWeight.medium,
+          colorType: AppTextColorType.primary,
         ),
         const Spacer(),
-        Text(
+        AppText(
           percentage,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+          variant: AppTextVariant.bodyMedium,
+          weight: AppTextWeight.semiBold,
+          colorType: AppTextColorType.primary,
         ),
       ],
     );
@@ -213,23 +206,20 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
+            AppText(
               'Credit Rating Breakup',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.white.withValues(alpha: 0.7),
-              ),
+              variant: AppTextVariant.bodyMedium,
+              weight: AppTextWeight.semiBold,
+              colorType: AppTextColorType.secondary,
             ),
-            const SizedBox(width: 8),
-            const Text(
+            AppText(
               '2.1%',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF3ABFF8),
-              ),
+              variant: AppTextVariant.bodyMedium,
+              weight: AppTextWeight.semiBold,
+              colorType: AppTextColorType.primary,
+              customColor: const Color(0xFF3ABFF8),
             ),
           ],
         ),
@@ -261,22 +251,18 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
           ),
         ),
         const SizedBox(width: 12),
-        const Text(
+        AppText(
           'AAA',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+          variant: AppTextVariant.bodyMedium,
+          weight: AppTextWeight.semiBold,
+          colorType: AppTextColorType.primary,
         ),
         const Spacer(),
-        const Text(
+        AppText(
           '100%',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+          variant: AppTextVariant.bodyMedium,
+          weight: AppTextWeight.semiBold,
+          colorType: AppTextColorType.primary,
         ),
       ],
     );
