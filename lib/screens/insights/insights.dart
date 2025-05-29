@@ -4,6 +4,7 @@ import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/screens/insights/widgets/asset_allocation_widget.dart';
 import 'package:nwt_app/screens/insights/widgets/dividend_history_widget.dart';
 import 'package:nwt_app/screens/insights/widgets/fund_details_widget.dart';
+import 'package:nwt_app/screens/insights/widgets/funds_distribution_widget.dart';
 import 'package:nwt_app/screens/insights/widgets/insights_graph.dart';
 import 'package:nwt_app/screens/insights/widgets/riskometer_widget.dart';
 import 'package:nwt_app/screens/insights/widgets/sector_allocation_widget.dart';
@@ -62,13 +63,7 @@ class _InsightsScreenState extends State<InsightsScreen> {
                 aum: '₹1,70,50,000',
                 exitLoad: '1% (90 days)',
               ),
-              const SipDetailsWidget(
-                minimumSip: '₹1,000',
-                maximumSip: '₹1,000',
-                frequency: 'Monthly, Quarterly',
-                lockInPeriod: 'None',
-              ),
-              const RiskometerWidget(riskLevel: 'Very High', riskValue: 30),
+
               AssetAllocationWidget(
                 assetItems: [
                   AssetItem(
@@ -88,6 +83,16 @@ class _InsightsScreenState extends State<InsightsScreen> {
                   ),
                 ],
               ),
+
+              const SipDetailsWidget(
+                minimumSip: '₹1,000',
+                maximumSip: '₹1,000',
+                frequency: 'Monthly, Quarterly',
+                lockInPeriod: 'None',
+              ),
+
+              const FundsDistributionWidget(),
+
               SectorAllocationWidget(
                 sectorItems: [
                   SectorItem(
@@ -122,6 +127,7 @@ class _InsightsScreenState extends State<InsightsScreen> {
                   ),
                 ],
               ),
+
               DividendHistoryWidget(
                 dividendItems: [
                   DividendItem(recordDate: '25, May 2025', dividend: '13.480'),
@@ -182,22 +188,7 @@ class _InsightsScreenState extends State<InsightsScreen> {
                 ],
               ),
 
-              //   AssetAllocationWidget(
-              //     assetItems: const [
-              //       AssetItem(
-              //         name: 'Equity',
-              //         percentage: 65,
-              //       ),
-              //       AssetItem(
-              //         name: 'Debt',
-              //         percentage: 15,
-              //       ),
-              //       AssetItem(
-              //         name: 'Hybrid',
-              //         percentage: 20,
-              //       ),
-              //     ],
-              //   ),
+              const RiskometerWidget(riskLevel: 'Very High', riskValue: 30),
             ],
           ),
         ),

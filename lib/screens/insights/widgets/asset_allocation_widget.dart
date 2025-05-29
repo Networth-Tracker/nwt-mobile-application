@@ -8,7 +8,11 @@ class AssetItem {
   final double percentage;
   final Color color;
 
-  const AssetItem({required this.name, required this.percentage, required this.color});
+  const AssetItem({
+    required this.name,
+    required this.percentage,
+    required this.color,
+  });
 }
 
 class AssetAllocationWidget extends StatelessWidget {
@@ -24,10 +28,7 @@ class AssetAllocationWidget extends StatelessWidget {
       child: Column(
         children: [
           // Donut chart
-          SizedBox(
-            height: 200,
-            child: _buildDonutChart(),
-          ),
+          SizedBox(height: 200, child: _buildDonutChart()),
           const SizedBox(height: 24),
           // Legend items
           ..._buildLegendItems(),
