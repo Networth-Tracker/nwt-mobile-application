@@ -40,8 +40,8 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
   Widget _buildTabs() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.3),
-        borderRadius: BorderRadius.circular(16),
+        color: Colors.black.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         children: List.generate(
@@ -54,20 +54,20 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
                 });
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 12),
+                padding: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
                   color:
                       _selectedTabIndex == index
                           ? Colors.white
                           : Colors.transparent,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 alignment: Alignment.center,
                 child: Text(
                   _tabs[index],
                   style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
                     color:
                         _selectedTabIndex == index
                             ? Colors.black
@@ -98,7 +98,7 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
             ),
             const SizedBox(width: 8),
             Text(
-              '97.9%',
+              '100%',
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -108,59 +108,45 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
           ],
         ),
         const SizedBox(height: 12),
-        // Progress bars
-        Stack(
-          children: [
-            // Base bar
-            Container(
-              height: 8,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4),
-                color: Colors.grey.withOpacity(0.2),
-              ),
-            ),
-            // Mid Cap (Light blue)
-            FractionallySizedBox(
-              widthFactor: 0.6, // 60% width
-              child: Container(
-                height: 8,
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(4),
-                    bottomLeft: Radius.circular(4),
-                  ),
-                  color: Color(0xFF3ABFF8), // Light blue
+        // Single stacked progress bar
+        SizedBox(
+          height: 8,
+          width: double.infinity,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: Stack(
+              children: [
+                // Background
+                Container(
+                  width: double.infinity,
+                  color: Colors.grey.withOpacity(0.2),
                 ),
-              ),
-            ),
-            // Large Cap (Pink)
-            Positioned(
-              left:
-                  MediaQuery.of(context).size.width *
-                  0.6 *
-                  0.7, // Adjust based on screen width
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.25, // 25% width
-                height: 8,
-                color: const Color(0xFFD926AA), // Pink
-              ),
-            ),
-            // Small Cap (Yellow)
-            Positioned(
-              right: 0,
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.1, // 10% width
-                height: 8,
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(4),
-                    bottomRight: Radius.circular(4),
+                // Mid Cap (Light blue) - 48.2%
+                FractionallySizedBox(
+                  widthFactor: 0.482 + 0.405 + 0.113, // Total width
+                  child: Row(
+                    children: [
+                      // Mid Cap - 48.2%
+                      Expanded(
+                        flex: 482, // 48.2%
+                        child: Container(color: const Color(0xFF3ABFF8)),
+                      ),
+                      // Large Cap - 40.5%
+                      Expanded(
+                        flex: 405, // 40.5%
+                        child: Container(color: const Color(0xFFD926AA)),
+                      ),
+                      // Small Cap - 5.8%
+                      Expanded(
+                        flex: 113, // 5.8%
+                        child: Container(color: const Color(0xFFFBBD23)),
+                      ),
+                    ],
                   ),
-                  color: Color(0xFFFBBD23), // Yellow
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ],
     );
@@ -173,7 +159,7 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
         const SizedBox(height: 16),
         _buildSizeCategory('Large Cap', '40.5%', const Color(0xFFD926AA)),
         const SizedBox(height: 16),
-        _buildSizeCategory('Small Cap', '5.8%', const Color(0xFFFBBD23)),
+        _buildSizeCategory('Small Cap', '11.3%', const Color(0xFFFBBD23)),
       ],
     );
   }
