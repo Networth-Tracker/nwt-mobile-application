@@ -97,11 +97,10 @@ class MFTopPerformersWidget extends StatelessWidget {
       children: List.generate(controller.topPerformers.value!.length, (index) {
         final performer = controller.topPerformers.value![index];
         return InkWell(
-          onTap:
-              () => Get.to(
-                () => InsightsScreen(),
-                transition: Transition.rightToLeft,
-              ),
+          onTap: () => Get.to(
+            () => InsightsScreen(fundId: performer.guid),
+            transition: Transition.rightToLeft,
+          ),
           child: Container(
             margin: const EdgeInsets.only(bottom: 10),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),

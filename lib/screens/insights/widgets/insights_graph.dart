@@ -1,12 +1,50 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:nwt_app/constants/colors.dart';
+import 'package:nwt_app/screens/insights/types/insights.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class InsightsGraphWidget extends StatefulWidget {
-  const InsightsGraphWidget({super.key});
+  final String fundName;
+  final String fundType;
+  final String navValue;
+  final double returnPercentage;
+  // Regular return data
+  final List<MFPerformanceDataPoint> oneMonthData;
+  final List<MFPerformanceDataPoint> threeMonthData;
+  final List<MFPerformanceDataPoint> sixMonthData;
+  final List<MFPerformanceDataPoint> oneYearData;
+  final List<MFPerformanceDataPoint> fiveYearData;
+  final List<MFPerformanceDataPoint> tenYearData;
+  // SIP return data
+  final List<MFPerformanceDataPoint> sipOneMonthData;
+  final List<MFPerformanceDataPoint> sipThreeMonthData;
+  final List<MFPerformanceDataPoint> sipSixMonthData;
+  final List<MFPerformanceDataPoint> sipOneYearData;
+  final List<MFPerformanceDataPoint> sipFiveYearData;
+  final List<MFPerformanceDataPoint> sipTenYearData;
+
+  const InsightsGraphWidget({
+    super.key,
+    required this.fundName,
+    required this.fundType,
+    required this.navValue,
+    required this.returnPercentage,
+    required this.oneMonthData,
+    required this.threeMonthData,
+    required this.sixMonthData,
+    required this.oneYearData,
+    required this.fiveYearData,
+    required this.tenYearData,
+    required this.sipOneMonthData,
+    required this.sipThreeMonthData,
+    required this.sipSixMonthData,
+    required this.sipOneYearData,
+    required this.sipFiveYearData,
+    required this.sipTenYearData,
+  });
 
   @override
   State<InsightsGraphWidget> createState() => _InsightsGraphWidgetState();
@@ -15,10 +53,10 @@ class InsightsGraphWidget extends StatefulWidget {
 class _InsightsGraphWidgetState extends State<InsightsGraphWidget> {
   List<FundReturnData>? _chartData;
   late TrackballBehavior _trackballBehavior;
-  final String _fundName = 'Franklin India Opportunities Fund Regular Growth';
-  final String _fundType = 'Equity Fund';
-  final String _navValue = '₹8.6';
-  final double _returnPercentage = 0.7;
+  String get _fundName => widget.fundName;
+  String get _fundType => widget.fundType;
+  String get _navValue => widget.navValue;
+  double get _returnPercentage => widget.returnPercentage;
 
   // Tooltip behavior
   late TooltipBehavior _tooltipBehavior;
@@ -38,117 +76,103 @@ class _InsightsGraphWidgetState extends State<InsightsGraphWidget> {
   }
 
   void _updateChartDataForPeriod(String period) {
-    // Current date as the end date
-    final DateTime endDate = DateTime.now();
-    DateTime startDate;
-
-    // Calculate start date based on selected period
-    switch (period) {
-      case '1W':
-        startDate = endDate.subtract(const Duration(days: 7));
-        break;
-      case '1M':
-        startDate = DateTime(endDate.year, endDate.month - 1, endDate.day);
-        break;
-      case '3M':
-        startDate = DateTime(endDate.year, endDate.month - 3, endDate.day);
-        break;
-      case '6M':
-        startDate = DateTime(endDate.year, endDate.month - 6, endDate.day);
-        break;
-      case '1Y':
-        startDate = DateTime(endDate.year - 1, endDate.month, endDate.day);
-        break;
-      case 'All':
-        // For 'All', show 2 years of data
-        startDate = DateTime(endDate.year - 2, endDate.month, endDate.day);
-        break;
-      default:
-        startDate = DateTime(
-          endDate.year,
-          endDate.month - 1,
-          endDate.day,
-        ); // Default to 1M
-    }
-
-    // Generate chart data for the selected period with realistic stock patterns
-    _chartData = _generateDataForPeriod(period, startDate, endDate);
+    // Use real data from the service based on the selected period
+    _chartData = _getDataForPeriod(period);
 
     // Update selected period
     _selectedPeriod = period;
   }
 
-  List<FundReturnData> _generateDataForPeriod(
-    String period,
-    DateTime startDate,
-    DateTime endDate,
-  ) {
-    // Create different data patterns based on the period
+  List<FundReturnData> _getDataForPeriod(String period) {
+    // Use real data from the service based on the selected period
+    List<MFPerformanceDataPoint> regularDataPoints;
+    List<MFPerformanceDataPoint> sipDataPoints;
+
     switch (period) {
       case '1W':
-        return _generateSimulatedData(
-          startDate,
-          endDate,
-          initialValue: 12.5,
-          volatility: 0.15,
-          trendStrength: 0.05,
-          dataPoints: 7,
-        );
+        // For 1W, we'll use a subset of 1M data
+        regularDataPoints =
+            widget.oneMonthData.isNotEmpty
+                ? widget.oneMonthData.sublist(
+                  0,
+                  widget.oneMonthData.length > 7
+                      ? 7
+                      : widget.oneMonthData.length,
+                )
+                : [];
+        sipDataPoints =
+            widget.sipOneMonthData.isNotEmpty
+                ? widget.sipOneMonthData.sublist(
+                  0,
+                  widget.sipOneMonthData.length > 7
+                      ? 7
+                      : widget.sipOneMonthData.length,
+                )
+                : [];
+        break;
       case '1M':
-        return _generateSimulatedData(
-          startDate,
-          endDate,
-          initialValue: 11.8,
-          volatility: 0.25,
-          trendStrength: 0.12,
-          dataPoints: 30,
-        );
+        regularDataPoints = widget.oneMonthData;
+        sipDataPoints = widget.sipOneMonthData;
+        break;
       case '3M':
-        return _generateSimulatedData(
-          startDate,
-          endDate,
-          initialValue: 10.5,
-          volatility: 0.35,
-          trendStrength: 0.18,
-          dataPoints: 45,
-        );
+        regularDataPoints = widget.threeMonthData;
+        sipDataPoints = widget.sipThreeMonthData;
+        break;
       case '6M':
-        return _generateSimulatedData(
-          startDate,
-          endDate,
-          initialValue: 8.2,
-          volatility: 0.45,
-          trendStrength: 0.25,
-          dataPoints: 60,
-        );
+        regularDataPoints = widget.sixMonthData;
+        sipDataPoints = widget.sipSixMonthData;
+        break;
       case '1Y':
-        return _generateSimulatedData(
-          startDate,
-          endDate,
-          initialValue: 5.0,
-          volatility: 0.55,
-          trendStrength: 0.35,
-          dataPoints: 90,
-        );
+        regularDataPoints = widget.oneYearData;
+        sipDataPoints = widget.sipOneYearData;
+        break;
       case 'All':
-        return _generateSimulatedData(
-          startDate,
-          endDate,
-          initialValue: 0.0,
-          volatility: 0.65,
-          trendStrength: 0.45,
-          dataPoints: 120,
-        );
+        // For 'All', we'll use a combination of data
+        regularDataPoints =
+            widget.tenYearData.isNotEmpty
+                ? widget.tenYearData
+                : widget.fiveYearData.isNotEmpty
+                ? widget.fiveYearData
+                : widget.oneYearData;
+        sipDataPoints =
+            widget.sipTenYearData.isNotEmpty
+                ? widget.sipTenYearData
+                : widget.sipFiveYearData.isNotEmpty
+                ? widget.sipFiveYearData
+                : widget.sipOneYearData;
+        break;
       default:
-        return _generateSimulatedData(
-          startDate,
-          endDate,
-          initialValue: 11.8,
-          volatility: 0.25,
-          trendStrength: 0.12,
-          dataPoints: 30,
-        );
+        regularDataPoints = widget.oneMonthData;
+        sipDataPoints = widget.sipOneMonthData;
     }
+
+    // If we have no data, generate some simulated data
+    if (regularDataPoints.isEmpty) {
+      return _generateSimulatedData(
+        DateTime.now().subtract(const Duration(days: 30)),
+        DateTime.now(),
+        initialValue: 10.0,
+        volatility: 0.25,
+        trendStrength: 0.12,
+        dataPoints: 30,
+      );
+    }
+
+    // Create a map to quickly look up SIP data points by date
+    final Map<String, double> sipValuesByDate = {};
+    for (final point in sipDataPoints) {
+      sipValuesByDate[point.date] = point.value;
+    }
+
+    // Convert MFPerformanceDataPoint to FundReturnData
+    return regularDataPoints.map((point) {
+      return FundReturnData(
+        date: point.date,
+        returnValue: point.value,
+        sipReturnValue:
+            sipValuesByDate[point.date] ?? 0.0, // Use SIP value if available
+      );
+    }).toList();
   }
 
   /// Generates realistic stock-like data using a modified random walk model
@@ -205,7 +229,8 @@ class _InsightsGraphWidgetState extends State<InsightsGraphWidget> {
 
       data.add(
         FundReturnData(
-          date: date,
+          date:
+              "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
           returnValue: double.parse(baseReturn.toStringAsFixed(2)),
           sipReturnValue: double.parse(baseSipReturn.toStringAsFixed(2)),
         ),
@@ -213,10 +238,13 @@ class _InsightsGraphWidgetState extends State<InsightsGraphWidget> {
     }
 
     // Ensure we include the end date with a realistic final value
-    if (data.isEmpty || data.last.date != endDate) {
+    if (data.isEmpty ||
+        data.last.date !=
+            "${endDate.year}-${endDate.month.toString().padLeft(2, '0')}-${endDate.day.toString().padLeft(2, '0')}") {
       data.add(
         FundReturnData(
-          date: endDate,
+          date:
+              "${endDate.year}-${endDate.month.toString().padLeft(2, '0')}-${endDate.day.toString().padLeft(2, '0')}",
           returnValue: double.parse((baseReturn + 0.3).toStringAsFixed(2)),
           sipReturnValue: double.parse(
             (baseSipReturn + 0.2).toStringAsFixed(2),
@@ -314,11 +342,29 @@ class _InsightsGraphWidgetState extends State<InsightsGraphWidget> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            AppText(
-              'NAV $_navValue',
-              variant: AppTextVariant.bodyMedium,
-              colorType: AppTextColorType.primary,
-              weight: AppTextWeight.semiBold,
+            RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'NAV ',
+                    style: const TextStyle(
+                      color: AppColors.lightSecondary,
+                      fontFamily: 'Poppins',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  TextSpan(
+                    text: '₹$_navValue',
+                    style: const TextStyle(
+                      color: AppColors.darkTextPrimary,
+                      fontFamily: 'Poppins',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 4),
             Container(
@@ -453,32 +499,25 @@ class _InsightsGraphWidgetState extends State<InsightsGraphWidget> {
 
     // Configure X-axis interval based on selected period
     int? interval;
-    DateFormat? dateFormat;
 
     switch (_selectedPeriod) {
       case '1W':
         interval = 1; // Show daily labels
-        dateFormat = DateFormat.E(); // Day of week (Mon, Tue, etc.)
         break;
       case '1M':
         interval = 7; // Show weekly labels
-        dateFormat = DateFormat('d MMM'); // 15 Jan
         break;
       case '3M':
         interval = 14; // Show bi-weekly labels
-        dateFormat = DateFormat('d MMM'); // 15 Jan
         break;
       case '6M':
         interval = 30; // Show monthly labels
-        dateFormat = DateFormat('MMM'); // Jan, Feb, etc.
         break;
       case '1Y':
         interval = 60; // Show bi-monthly labels
-        dateFormat = DateFormat('MMM'); // Jan, Feb, etc.
         break;
       case 'All':
         interval = 90; // Show quarterly labels
-        dateFormat = DateFormat('MMM yy'); // Jan 23, Apr 23, etc.
         break;
     }
 
@@ -491,11 +530,10 @@ class _InsightsGraphWidgetState extends State<InsightsGraphWidget> {
       enableAxisAnimation: true,
       key: ValueKey<String>(_selectedPeriod), // Force rebuild on period change
 
-      primaryXAxis: DateTimeAxis(
+      primaryXAxis: CategoryAxis(
         majorGridLines: const MajorGridLines(width: 0),
         axisLine: const AxisLine(width: 0),
         labelStyle: const TextStyle(color: Colors.white70),
-        dateFormat: dateFormat,
         labelIntersectAction: AxisLabelIntersectAction.hide,
         edgeLabelPlacement: EdgeLabelPlacement.shift,
         rangePadding: ChartRangePadding.none,
@@ -519,7 +557,7 @@ class _InsightsGraphWidgetState extends State<InsightsGraphWidget> {
   /// Returns the list of Cartesian Spline series.
   List<CartesianSeries> _buildSplineSeries() {
     return <CartesianSeries>[
-      SplineSeries<FundReturnData, DateTime>(
+      SplineSeries<FundReturnData, String>(
         dataSource: _chartData!,
         xValueMapper: (FundReturnData data, _) => data.date,
         yValueMapper: (FundReturnData data, _) => data.returnValue,
@@ -530,7 +568,7 @@ class _InsightsGraphWidgetState extends State<InsightsGraphWidget> {
         markerSettings: const MarkerSettings(isVisible: false),
         animationDuration: 500, // Faster animation
       ),
-      SplineSeries<FundReturnData, DateTime>(
+      SplineSeries<FundReturnData, String>(
         dataSource: _chartData!,
         xValueMapper: (FundReturnData data, _) => data.date,
         yValueMapper: (FundReturnData data, _) => data.sipReturnValue,
@@ -546,7 +584,6 @@ class _InsightsGraphWidgetState extends State<InsightsGraphWidget> {
 
   @override
   void dispose() {
-    _chartData?.clear();
     super.dispose();
   }
 }
@@ -560,7 +597,7 @@ class FundReturnData {
   });
 
   /// Date of the data point
-  final DateTime date;
+  final String date;
 
   /// Regular return value
   final double returnValue;

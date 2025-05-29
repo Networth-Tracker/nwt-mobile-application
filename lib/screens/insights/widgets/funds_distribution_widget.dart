@@ -3,7 +3,14 @@ import 'package:nwt_app/widgets/common/custom_accordion.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 
 class FundsDistributionWidget extends StatefulWidget {
-  const FundsDistributionWidget({super.key});
+  final Map<String, dynamic> equityDistribution;
+  final Map<String, dynamic> debtCashDistribution;
+
+  const FundsDistributionWidget({
+    super.key,
+    required this.equityDistribution,
+    required this.debtCashDistribution,
+  });
 
   @override
   State<FundsDistributionWidget> createState() =>
@@ -30,24 +37,24 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
 
             // Show different content based on selected tab
             if (_selectedTabIndex == 0) ...[
-            // Size Breakup section for Equity
-            _buildSizeBreakup(),
-            const SizedBox(height: 24),
+              // Size Breakup section for Equity
+              _buildSizeBreakup(),
+              const SizedBox(height: 24),
 
-            // Size categories with percentages for Equity
-            _buildSizeCategories(),
-          ] else ...[
-            // Credit Rating Breakup for Debt & Cash
-            _buildCreditRatingBreakup(),
-            const SizedBox(height: 24),
+              // Size categories with percentages for Equity
+              _buildSizeCategories(),
+            ] else ...[
+              // Credit Rating Breakup for Debt & Cash
+              _buildCreditRatingBreakup(),
+              const SizedBox(height: 24),
 
-            // Credit Rating categories for Debt & Cash
-            _buildCreditRatingCategories(),
+              // Credit Rating categories for Debt & Cash
+              _buildCreditRatingCategories(),
+            ],
+            const SizedBox(height: 16),
           ],
-          const SizedBox(height: 16),
-        ],
+        ),
       ),
-    ),
     );
   }
 
@@ -70,9 +77,10 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
-                  color: _selectedTabIndex == index
-                      ? Colors.white
-                      : Colors.transparent,
+                  color:
+                      _selectedTabIndex == index
+                          ? Colors.white
+                          : Colors.transparent,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 alignment: Alignment.center,
@@ -80,9 +88,10 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
                   _tabs[index],
                   variant: AppTextVariant.bodySmall,
                   weight: AppTextWeight.bold,
-                  colorType: _selectedTabIndex == index
-                      ? AppTextColorType.primary
-                      : AppTextColorType.secondary,
+                  colorType:
+                      _selectedTabIndex == index
+                          ? AppTextColorType.primary
+                          : AppTextColorType.secondary,
                 ),
               ),
             ),
@@ -93,6 +102,22 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
   }
 
   Widget _buildSizeBreakup() {
+    // Get values from the equity distribution data
+    final midcap = widget.equityDistribution['midcap'] ?? 0.0;
+    final largecap = widget.equityDistribution['largecap'] ?? 0.0;
+    final smallcap = widget.equityDistribution['smallcap'] ?? 0.0;
+
+    // Calculate total for percentage display
+    final total = midcap + largecap + smallcap;
+
+    // Convert to integer flex values for the progress bar
+    final midcapFlex = (midcap * 10).round();
+    final largecapFlex = (largecap * 10).round();
+    final smallcapFlex = (smallcap * 10).round();
+
+    // Calculate the total width factor (should be 1.0 if all data is present)
+    final widthFactor = (midcap + largecap + smallcap) / 100;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -106,7 +131,7 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
               colorType: AppTextColorType.secondary,
             ),
             AppText(
-              '100%',
+              '${total.toStringAsFixed(1)}%',
               variant: AppTextVariant.bodyMedium,
               weight: AppTextWeight.semiBold,
               colorType: AppTextColorType.primary,
@@ -128,24 +153,24 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
                   width: double.infinity,
                   color: const Color(0xFF2A2A2A),
                 ),
-                // Mid Cap (Light blue) - 48.2%
+                // Stacked progress bars
                 FractionallySizedBox(
-                  widthFactor: 0.482 + 0.405 + 0.113, // Total width
+                  widthFactor: widthFactor, // Total width based on actual data
                   child: Row(
                     children: [
-                      // Mid Cap - 48.2%
+                      // Mid Cap
                       Expanded(
-                        flex: 482, // 48.2%
+                        flex: midcapFlex,
                         child: Container(color: const Color(0xFF3ABFF8)),
                       ),
-                      // Large Cap - 40.5%
+                      // Large Cap
                       Expanded(
-                        flex: 405, // 40.5%
+                        flex: largecapFlex,
                         child: Container(color: const Color(0xFFD926AA)),
                       ),
-                      // Small Cap - 11.3%
+                      // Small Cap
                       Expanded(
-                        flex: 113, // 11.3%
+                        flex: smallcapFlex,
                         child: Container(color: const Color(0xFFFBBD23)),
                       ),
                     ],
@@ -160,13 +185,30 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
   }
 
   Widget _buildSizeCategories() {
+    // Get values from the equity distribution data
+    final midcap = widget.equityDistribution['midcap'] ?? 0.0;
+    final largecap = widget.equityDistribution['largecap'] ?? 0.0;
+    final smallcap = widget.equityDistribution['smallcap'] ?? 0.0;
+
     return Column(
       children: [
-        _buildSizeCategory('Mid Cap', '48.2%', const Color(0xFF3ABFF8)),
+        _buildSizeCategory(
+          'Mid Cap',
+          '${midcap.toStringAsFixed(1)}%',
+          const Color(0xFF3ABFF8),
+        ),
         const SizedBox(height: 16),
-        _buildSizeCategory('Large Cap', '40.5%', const Color(0xFFD926AA)),
+        _buildSizeCategory(
+          'Large Cap',
+          '${largecap.toStringAsFixed(1)}%',
+          const Color(0xFFD926AA),
+        ),
         const SizedBox(height: 16),
-        _buildSizeCategory('Small Cap', '11.3%', const Color(0xFFFBBD23)),
+        _buildSizeCategory(
+          'Small Cap',
+          '${smallcap.toStringAsFixed(1)}%',
+          const Color(0xFFFBBD23),
+        ),
       ],
     );
   }
@@ -202,6 +244,12 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
 
   // Credit Rating Breakup for Debt & Cash tab
   Widget _buildCreditRatingBreakup() {
+    // Get AAA value from the debt cash distribution data
+    final aaa = widget.debtCashDistribution['aaa'] ?? 0.0;
+
+    // Calculate progress value (0.0 to 1.0)
+    final progressValue = aaa / 100;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -215,7 +263,7 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
               colorType: AppTextColorType.secondary,
             ),
             AppText(
-              '2.1%',
+              '${aaa.toStringAsFixed(1)}%',
               variant: AppTextVariant.bodyMedium,
               weight: AppTextWeight.semiBold,
               colorType: AppTextColorType.primary,
@@ -224,13 +272,13 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
           ],
         ),
         const SizedBox(height: 12),
-        // Single progress bar for AAA rating (100%)
+        // Single progress bar for AAA rating
         ClipRRect(
           borderRadius: BorderRadius.circular(4),
-          child: const LinearProgressIndicator(
-            value: 1.0, // 100%
-            backgroundColor: Color(0xFF2A2A2A),
-            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF3ABFF8)),
+          child: LinearProgressIndicator(
+            value: progressValue,
+            backgroundColor: const Color(0xFF2A2A2A),
+            valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF3ABFF8)),
             minHeight: 8,
           ),
         ),
@@ -240,6 +288,9 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
 
   // Credit Rating Categories for Debt & Cash tab
   Widget _buildCreditRatingCategories() {
+    // Get AAA value from the debt cash distribution data
+    final aaa = widget.debtCashDistribution['aaa'] ?? 0.0;
+
     return Row(
       children: [
         Container(
@@ -259,7 +310,7 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
         ),
         const Spacer(),
         AppText(
-          '100%',
+          '${aaa.toStringAsFixed(1)}%',
           variant: AppTextVariant.bodyMedium,
           weight: AppTextWeight.semiBold,
           colorType: AppTextColorType.primary,

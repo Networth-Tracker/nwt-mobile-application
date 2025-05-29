@@ -89,19 +89,8 @@ class _TopHoldingsWidgetState extends State<TopHoldingsWidget> {
               color: item.logoBackground ?? Colors.white,
               shape: BoxShape.circle,
             ),
-            child: Center(
-              child: Image.network(
-                item.logoUrl,
-                width: 24,
-                height: 24,
-                errorBuilder: (context, error, stackTrace) {
-                  return const Icon(
-                    Icons.business,
-                    size: 24,
-                    color: Colors.black54,
-                  );
-                },
-              ),
+            child: const Center(
+              child: Icon(Icons.business, size: 16, color: Colors.white),
             ),
           ),
 
