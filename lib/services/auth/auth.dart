@@ -96,7 +96,13 @@ class AuthService {
   }
 
   void logout() {
+    // Remove auth token
     StorageService.remove(StorageKeys.AUTH_TOKEN_KEY);
+
+    // Reset the bottom sheet shown flag so it shows again on next login
+    StorageService.remove(StorageKeys.MF_BOTTOMSHEET_SHOWN_KEY);
+
+    // Clear user data
     final userController = Get.find<UserController>();
     userController.clearUserData();
   }

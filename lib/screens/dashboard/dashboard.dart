@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/sizing.dart';
+import 'package:nwt_app/constants/storage_keys.dart';
 import 'package:nwt_app/controllers/dashboard/dashboard_asset.dart';
 import 'package:nwt_app/controllers/dashboard/mf_top_performers_controller.dart';
 import 'package:nwt_app/controllers/theme_controller.dart';
@@ -20,6 +21,7 @@ import 'package:nwt_app/screens/mf_switch/mf_switch.dart';
 import 'package:nwt_app/screens/notifications/notification_list.dart';
 import 'package:nwt_app/services/auth/auth_flow.dart';
 import 'package:nwt_app/services/dashboard/total_networth.dart';
+import 'package:nwt_app/services/global_storage.dart';
 import 'package:nwt_app/services/zerodha/zerodha.dart';
 import 'package:nwt_app/utils/currency_formatter.dart';
 import 'package:nwt_app/utils/logger.dart';
@@ -108,10 +110,19 @@ class _DashboardState extends State<Dashboard>
       // Fetch data in parallel
       await Future.wait([fetchDashboardAssets(), fetchTotalNetworth()]);
 
+      // Check if user is MF verified and bottom sheet hasn't been shown yet
       if (userResponse?.data.user.ismfverified == true) {
-        if (mounted) {
+        // Check if we've already shown the bottom sheet before
+        final hasShownBottomSheet =
+            StorageService.read(StorageKeys.MF_BOTTOMSHEET_SHOWN_KEY) ?? false;
+
+        if (!hasShownBottomSheet && mounted) {
+          // Show the bottom sheet after a delay
           Future.delayed(const Duration(milliseconds: 1900), () {
             _showBottomSheet();
+
+            // Mark that we've shown the bottom sheet
+            StorageService.write(StorageKeys.MF_BOTTOMSHEET_SHOWN_KEY, true);
           });
         }
       }
