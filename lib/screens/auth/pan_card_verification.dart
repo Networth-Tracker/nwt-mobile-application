@@ -245,6 +245,7 @@ class _PanCardVerificationState extends State<PanCardVerification> {
                 ),
               ),
               AnimatedErrorMessage(errorMessage: _errorMessage),
+              SizedBox(height: 10),
             ],
           ),
         ),
