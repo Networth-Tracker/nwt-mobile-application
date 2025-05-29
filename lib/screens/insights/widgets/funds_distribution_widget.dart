@@ -61,7 +61,7 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
   Widget _buildTabs() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.3),
+        color: Colors.black.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -88,10 +88,11 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
                   _tabs[index],
                   variant: AppTextVariant.bodySmall,
                   weight: AppTextWeight.bold,
-                  colorType:
+                  colorType: AppTextColorType.secondary,
+                  customColor:
                       _selectedTabIndex == index
-                          ? AppTextColorType.primary
-                          : AppTextColorType.secondary,
+                          ? const Color(0xFF000000)
+                          : null,
                 ),
               ),
             ),
