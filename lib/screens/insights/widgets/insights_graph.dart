@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/screens/insights/types/insights.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -168,7 +169,8 @@ class _InsightsGraphWidgetState extends State<InsightsGraphWidget> {
       return FundReturnData(
         date: point.date,
         returnValue: point.value,
-        sipReturnValue: sipValuesByDate[point.date] ?? 0.0, // Use SIP value if available
+        sipReturnValue:
+            sipValuesByDate[point.date] ?? 0.0, // Use SIP value if available
       );
     }).toList();
   }
@@ -340,11 +342,29 @@ class _InsightsGraphWidgetState extends State<InsightsGraphWidget> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            AppText(
-              'NAV $_navValue',
-              variant: AppTextVariant.bodyMedium,
-              colorType: AppTextColorType.primary,
-              weight: AppTextWeight.semiBold,
+            RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'NAV ',
+                    style: const TextStyle(
+                      color: AppColors.lightSecondary,
+                      fontFamily: 'Poppins',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  TextSpan(
+                    text: '₹$_navValue',
+                    style: const TextStyle(
+                      color: AppColors.darkTextPrimary,
+                      fontFamily: 'Poppins',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 4),
             Container(

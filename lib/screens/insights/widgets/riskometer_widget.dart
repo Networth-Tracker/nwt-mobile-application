@@ -29,7 +29,7 @@ class RiskometerWidget extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 16.0, top: 8.0),
             child: Center(
               child: AppText(
-                'This fund has $riskLevel Risk',
+                'This fund has $riskLevel risk',
                 variant: AppTextVariant.bodyLarge,
                 weight: AppTextWeight.medium,
                 colorType: AppTextColorType.primary,
@@ -79,17 +79,17 @@ class RiskometerPainter extends CustomPainter {
     final arcPaint =
         Paint()
           ..style = PaintingStyle.stroke
-          ..strokeWidth = 50.0
+          ..strokeWidth = 80.0
           ..strokeCap = StrokeCap.butt;
 
     // Define segment colors and angles
     final segmentColors = [
-      const Color(0xFF00B050), // Low risk - Green
-      const Color(0xFFAEE239), // Low to Moderate - Light Green
-      const Color(0xFFFFFF00), // Moderate - Yellow
-      const Color(0xFFFFC000), // Moderate to High - Orange
-      const Color(0xFFFF0000), // High - Red
-      const Color(0xFFAA0078), // Very High - Pink
+      const Color(0xFF5EC213), // Low risk - Green
+      const Color(0xFFBDD527), // Low to Moderate - Light Green
+      const Color(0xFFFFD607), // Moderate - Yellow
+      const Color(0xFFFE9105), // Moderate to High - Orange
+      const Color(0xFFFD5501), // High - Red
+      const Color(0xFFE00003), // Very High - Pink
     ];
 
     // Draw each segment as a separate arc

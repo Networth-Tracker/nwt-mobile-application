@@ -45,12 +45,7 @@ class FundDetailsWidget extends StatelessWidget {
             label: 'Fund Manager',
             value: fundManager,
             suffix: GestureDetector(
-              onTap:
-                  () => _showInfoBottomSheet(
-                    context,
-                    'Fund Manager',
-                    'R. Janakiraman is a seasoned fund manager with over 15 years of experience in equity markets. He specializes in large-cap growth stocks and has consistently delivered above-market returns.',
-                  ),
+              onTap: () => _showFundManagerBottomSheet(context),
               child: const Icon(
                 Icons.info_outline,
                 size: 12,
@@ -100,11 +95,14 @@ class FundDetailsWidget extends StatelessWidget {
         const SizedBox(height: 4),
         Row(
           children: [
-            AppText(
-              value,
-              variant: AppTextVariant.bodyMedium,
-              weight: AppTextWeight.semiBold,
-              colorType: AppTextColorType.primary,
+            Expanded(
+              child: AppText(
+                value,
+                variant: AppTextVariant.bodyMedium,
+                weight: AppTextWeight.semiBold,
+                colorType: AppTextColorType.primary,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
             if (suffix != null) ...[const SizedBox(width: 4), suffix],
           ],
