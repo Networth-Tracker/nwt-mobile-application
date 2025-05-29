@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:nwt_app/constants/api.dart';
 import 'package:nwt_app/screens/insights/types/insights.dart';
 import 'package:nwt_app/utils/logger.dart';
 import 'package:nwt_app/utils/network_api_helper.dart';
@@ -16,7 +17,7 @@ class InsightsService {
     onLoading(true);
     try {
       // Construct the URL with fund ID parameter if provided
-      String url = 'http://192.168.1.48:3000/v1/mf-performers/insight';
+      String url = ApiURLs.GET_MF_INSIGHTS;
       if (fundId != null && fundId.isNotEmpty) {
         url = "$url/$fundId";
       }
