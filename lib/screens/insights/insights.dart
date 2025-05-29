@@ -4,6 +4,7 @@ import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/screens/insights/widgets/asset_allocation_widget.dart';
 import 'package:nwt_app/screens/insights/widgets/dividend_history_widget.dart';
 import 'package:nwt_app/screens/insights/widgets/fund_details_widget.dart';
+import 'package:nwt_app/screens/insights/widgets/insights_graph.dart';
 import 'package:nwt_app/screens/insights/widgets/riskometer_widget.dart';
 import 'package:nwt_app/screens/insights/widgets/sector_allocation_widget.dart';
 import 'package:nwt_app/screens/insights/widgets/sip_details_widget.dart';
@@ -49,7 +50,10 @@ class _InsightsScreenState extends State<InsightsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 16),
+              const SizedBox(
+                width: double.infinity,
+                child: InsightsGraphWidget(),
+              ),
               FundDetailsWidget(
                 expenseRatio: '1.10%',
                 churnValue: '10%',

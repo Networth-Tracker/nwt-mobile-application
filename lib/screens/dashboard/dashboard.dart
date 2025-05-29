@@ -11,13 +11,11 @@ import 'package:nwt_app/screens/Advisory/advisory.dart';
 import 'package:nwt_app/screens/assets/banks/banks.dart';
 import 'package:nwt_app/screens/assets/investments/investments.dart';
 import 'package:nwt_app/screens/connections/connections.dart';
-import 'package:nwt_app/screens/dashboard/data/networth_chart_dummy_data.dart';
 import 'package:nwt_app/screens/dashboard/widgets/asset_card.dart';
 import 'package:nwt_app/screens/dashboard/widgets/mutual_fund_bottom_sheet.dart';
-import 'package:nwt_app/screens/dashboard/widgets/sync_networth_chart.dart';
 import 'package:nwt_app/screens/dashboard/zerodha_webview.dart';
 import 'package:nwt_app/screens/explore/explore.dart';
-import 'package:nwt_app/screens/insights/widgets/insights_graph.dart';
+import 'package:nwt_app/screens/insights/insights.dart';
 import 'package:nwt_app/screens/mf_switch/mf_switch.dart';
 import 'package:nwt_app/screens/notifications/notification_list.dart';
 import 'package:nwt_app/screens/products/products.dart';
@@ -637,17 +635,7 @@ class _DashboardState extends State<Dashboard>
                                                         AppTextColorType
                                                             .secondary,
                                                   ),
-                                                  SyncNetworthChart(
-                                                    showProjection: true,
-                                                    currentNetworth:
-                                                        NetworthChartDummyData.getTotalNetworth(),
-                                                    projectedNetworth:
-                                                        NetworthChartDummyData.getProjectedNetworth(),
-                                                    currentprojection:
-                                                        NetworthChartDummyData.getCurrentProjection(),
-                                                    futureprojection:
-                                                        NetworthChartDummyData.getFutureProjection(),
-                                                  ),
+
                                                   // NetworthChart(
                                                   //   showProjection: true,
                                                   //   currentNetworth:
@@ -1399,10 +1387,7 @@ class _DashboardState extends State<Dashboard>
                                         ],
                                       ),
                                     ),
-                                    const SizedBox(
-                                      width: double.infinity,
-                                      child: InsightsGraphWidget(),
-                                    ),
+
                                     Container(
                                       padding: const EdgeInsets.symmetric(
                                         horizontal:
@@ -1443,12 +1428,15 @@ class _DashboardState extends State<Dashboard>
                                               ),
                                               child: Row(
                                                 children: [
-                                                  CircleAvatar(
-                                                    backgroundColor:
-                                                        Colors.grey[800],
-                                                    child: Icon(
-                                                      Icons.add,
-                                                      color: Colors.white,
+                                                  InkWell(
+                                                    onTap: ()=> Get.to(() => InsightsScreen()),
+                                                    child: CircleAvatar(
+                                                      backgroundColor:
+                                                          Colors.grey[800],
+                                                      child: Icon(
+                                                        Icons.add,
+                                                        color: Colors.white,
+                                                      ),
                                                     ),
                                                   ),
                                                   const SizedBox(width: 12),

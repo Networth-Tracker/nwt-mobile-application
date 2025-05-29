@@ -163,7 +163,6 @@ class _InsightsGraphWidgetState extends State<InsightsGraphWidget> {
         ),
       ),
       crosshairBehavior: _crosshairBehavior,
-      title: ChartTitle(text: 'Average high/low temperature of London'),
       primaryXAxis: const CategoryAxis(
         majorGridLines: MajorGridLines(width: 0),
         labelPlacement: LabelPlacement.onTicks,
