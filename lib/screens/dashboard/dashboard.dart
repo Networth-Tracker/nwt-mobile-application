@@ -7,7 +7,6 @@ import 'package:nwt_app/controllers/dashboard/dashboard_asset.dart';
 import 'package:nwt_app/controllers/dashboard/mf_top_performers_controller.dart';
 import 'package:nwt_app/controllers/theme_controller.dart';
 import 'package:nwt_app/controllers/user_controller.dart';
-import 'package:nwt_app/screens/Advisory/advisory.dart';
 import 'package:nwt_app/screens/assets/banks/banks.dart';
 import 'package:nwt_app/screens/assets/investments/investments.dart';
 import 'package:nwt_app/screens/connections/connections.dart';
@@ -15,12 +14,10 @@ import 'package:nwt_app/screens/dashboard/types/dashboard_networth.dart';
 import 'package:nwt_app/screens/dashboard/widgets/asset_card.dart';
 import 'package:nwt_app/screens/dashboard/widgets/mf_top_performers_widget.dart';
 import 'package:nwt_app/screens/dashboard/widgets/mutual_fund_bottom_sheet.dart';
-import 'package:nwt_app/screens/dashboard/widgets/networth_chart.dart';
+import 'package:nwt_app/screens/dashboard/widgets/networth_chart_main.dart';
 import 'package:nwt_app/screens/dashboard/zerodha_webview.dart';
-import 'package:nwt_app/screens/explore/explore.dart';
 import 'package:nwt_app/screens/mf_switch/mf_switch.dart';
 import 'package:nwt_app/screens/notifications/notification_list.dart';
-import 'package:nwt_app/screens/products/products.dart';
 import 'package:nwt_app/services/auth/auth_flow.dart';
 import 'package:nwt_app/services/dashboard/total_networth.dart';
 import 'package:nwt_app/services/zerodha/zerodha.dart';
@@ -528,8 +525,13 @@ class _DashboardState extends State<Dashboard>
                                         weight: AppTextWeight.semiBold,
                                         colorType: AppTextColorType.secondary,
                                       ),
-                                      SizedBox(height: 12),
-
+                                      const SizedBox(height: 12),
+                                      NetworthChartMain(
+                                        currentProjection:
+                                            _currentProjection ?? [],
+                                        isLoading: isNetworthLoading,
+                                      ),
+                                      const SizedBox(height: 12),
                                       // NetworthChart(
                                       //   showProjection: true,
                                       //   currentNetworth:
@@ -1234,38 +1236,23 @@ class _DashboardState extends State<Dashboard>
 
                       // Navigate based on the selected index
                       if (index == 1) {
-                        // Products tab
+                        // Switch tab
                         Get.to(
-                          () => const ProductsScreen(),
+                          () => const MutualFundSwitchScreen(),
                           transition: Transition.rightToLeft,
-                        )?.then((_) {
-                          setState(() {
-                            _selectedIndex =
-                                0; // Reset to home tab when returning
-                          });
-                        });
+                        );
                       } else if (index == 2) {
-                        // Advisory tab
+                        // Banks tab
                         Get.to(
-                          () => const AdvisoryScreen(),
+                          () => const AssetBankScreen(),
                           transition: Transition.rightToLeft,
-                        )?.then((_) {
-                          setState(() {
-                            _selectedIndex =
-                                0; // Reset to home tab when returning
-                          });
-                        });
+                        );
                       } else if (index == 3) {
-                        // Explore tab
+                        // Investments tab
                         Get.to(
-                          () => const ExploreScreen(),
+                          () => const AssetInvestmentScreen(),
                           transition: Transition.rightToLeft,
-                        )?.then((_) {
-                          setState(() {
-                            _selectedIndex =
-                                0; // Reset to home tab when returning
-                          });
-                        });
+                        );
                       }
                     },
                     selectedItemColor: AppColors.darkPrimary,
@@ -1278,15 +1265,15 @@ class _DashboardState extends State<Dashboard>
                       ),
                       BottomNavigationBarItem(
                         icon: Icon(Icons.category_rounded),
-                        label: "Products",
+                        label: "Switch",
                       ),
                       BottomNavigationBarItem(
                         icon: Icon(Icons.smart_toy_rounded),
-                        label: "Advisory",
+                        label: "Banks",
                       ),
                       BottomNavigationBarItem(
                         icon: Icon(Icons.dashboard_rounded),
-                        label: "Explore",
+                        label: "Investments",
                       ),
                     ],
                   ),
