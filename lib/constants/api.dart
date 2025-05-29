@@ -37,6 +37,7 @@ class ApiURLs {
 
   // Mutual Fund Switch Advice endpoints
   static String get GET_MF_SWITCH_ADVICE => "$baseUrl/mfcentral/switch/details";
+  static String get GET_MF_TOP_PERFORMERS => "$baseUrl/mf-performers/top-mf";
 
   static String get GET_NOTIFICATION_PERMISSION => "$baseUrl/userdetail/fcm";
 }

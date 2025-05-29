@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:nwt_app/constants/colors.dart';
 import 'package:nwt_app/constants/sizing.dart';
 import 'package:nwt_app/controllers/dashboard/dashboard_asset.dart';
+import 'package:nwt_app/controllers/dashboard/mf_top_performers_controller.dart';
 import 'package:nwt_app/controllers/theme_controller.dart';
 import 'package:nwt_app/controllers/user_controller.dart';
 import 'package:nwt_app/screens/Advisory/advisory.dart';
@@ -12,10 +13,10 @@ import 'package:nwt_app/screens/assets/banks/banks.dart';
 import 'package:nwt_app/screens/assets/investments/investments.dart';
 import 'package:nwt_app/screens/connections/connections.dart';
 import 'package:nwt_app/screens/dashboard/widgets/asset_card.dart';
+import 'package:nwt_app/screens/dashboard/widgets/mf_top_performers_widget.dart';
 import 'package:nwt_app/screens/dashboard/widgets/mutual_fund_bottom_sheet.dart';
 import 'package:nwt_app/screens/dashboard/zerodha_webview.dart';
 import 'package:nwt_app/screens/explore/explore.dart';
-import 'package:nwt_app/screens/insights/insights.dart';
 import 'package:nwt_app/screens/mf_switch/mf_switch.dart';
 import 'package:nwt_app/screens/notifications/notification_list.dart';
 import 'package:nwt_app/screens/products/products.dart';
@@ -40,6 +41,7 @@ class _DashboardState extends State<Dashboard>
     with SingleTickerProviderStateMixin {
   int _selectedIndex = 0;
   final dashboardAssetController = Get.put(DashboardAssetController());
+  final mfTopPerformersController = Get.put(MFTopPerformersController());
   final _zerodhaService = ZerodhaService();
   final _totalNetworthService = TotalNetworthService();
   late AnimationController _refreshController;
@@ -1388,84 +1390,8 @@ class _DashboardState extends State<Dashboard>
                                       ),
                                     ),
 
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal:
-                                            AppSizing.scaffoldHorizontalPadding,
-                                        vertical: 16,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: AppColors.darkBackground,
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          const AppText(
-                                            'MF Top 10 Performers',
-                                            variant: AppTextVariant.headline5,
-                                            weight: AppTextWeight.bold,
-                                            colorType: AppTextColorType.primary,
-                                            decoration: TextDecoration.none,
-                                          ),
-                                          const SizedBox(height: 20),
-                                          ...List.generate(
-                                            7,
-                                            (index) => Container(
-                                              margin: const EdgeInsets.only(
-                                                bottom: 10,
-                                              ),
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    horizontal: 12,
-                                                    vertical: 14,
-                                                  ),
-                                              decoration: BoxDecoration(
-                                                color: const Color(0xFF1E1E1E),
-                                                borderRadius:
-                                                    BorderRadius.circular(12),
-                                              ),
-                                              child: Row(
-                                                children: [
-                                                  InkWell(
-                                                    onTap: ()=> Get.to(() => InsightsScreen()),
-                                                    child: CircleAvatar(
-                                                      backgroundColor:
-                                                          Colors.grey[800],
-                                                      child: Icon(
-                                                        Icons.add,
-                                                        color: Colors.white,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  const SizedBox(width: 12),
-                                                  Expanded(
-                                                    child: AppText(
-                                                      "sdfsdfsdfsdfsd",
-                                                      variant:
-                                                          AppTextVariant
-                                                              .bodyMedium,
-                                                      weight:
-                                                          AppTextWeight.medium,
-                                                      colorType:
-                                                          AppTextColorType
-                                                              .primary,
-                                                      decoration:
-                                                          TextDecoration.none,
-                                                    ),
-                                                  ),
-                                                  const Icon(
-                                                    Icons.arrow_forward_ios,
-                                                    color: Colors.white,
-                                                    size: 16,
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
+                                    MFTopPerformersWidget(
+                                      controller: mfTopPerformersController,
                                     ),
                                     Material(
                                       color: AppColors.darkBackground,
