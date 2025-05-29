@@ -21,15 +21,59 @@ class _InsightsGraphWidgetState extends State<InsightsGraphWidget> {
   // Tooltip behavior
   late TooltipBehavior _tooltipBehavior;
 
+  // Selected time period
+  String _selectedPeriod = '1M';
+
+  // Available time periods
+  final List<String> _timePeriods = ['1W', '1M', '3M', '6M', '1Y', 'All'];
+
   @override
   void initState() {
     super.initState();
 
-    // Generate sample data for the chart
-    final DateTime startDate = DateTime(2025, 3, 16);
-    final DateTime endDate = DateTime(2025, 5, 16);
+    // Generate initial chart data for 1M period
+    _updateChartDataForPeriod(_selectedPeriod);
+  }
 
+  void _updateChartDataForPeriod(String period) {
+    // Current date as the end date
+    final DateTime endDate = DateTime.now();
+    DateTime startDate;
+
+    // Calculate start date based on selected period
+    switch (period) {
+      case '1W':
+        startDate = endDate.subtract(const Duration(days: 7));
+        break;
+      case '1M':
+        startDate = DateTime(endDate.year, endDate.month - 1, endDate.day);
+        break;
+      case '3M':
+        startDate = DateTime(endDate.year, endDate.month - 3, endDate.day);
+        break;
+      case '6M':
+        startDate = DateTime(endDate.year, endDate.month - 6, endDate.day);
+        break;
+      case '1Y':
+        startDate = DateTime(endDate.year - 1, endDate.month, endDate.day);
+        break;
+      case 'All':
+        // For 'All', show 2 years of data
+        startDate = DateTime(endDate.year - 2, endDate.month, endDate.day);
+        break;
+      default:
+        startDate = DateTime(
+          endDate.year,
+          endDate.month - 1,
+          endDate.day,
+        ); // Default to 1M
+    }
+
+    // Generate chart data for the selected period
     _chartData = _generateChartData(startDate, endDate);
+
+    // Update selected period
+    _selectedPeriod = period;
   }
 
   List<FundReturnData> _generateChartData(
@@ -151,6 +195,8 @@ class _InsightsGraphWidgetState extends State<InsightsGraphWidget> {
             width: double.infinity,
             child: _buildCartesianChart(),
           ),
+          const SizedBox(height: 16),
+          _buildTimePeriodSelector(),
         ],
       ),
     );
@@ -238,6 +284,50 @@ class _InsightsGraphWidgetState extends State<InsightsGraphWidget> {
     );
   }
 
+  Widget _buildTimePeriodSelector() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children:
+          _timePeriods.map((period) => _buildPeriodButton(period)).toList(),
+    );
+  }
+
+  Widget _buildPeriodButton(String period) {
+    final bool isSelected = period == _selectedPeriod;
+
+    return GestureDetector(
+      onTap: () {
+        if (period != _selectedPeriod) {
+          setState(() {
+            _updateChartDataForPeriod(period);
+          });
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color:
+              isSelected
+                  ? Colors.blue.withValues(alpha: 0.2)
+                  : Colors.transparent,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color:
+                isSelected ? Colors.blue : Colors.grey.withValues(alpha: 0.3),
+            width: 1,
+          ),
+        ),
+        child: AppText(
+          period,
+          variant: AppTextVariant.bodySmall,
+          colorType:
+              isSelected ? AppTextColorType.link : AppTextColorType.muted,
+          weight: isSelected ? AppTextWeight.semiBold : AppTextWeight.regular,
+        ),
+      ),
+    );
+  }
+
   SfCartesianChart _buildCartesianChart() {
     return SfCartesianChart(
       plotAreaBorderWidth: 0,
@@ -245,15 +335,18 @@ class _InsightsGraphWidgetState extends State<InsightsGraphWidget> {
       margin: const EdgeInsets.all(0),
       trackballBehavior: _trackballBehavior,
       tooltipBehavior: _tooltipBehavior,
+      enableAxisAnimation: true,
 
       primaryXAxis: DateTimeAxis(
         majorGridLines: const MajorGridLines(width: 0),
         axisLine: const AxisLine(width: 0),
-        majorTickLines: const MajorTickLines(size: 0),
-        dateFormat: DateFormat('dd-MM-yyyy'),
-        intervalType: DateTimeIntervalType.days,
-        interval: 15,
-        labelStyle: const TextStyle(color: Colors.grey, fontSize: 12),
+        labelStyle: const TextStyle(color: Colors.white70),
+        dateFormat: DateFormat.MMMd(),
+        labelIntersectAction: AxisLabelIntersectAction.hide,
+        edgeLabelPlacement: EdgeLabelPlacement.shift,
+        rangePadding: ChartRangePadding.none,
+        // Custom interval to show only first and last labels
+        interval: 31,
       ),
       primaryYAxis: NumericAxis(
         minimum: -3,
@@ -280,7 +373,7 @@ class _InsightsGraphWidgetState extends State<InsightsGraphWidget> {
         width: 3,
         splineType: SplineType.natural,
         markerSettings: const MarkerSettings(isVisible: false),
-        animationDuration: 1500,
+        animationDuration: 500, // Faster animation
       ),
       SplineSeries<FundReturnData, DateTime>(
         dataSource: _chartData!,
@@ -291,7 +384,7 @@ class _InsightsGraphWidgetState extends State<InsightsGraphWidget> {
         width: 3,
         splineType: SplineType.natural,
         markerSettings: const MarkerSettings(isVisible: false),
-        animationDuration: 1500,
+        animationDuration: 500, // Faster animation
       ),
     ];
   }
