@@ -6,7 +6,6 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:nwt_app/constants/storage_keys.dart';
 import 'package:nwt_app/constants/theme.dart';
 import 'package:nwt_app/controllers/theme_controller.dart';
 import 'package:nwt_app/controllers/user_controller.dart';
@@ -107,7 +106,7 @@ class MainEntry extends StatelessWidget {
     final themeController = Get.put(ThemeController());
     return Obx(
       () => GetMaterialApp(
-        title: 'pivot.money',
+        title: 'Pivot.Money',
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: themeController.themeMode,

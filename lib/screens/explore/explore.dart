@@ -37,11 +37,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
               color: iconBackgroundColor,
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              icon,
-              color: AppColors.darkTextSecondary,
-              size: 28,
-            ),
+            child: Icon(icon, color: AppColors.darkTextSecondary, size: 28),
           ),
           const SizedBox(height: 16),
           AppText(
@@ -55,6 +51,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
       ),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,7 +86,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
               const SizedBox(height: 20),
               Center(
                 child: AppText(
-                  "Explore the features of pivot.money",
+                  "Explore the features of Pivot.Money",
                   variant: AppTextVariant.headline6,
                   weight: AppTextWeight.semiBold,
                   colorType: AppTextColorType.link,
@@ -135,14 +132,26 @@ class _ExploreScreenState extends State<ExploreScreen> {
           setState(() {
             _selectedIndex = index;
           });
-          
+
           // Navigate based on the selected index
-          if (index == 0) { // Home tab
-            Get.off(() => const Dashboard(), transition: Transition.leftToRight);
-          } else if (index == 1) { // Products tab
-            Get.off(() => const ProductsScreen(), transition: Transition.leftToRight);
-          } else if (index == 2) { // Advisory tab
-            Get.off(() => const AdvisoryScreen(), transition: Transition.leftToRight);
+          if (index == 0) {
+            // Home tab
+            Get.off(
+              () => const Dashboard(),
+              transition: Transition.leftToRight,
+            );
+          } else if (index == 1) {
+            // Products tab
+            Get.off(
+              () => const ProductsScreen(),
+              transition: Transition.leftToRight,
+            );
+          } else if (index == 2) {
+            // Advisory tab
+            Get.off(
+              () => const AdvisoryScreen(),
+              transition: Transition.leftToRight,
+            );
           }
         },
         selectedItemColor: AppColors.darkPrimary,

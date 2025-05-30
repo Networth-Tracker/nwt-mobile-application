@@ -122,7 +122,7 @@ class _PhoneNumberInputScreenState extends State<PhoneNumberInputScreen> {
                             height: MediaQuery.of(context).size.height * 0.15,
                           ),
                           AppText(
-                            "Welcome to \npivot.money",
+                            "Welcome to \nPivot.Money",
                             variant: AppTextVariant.headline1,
                             lineHeight: 1.3,
                             weight: AppTextWeight.bold,
