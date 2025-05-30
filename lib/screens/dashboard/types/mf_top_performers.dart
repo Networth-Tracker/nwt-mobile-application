@@ -36,7 +36,7 @@ class MFPerformers {
   String fundname;
   DateTime createdat;
   DateTime updatedat;
-  String isincode;
+  String? isincode;
 
   MFPerformers({
     required this.id,
@@ -45,7 +45,7 @@ class MFPerformers {
     required this.fundname,
     required this.createdat,
     required this.updatedat,
-    required this.isincode,
+    this.isincode,
   });
 
   factory MFPerformers.fromJson(Map<String, dynamic> json) => MFPerformers(
@@ -55,7 +55,7 @@ class MFPerformers {
     fundname: json["fundname"],
     createdat: DateTime.parse(json["createdat"]),
     updatedat: DateTime.parse(json["updatedat"]),
-    isincode: json["isincode"],
+    isincode: json["isincode"] ?? "N/A",
   );
 
   Map<String, dynamic> toJson() => {
@@ -65,6 +65,6 @@ class MFPerformers {
     "fundname": fundname,
     "createdat": createdat.toIso8601String(),
     "updatedat": updatedat.toIso8601String(),
-    "isincode": isincode,
+    "isincode": isincode ?? "N/A",
   };
 }
