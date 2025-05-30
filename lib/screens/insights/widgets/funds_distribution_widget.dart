@@ -88,7 +88,10 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
                   _tabs[index],
                   variant: AppTextVariant.bodySmall,
                   weight: AppTextWeight.bold,
-                  colorType: AppTextColorType.secondary,
+                  colorType:
+                      _selectedTabIndex == index
+                          ? AppTextColorType.tertiary
+                          : AppTextColorType.primary,
                   customColor:
                       _selectedTabIndex == index
                           ? const Color(0xFF000000)
@@ -111,13 +114,18 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
     // Calculate total for percentage display
     final total = midcap + largecap + smallcap;
 
-    // Convert to integer flex values for the progress bar
-    final midcapFlex = (midcap * 10).round();
-    final largecapFlex = (largecap * 10).round();
-    final smallcapFlex = (smallcap * 10).round();
+    // Normalize values to ensure they sum to 100 for the graph
+    final normalizedMidcap = total > 0 ? (midcap / total) * 100 : 0.0;
+    final normalizedLargecap = total > 0 ? (largecap / total) * 100 : 0.0;
+    final normalizedSmallcap = total > 0 ? (smallcap / total) * 100 : 0.0;
 
-    // Calculate the total width factor (should be 1.0 if all data is present)
-    final widthFactor = (midcap + largecap + smallcap) / 100;
+    // Convert to integer flex values for the progress bar using normalized values
+    final midcapFlex = (normalizedMidcap * 10).round();
+    final largecapFlex = (normalizedLargecap * 10).round();
+    final smallcapFlex = (normalizedSmallcap * 10).round();
+
+    // Width factor is always 1.0 since we're normalizing to 100%
+    const widthFactor = 1.0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -161,14 +169,14 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
                     children: [
                       // Mid Cap
                       Expanded(
+                        flex: largecapFlex,
+                        child: Container(color: const Color(0xFFD926AA)),
+                      ),
+                      Expanded(
                         flex: midcapFlex,
                         child: Container(color: const Color(0xFF3ABFF8)),
                       ),
                       // Large Cap
-                      Expanded(
-                        flex: largecapFlex,
-                        child: Container(color: const Color(0xFFD926AA)),
-                      ),
                       // Small Cap
                       Expanded(
                         flex: smallcapFlex,
@@ -194,15 +202,15 @@ class _FundsDistributionWidgetState extends State<FundsDistributionWidget> {
     return Column(
       children: [
         _buildSizeCategory(
-          'Mid Cap',
-          '${midcap.toStringAsFixed(1)}%',
-          const Color(0xFF3ABFF8),
-        ),
-        const SizedBox(height: 16),
-        _buildSizeCategory(
           'Large Cap',
           '${largecap.toStringAsFixed(1)}%',
           const Color(0xFFD926AA),
+        ),
+        const SizedBox(height: 16),
+        _buildSizeCategory(
+          'Mid Cap',
+          '${midcap.toStringAsFixed(1)}%',
+          const Color(0xFF3ABFF8),
         ),
         const SizedBox(height: 16),
         _buildSizeCategory(

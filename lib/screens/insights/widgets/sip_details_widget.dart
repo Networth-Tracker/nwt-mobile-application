@@ -70,10 +70,13 @@ class SipDetailsWidget extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         AppText(
-          value,
+          value.isNotEmpty
+              ? value[0].toUpperCase() + value.substring(1)
+              : value,
           variant: AppTextVariant.bodyMedium,
           weight: AppTextWeight.semiBold,
           colorType: AppTextColorType.primary,
+          textAlign: TextAlign.right,
         ),
       ],
     );

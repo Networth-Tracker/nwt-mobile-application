@@ -330,7 +330,7 @@ class FundDetailsWidget extends StatelessWidget {
                             text: '$fundName - ',
                             style: const TextStyle(
                               color: AppColors.darkTextPrimary,
-                              fontFamily: 'Poppins',
+                              fontFamily: 'Montserrat',
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
                               decoration: TextDecoration.underline,
@@ -340,7 +340,7 @@ class FundDetailsWidget extends StatelessWidget {
                             text: since,
                             style: const TextStyle(
                               color: AppColors.darkTextPrimary,
-                              fontFamily: 'Poppins',
+                              fontFamily: 'Montserrat',
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
                             ),
@@ -349,7 +349,7 @@ class FundDetailsWidget extends StatelessWidget {
                             text: ' | ',
                             style: TextStyle(
                               color: AppColors.darkTextPrimary,
-                              fontFamily: 'Poppins',
+                              fontFamily: 'Montserrat',
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
                             ),
@@ -358,7 +358,7 @@ class FundDetailsWidget extends StatelessWidget {
                             text: investLink,
                             style: const TextStyle(
                               color: AppColors.darkTextPrimary,
-                              fontFamily: 'Poppins',
+                              fontFamily: 'Montserrat',
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
                             ),

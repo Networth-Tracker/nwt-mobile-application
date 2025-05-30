@@ -9,7 +9,7 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 class InsightsGraphWidget extends StatefulWidget {
   final String fundName;
   final String fundType;
-  final String navValue;
+  final double navValue;
   final double returnPercentage;
   // Regular return data
   final List<MFPerformanceDataPoint> oneMonthData;
@@ -55,7 +55,7 @@ class _InsightsGraphWidgetState extends State<InsightsGraphWidget> {
   late TrackballBehavior _trackballBehavior;
   String get _fundName => widget.fundName;
   String get _fundType => widget.fundType;
-  String get _navValue => widget.navValue;
+  double get _navValue => widget.navValue;
   double get _returnPercentage => widget.returnPercentage;
 
   // Tooltip behavior
@@ -349,7 +349,7 @@ class _InsightsGraphWidgetState extends State<InsightsGraphWidget> {
                     text: 'NAV ',
                     style: const TextStyle(
                       color: AppColors.lightSecondary,
-                      fontFamily: 'Poppins',
+                      fontFamily: 'Montserrat',
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
                     ),
@@ -358,7 +358,7 @@ class _InsightsGraphWidgetState extends State<InsightsGraphWidget> {
                     text: '₹$_navValue',
                     style: const TextStyle(
                       color: AppColors.darkTextPrimary,
-                      fontFamily: 'Poppins',
+                      fontFamily: 'Montserrat',
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
                     ),

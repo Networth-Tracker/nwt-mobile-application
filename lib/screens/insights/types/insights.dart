@@ -27,8 +27,8 @@ class MutualFundInsightRespose {
 class InsightsSummary {
   String fundname;
   String fundtype;
-  String nav;
-  String navdelta;
+  double nav;
+  double navdelta;
   Mfreturnandsipreturn mfreturnandsipreturn;
   Funddetail funddetail;
   Assetallocation assetallocation;
@@ -61,8 +61,8 @@ class InsightsSummary {
       InsightsSummary(
         fundname: json["fundname"],
         fundtype: json["fundtype"],
-        nav: json["nav"],
-        navdelta: json["navdelta"],
+        nav: json["nav"]?.toDouble() ?? 0.0,
+        navdelta: json["navdelta"]?.toDouble() ?? 0.0,
         mfreturnandsipreturn: Mfreturnandsipreturn.fromJson(
           json["mfreturnandsipreturn"],
         ),

@@ -42,11 +42,12 @@ class InsightsService {
         }
       }
       return null;
-    } catch (e) {
+    } catch (e, subTrace) {
       AppLogger.error(
         'Get MF Insights Error',
         error: e,
         tag: 'InsightsService',
+        stackTrace: subTrace,
       );
       return null;
     } finally {

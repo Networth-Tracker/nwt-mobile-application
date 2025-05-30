@@ -156,8 +156,7 @@ class _InsightsScreenState extends State<InsightsScreen> {
                           fundName: _insightData!.fundname,
                           fundType: _insightData!.fundtype,
                           navValue: _insightData!.nav,
-                          returnPercentage:
-                              double.tryParse(_insightData!.navdelta) ?? 0.0,
+                          returnPercentage: _insightData!.navdelta,
                           // Regular return data
                           oneMonthData:
                               _insightsService.getOneMonthPerformanceData(),
@@ -319,6 +318,7 @@ class _InsightsScreenState extends State<InsightsScreen> {
                         riskValue:
                             30, // Default value as API doesn't provide risk value
                       ),
+                      const SizedBox(height: 20),
                     ],
                   ),
                 ),
