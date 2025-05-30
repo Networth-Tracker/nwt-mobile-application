@@ -295,94 +295,123 @@ class _InsightsGraphWidgetState extends State<InsightsGraphWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.black,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildHeader(),
-          const SizedBox(height: 8),
-          _buildFundType(),
-          const SizedBox(height: 16),
-          _buildLegend(),
-          const SizedBox(height: 8),
-          SizedBox(
-            height: 300,
-            width: double.infinity,
-            child: _buildCartesianChart(),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Calculate responsive dimensions based on available width
+        final double availableWidth = constraints.maxWidth;
+        // Adjust chart height based on available width for better aspect ratio
+        final double chartHeight = availableWidth < 400 ? 250 : 300;
+
+        return Container(
+          padding: EdgeInsets.all(availableWidth < 350 ? 12 : 16),
+          decoration: BoxDecoration(
+            color: Colors.black,
+            borderRadius: BorderRadius.circular(16),
           ),
-          const SizedBox(height: 16),
-          _buildTimePeriodSelector(),
-        ],
-      ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(),
+              const SizedBox(height: 8),
+              _buildFundType(),
+              const SizedBox(height: 16),
+              _buildLegend(),
+              const SizedBox(height: 8),
+              SizedBox(
+                height: chartHeight,
+                width: double.infinity,
+                child: _buildCartesianChart(),
+              ),
+              const SizedBox(height: 16),
+              _buildTimePeriodSelector(availableWidth),
+            ],
+          ),
+        );
+      },
     );
   }
 
   Widget _buildHeader() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Flexible(
-          child: AppText(
-            _fundName,
-            variant: AppTextVariant.headline3,
-            colorType: AppTextColorType.primary,
-            weight: AppTextWeight.semiBold,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            lineHeight: 1.3,
-          ),
-        ),
-        const SizedBox(width: 16),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Determine if we're in a narrow layout
+        final bool isNarrow = constraints.maxWidth < 350;
+
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            RichText(
-              text: TextSpan(
+            Flexible(
+              flex: 3,
+              child: AppText(
+                _fundName,
+                variant:
+                    isNarrow
+                        ? AppTextVariant.headline4
+                        : AppTextVariant.headline3,
+                colorType: AppTextColorType.primary,
+                weight: AppTextWeight.semiBold,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                lineHeight: 1.3,
+              ),
+            ),
+            SizedBox(width: isNarrow ? 8 : 16),
+            Flexible(
+              flex: 2,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  TextSpan(
-                    text: 'NAV ',
-                    style: const TextStyle(
-                      color: AppColors.lightSecondary,
-                      fontFamily: 'Montserrat',
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'NAV ',
+                          style: TextStyle(
+                            color: AppColors.lightSecondary,
+                            fontFamily: 'Montserrat',
+                            fontSize: isNarrow ? 12 : 14,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                        TextSpan(
+                          text: '₹${_navValue.toStringAsFixed(2)}',
+                          style: TextStyle(
+                            color: AppColors.darkTextPrimary,
+                            fontFamily: 'Montserrat',
+                            fontSize: isNarrow ? 12 : 14,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  TextSpan(
-                    text: '₹$_navValue',
-                    style: const TextStyle(
-                      color: AppColors.darkTextPrimary,
-                      fontFamily: 'Montserrat',
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
+                  const SizedBox(height: 4),
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: isNarrow ? 6 : 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.green.withValues(alpha: 0.3),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: AppText(
+                      '+ ${_returnPercentage.toStringAsFixed(1)}%',
+                      variant:
+                          isNarrow
+                              ? AppTextVariant.bodySmall
+                              : AppTextVariant.bodyMedium,
+                      colorType: AppTextColorType.success,
+                      weight: AppTextWeight.semiBold,
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 4),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.green.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: AppText(
-                '+ ${_returnPercentage.toStringAsFixed(1)}%',
-                variant: AppTextVariant.bodyMedium,
-                colorType: AppTextColorType.success,
-                weight: AppTextWeight.semiBold,
-              ),
-            ),
           ],
-        ),
-      ],
+        );
+      },
     );
   }
 
@@ -396,41 +425,62 @@ class _InsightsGraphWidgetState extends State<InsightsGraphWidget> {
   }
 
   Widget _buildLegend() {
-    return Row(
-      children: [
-        _buildLegendItem('Returns', const Color(0xFFB176E2)),
-        const SizedBox(width: 16),
-        _buildLegendItem('SIP Returns', const Color(0xFFFFDD55)),
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Determine if we're in a narrow layout
+        final bool isNarrow = constraints.maxWidth < 350;
+
+        return Row(
+          children: [
+            _buildLegendItem('Returns', const Color(0xFFB176E2), isNarrow),
+            SizedBox(width: isNarrow ? 10 : 16),
+            _buildLegendItem('SIP Returns', const Color(0xFFFFDD55), isNarrow),
+          ],
+        );
+      },
     );
   }
 
-  Widget _buildLegendItem(String title, Color color) {
+  Widget _buildLegendItem(String title, Color color, [bool isNarrow = false]) {
     return Row(
       children: [
         Container(
-          width: 12,
-          height: 12,
+          width: isNarrow ? 10 : 12,
+          height: isNarrow ? 10 : 12,
           decoration: BoxDecoration(
             color: color,
             borderRadius: BorderRadius.circular(2),
           ),
         ),
-        const SizedBox(width: 8),
-        Text(title, style: const TextStyle(color: Colors.white, fontSize: 14)),
+        SizedBox(width: isNarrow ? 6 : 8),
+        Text(
+          title,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: isNarrow ? 12 : 14,
+            fontFamily: 'Montserrat',
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildTimePeriodSelector() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  Widget _buildTimePeriodSelector([double availableWidth = double.infinity]) {
+    // Adjust the layout based on available width
+    final bool isNarrow = availableWidth < 350;
+
+    return Wrap(
+      spacing: isNarrow ? 6 : 8,
+      runSpacing: 8,
+      alignment: WrapAlignment.center,
       children:
-          _timePeriods.map((period) => _buildPeriodButton(period)).toList(),
+          _timePeriods
+              .map((period) => _buildPeriodButton(period, isNarrow))
+              .toList(),
     );
   }
 
-  Widget _buildPeriodButton(String period) {
+  Widget _buildPeriodButton(String period, [bool isNarrow = false]) {
     final bool isSelected = period == _selectedPeriod;
 
     return GestureDetector(
@@ -442,7 +492,11 @@ class _InsightsGraphWidgetState extends State<InsightsGraphWidget> {
         }
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        // Adjust padding based on available space
+        padding: EdgeInsets.symmetric(
+          horizontal: isNarrow ? 8 : 12,
+          vertical: 6,
+        ),
         decoration: BoxDecoration(
           color:
               isSelected
@@ -491,9 +545,9 @@ class _InsightsGraphWidgetState extends State<InsightsGraphWidget> {
       }
     }
 
-    // Add padding to the min/max values (10% of the range)
+    // Add more padding to the min/max values (15% of the range) to keep lines inside visible area
     final double range = (maxValue ?? 12) - (minValue ?? 0);
-    final double padding = range * 0.1;
+    final double padding = range * 0.15;
     final double yMin = (minValue ?? 0) - padding;
     final double yMax = (maxValue ?? 12) + padding;
 
@@ -548,7 +602,12 @@ class _InsightsGraphWidgetState extends State<InsightsGraphWidget> {
         axisLine: const AxisLine(width: 0),
         majorTickLines: const MajorTickLines(size: 0),
         majorGridLines: const MajorGridLines(width: 0),
+        // Add proper padding to ensure lines stay within visible area
+        rangePadding: ChartRangePadding.additional,
       ),
+      // Add plot area border padding to contain the graph lines
+      plotAreaBorderColor: Colors.transparent,
+      plotAreaBackgroundColor: Colors.transparent,
       series: _buildSplineSeries(),
       legend: const Legend(isVisible: false),
     );
@@ -567,6 +626,10 @@ class _InsightsGraphWidgetState extends State<InsightsGraphWidget> {
         splineType: SplineType.natural,
         markerSettings: const MarkerSettings(isVisible: false),
         animationDuration: 500, // Faster animation
+        // Ensure lines stay within chart boundaries
+        enableTooltip: true,
+        isVisibleInLegend: false,
+        emptyPointSettings: EmptyPointSettings(mode: EmptyPointMode.drop),
       ),
       SplineSeries<FundReturnData, String>(
         dataSource: _chartData!,
@@ -578,6 +641,10 @@ class _InsightsGraphWidgetState extends State<InsightsGraphWidget> {
         splineType: SplineType.natural,
         markerSettings: const MarkerSettings(isVisible: false),
         animationDuration: 500, // Faster animation
+        // Ensure lines stay within chart boundaries
+        enableTooltip: true,
+        isVisibleInLegend: false,
+        emptyPointSettings: EmptyPointSettings(mode: EmptyPointMode.drop),
       ),
     ];
   }
