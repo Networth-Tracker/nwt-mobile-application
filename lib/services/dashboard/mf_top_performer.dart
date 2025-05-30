@@ -28,16 +28,30 @@ class MFTopPerformerService {
 
         if (response.statusCode == 200 || response.statusCode == 201) {
           return MutualFundTopPerformersRespose.fromJson(responseData);
+        } else {
+          return MutualFundTopPerformersRespose(
+            status: response.statusCode,
+            message: responseData['message'] ?? 'Unknown error',
+            data: null,
+          );
         }
       }
-      return null;
+      return MutualFundTopPerformersRespose(
+        status: response?.statusCode ?? 0,
+        message: 'Unknown error',
+        data: null,
+      );
     } catch (e) {
       AppLogger.error(
         'Get MF Top Performers Error',
         error: e,
         tag: 'MFTopPerformerService',
       );
-      return null;
+      return MutualFundTopPerformersRespose(
+        status: 0,
+        message: e.toString(),
+        data: null,
+      );
     } finally {
       onLoading(false);
     }

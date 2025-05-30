@@ -67,20 +67,14 @@ class AuthFlow {
         // Handle loading silently for initial fetch
       },
     );
-    if (userData != null) {
-      AppLogger.info(
-        'User data found, handling verification status',
-        tag: 'AuthFlow',
-      );
-      _handleUserVerificationStatus(userData.data.user);
-    } else {
-      AppLogger.info(
-        'Failed to fetch user data, redirecting to onboarding',
-        tag: 'AuthFlow',
-      );
-      _navigateToOnboarding();
+    AppLogger.info(
+      'User data found, handling verification status',
+      tag: 'AuthFlow',
+    );
+    if (userData.data?.user != null) {
+      _handleUserVerificationStatus(userData.data!.user);
     }
-  }
+    }
 
   void _handleUserVerificationStatus(User user) {
     if (!user.isverified) {

@@ -32,17 +32,14 @@ class UserController extends GetxController {
     }
   }
 
-  Future<UserDataResponse?> fetchUserProfile({
+  Future<UserDataResponse> fetchUserProfile({
     required Function(bool) onLoading,
   }) async {
     final response = await _authService.getUserProfile(onLoading: onLoading);
     AppLogger.info(response.toString(), tag: 'UserController');
-    if (response != null) {
-      _userData = response.data.user;
-      update();
-      return response;
-    }
-    return null;
+    _userData = response.data?.user;
+    update();
+    return response;
   }
 
   void clearUserData() {

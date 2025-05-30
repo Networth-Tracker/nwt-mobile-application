@@ -26,14 +26,23 @@ class MutualFundSwitchAdviceService {
           return MutualFundSwitchAdvisory.fromJson(responseData);
         }
       }
-      return null;
-    } catch (e) {
+      return MutualFundSwitchAdvisory(
+        status: response?.statusCode ?? 0,
+        message: 'Unknown error',
+        data: null,
+      );
+    } catch (e, stackTrace) {
       AppLogger.error(
         'Get MF Switch Advice Error',
         error: e,
+        stackTrace: stackTrace,
         tag: 'MutualFundSwitchAdviceService',
       );
-      return null;
+      return MutualFundSwitchAdvisory(
+        status: 0,
+        message: e.toString(),
+        data: null,
+      );
     } finally {
       onLoading(false);
     }

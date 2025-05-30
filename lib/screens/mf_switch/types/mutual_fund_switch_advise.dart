@@ -1,25 +1,27 @@
 class MutualFundSwitchAdvisory {
   int status;
   String message;
-  MutualFundSwitchAdvise data;
+  MutualFundSwitchAdvise? data;
 
   MutualFundSwitchAdvisory({
     required this.status,
     required this.message,
-    required this.data,
+    this.data,
   });
 
   factory MutualFundSwitchAdvisory.fromJson(Map<String, dynamic> json) =>
       MutualFundSwitchAdvisory(
         status: json["status"],
         message: json["message"],
-        data: MutualFundSwitchAdvise.fromJson(json["data"]),
+        data: json["data"] != null
+            ? MutualFundSwitchAdvise.fromJson(json["data"])
+            : null,
       );
 
   Map<String, dynamic> toJson() => {
     "status": status,
     "message": message,
-    "data": data.toJson(),
+    "data": data?.toJson(),
   };
 }
 

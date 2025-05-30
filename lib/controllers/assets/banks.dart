@@ -13,13 +13,11 @@ class BankController extends GetxController {
     bankService.getBankSummary(onLoading: (isLoading) {
       onLoading(isLoading);
     }).then((value) {
-      if (value != null) {
-        print('Bank Summary Response: ${value.toJson()}');
-        if (value.data != null) {
-          print('Bank Summary Data: ${value.data!.toJson()}');
-        }
+      print('Bank Summary Response: ${value.toJson()}');
+      if (value.data != null) {
+        print('Bank Summary Data: ${value.data!.toJson()}');
       }
-      bankSummary = value;
+          bankSummary = value;
       update();
     });
   }

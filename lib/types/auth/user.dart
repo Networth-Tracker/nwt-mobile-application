@@ -1,26 +1,22 @@
 class UserDataResponse {
   int status;
   String message;
-  DataResponse data;
+  DataResponse? data;
   bool get success => status == 200 || status == 201;
 
-  UserDataResponse({
-    required this.status,
-    required this.message,
-    required this.data,
-  });
+  UserDataResponse({required this.status, required this.message, this.data});
 
   factory UserDataResponse.fromJson(Map<String, dynamic> json) =>
       UserDataResponse(
         status: json["status"],
         message: json["message"],
-        data: DataResponse.fromJson(json["data"]),
+        data: json["data"] != null ? DataResponse.fromJson(json["data"]) : null,
       );
 
   Map<String, dynamic> toJson() => {
     "status": status,
     "message": message,
-    "data": data.toJson(),
+    "data": data?.toJson(),
   };
 }
 

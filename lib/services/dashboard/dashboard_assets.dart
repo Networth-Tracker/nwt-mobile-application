@@ -1,30 +1,55 @@
 import 'dart:convert';
+
 import 'package:nwt_app/constants/api.dart';
 import 'package:nwt_app/screens/dashboard/types/dashboard_assets.dart';
 import 'package:nwt_app/utils/logger.dart';
 import 'package:nwt_app/utils/network_api_helper.dart';
 
 class DashboardAssetsService {
-  Future<DashboardAssetsResponse?> getDashboardAssets({
+  Future<DashboardAssetsResponse> getDashboardAssets({
     required Function(bool isLoading) onLoading,
   }) async {
     onLoading(true);
     try {
-      final response = await NetworkAPIHelper().get(ApiURLs.USER_DASHBOARD_ASSETS);
+      final response = await NetworkAPIHelper().get(
+        ApiURLs.USER_DASHBOARD_ASSETS,
+      );
       if (response != null) {
         final responseData = jsonDecode(response.body);
-        AppLogger.info('Get Dashboard Assets Response: ${responseData.toString()}', tag: 'DashboardAssetsService');
+        AppLogger.info(
+          'Get Dashboard Assets Response: ${responseData.toString()}',
+          tag: 'DashboardAssetsService',
+        );
 
         if (response.statusCode == 200 || response.statusCode == 201) {
           return DashboardAssetsResponse.fromJson(responseData);
+        } else {
+          return DashboardAssetsResponse(
+            status: response.statusCode,
+            message: responseData['message'] ?? 'Unknown error',
+            data: null,
+          );
         }
       }
-      return null;
     } catch (e, stackTrace) {
-      AppLogger.error('Get Dashboard Assets Error', error: e, stackTrace: stackTrace, tag: 'DashboardAssetsService');
-      return null;
+      AppLogger.error(
+        'Get Dashboard Assets Error',
+        error: e,
+        stackTrace: stackTrace,
+        tag: 'DashboardAssetsService',
+      );
+      return DashboardAssetsResponse(
+        status: 0,
+        message: e.toString(),
+        data: null,
+      );
     } finally {
       onLoading(false);
     }
+    return DashboardAssetsResponse(
+      status: 0,
+      message: 'Unknown error',
+      data: null,
+    );
   }
 }

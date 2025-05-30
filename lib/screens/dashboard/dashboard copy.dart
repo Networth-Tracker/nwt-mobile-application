@@ -87,12 +87,6 @@ class _DashboardState extends State<Dashboard>
   final UserController _userController = UserController();
   bool _isExpanded = false;
 
-  void _toggleExpand() {
-    setState(() {
-      _isExpanded = !_isExpanded;
-    });
-  }
-
   void initData() async {
     final userResponse = await _userController.fetchUserProfile(
       onLoading: (isLoading) {
@@ -105,7 +99,7 @@ class _DashboardState extends State<Dashboard>
     );
     fetchDashboardAssets();
     fetchTotalNetworth();
-    if (userResponse?.data.user.ismfverified == true) {
+    if (userResponse.data?.user.ismfverified == true) {
       Future.delayed(const Duration(milliseconds: 1900), () {
         _showBottomSheet();
       });
@@ -156,7 +150,7 @@ class _DashboardState extends State<Dashboard>
           },
         )
         .then((response) {
-          if (response != null && response.data != null) {
+          if (response.data != null) {
             if (mounted) {
               setState(() {
                 // Format the networth amount with rupee symbol

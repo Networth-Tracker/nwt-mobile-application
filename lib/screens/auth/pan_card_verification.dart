@@ -77,36 +77,29 @@ class _PanCardVerificationState extends State<PanCardVerification> {
       );
 
       // Check response
-      if (response != null) {
-        AppLogger.info(
-          'PAN Verification completed: ${response.message}',
-          tag: 'PanCardVerification',
-        );
+      AppLogger.info(
+        'PAN Verification completed: ${response.message}',
+        tag: 'PanCardVerification',
+      );
 
-        if (response.success) {
-          // Clear any error messages on success
-          setState(() {
-            _errorMessage = null;
-          });
-
-          // Navigate to dashboard immediately
-          Get.to(
-            () => const MutualFundHoldingsJourneyScreen(),
-            transition: Transition.rightToLeft,
-          );
-        } else {
-          // Show error message from the server
-          setState(() {
-            _errorMessage = response.message;
-          });
-        }
-      } else {
-        // Handle null response (service error)
+      if (response.success) {
+        // Clear any error messages on success
         setState(() {
-          _errorMessage = "Verification failed. Please try again.";
+          _errorMessage = null;
+        });
+
+        // Navigate to dashboard immediately
+        Get.to(
+          () => const MutualFundHoldingsJourneyScreen(),
+          transition: Transition.rightToLeft,
+        );
+      } else {
+        // Show error message from the server
+        setState(() {
+          _errorMessage = response.message;
         });
       }
-    } catch (e) {
+        } catch (e) {
       AppLogger.error(
         'PAN Verification Error',
         error: e,

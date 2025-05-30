@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:nwt_app/services/assets/investments/investments.dart';
 import 'package:nwt_app/utils/logger.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
 
@@ -29,7 +28,6 @@ class _LoadingLayoutState extends State<LoadingLayout> {
   Timer? _redirectTimer;
   final bool _isRedirecting = false;
   final bool _dataReceived = false;
-  final InvestmentService _investmentService = InvestmentService();
 
   final List<String> _loadingMessages = [
     "Fetching your\nMutual Fund details",

@@ -10,7 +10,7 @@ class InsightsService {
   InsightsSummary? _cachedInsightData;
 
   // Fetch mutual fund insights data using the provided fund ID
-  Future<MutualFundInsightRespose?> getMFInsights({
+  Future<MutualFundInsightRespose> getMFInsights({
     required Function(bool isLoading) onLoading,
     String? fundId,
   }) async {
@@ -39,9 +39,14 @@ class InsightsService {
             _cachedInsightData = insightResponse.data;
           }
           return insightResponse;
+        } else {
+          return MutualFundInsightRespose(
+            status: response.statusCode,
+            message: responseData['message'] ?? 'Unknown error',
+            data: null,
+          );
         }
       }
-      return null;
     } catch (e, subTrace) {
       AppLogger.error(
         'Get MF Insights Error',
@@ -49,10 +54,19 @@ class InsightsService {
         tag: 'InsightsService',
         stackTrace: subTrace,
       );
-      return null;
+      return MutualFundInsightRespose(
+        status: 0,
+        message: e.toString(),
+        data: null,
+      );
     } finally {
       onLoading(false);
     }
+    return MutualFundInsightRespose(
+      status: 0,
+      message: 'Unknown error',
+      data: null,
+    );
   }
 
   // Get the specific fund insights for the provided ID
@@ -62,7 +76,7 @@ class InsightsService {
   }) async {
     final response = await getMFInsights(onLoading: onLoading, fundId: fundId);
 
-    return response?.data;
+    return response.data;
   }
 
   // Helper methods to access specific data for charts

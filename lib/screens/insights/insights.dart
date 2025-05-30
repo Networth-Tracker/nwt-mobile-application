@@ -47,7 +47,7 @@ class _InsightsScreenState extends State<InsightsScreen> {
         },
       );
 
-      if (response != null && response.data != null) {
+      if (response.data != null) {
         setState(() {
           _insightData = response.data;
         });

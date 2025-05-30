@@ -13,7 +13,6 @@ class ResetPin extends StatefulWidget {
 class _ResetPinState extends State<ResetPin> {
   final List<TextEditingController> _pinControllers =
       List.generate(4, (index) => TextEditingController());
-  String _enteredPin = '';
 
   @override
   void dispose() {
@@ -33,13 +32,6 @@ class _ResetPinState extends State<ResetPin> {
         FocusScope.of(context).previousFocus();
       }
     }
-    _updateEnteredPin();
-  }
-
-  void _updateEnteredPin() {
-    setState(() {
-      _enteredPin = _pinControllers.map((c) => c.text).join();
-    });
   }
 
   @override

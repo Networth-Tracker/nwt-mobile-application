@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:nwt_app/constants/api.dart';
 import 'package:nwt_app/screens/assets/investments/types/holdings.dart';
 import 'package:nwt_app/screens/assets/investments/types/portfolio.dart';
@@ -34,7 +35,7 @@ class InvestmentService {
     }
   }
 
-  Future<InvestmentHoldingsResponse?> getHoldings({
+  Future<InvestmentHoldingsResponse> getHoldings({
     required Function(bool isLoading) onLoading,
   }) async {
     onLoading(true);
@@ -48,12 +49,26 @@ class InvestmentService {
         );
         if (response.statusCode == 200 || response.statusCode == 201) {
           return InvestmentHoldingsResponse.fromJson(responseData);
+        } else {
+          return InvestmentHoldingsResponse(
+            status: response.statusCode,
+            message: responseData['message'] ?? 'Unknown error',
+            data: null,
+          );
         }
       }
-      return null;
+      return InvestmentHoldingsResponse(
+        status: 0,
+        message: 'Unknown error',
+        data: null,
+      );
     } catch (e) {
       AppLogger.error('Get Holdings Error', error: e, tag: 'AuthService');
-      return null;
+      return InvestmentHoldingsResponse(
+        status: 0,
+        message: 'An unexpected error occurred',
+        data: null,
+      );
     } finally {
       onLoading(false);
     }

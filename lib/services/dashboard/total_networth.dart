@@ -8,7 +8,7 @@ import 'package:nwt_app/utils/network_api_helper.dart';
 class TotalNetworthService {
   List<Currentprojection>? currentProjection;
 
-  Future<DashboardNetworthResponse?> getTotalNetworth({
+  Future<DashboardNetworthResponse> getTotalNetworth({
     required Function(bool isLoading) onLoading,
   }) async {
     onLoading(true);
@@ -26,16 +26,30 @@ class TotalNetworthService {
           final result = DashboardNetworthResponse.fromJson(responseData);
           currentProjection = result.data?.currentprojection;
           return result;
+        } else {
+          return DashboardNetworthResponse(
+            status: response.statusCode,
+            message: responseData['message'] ?? 'Unknown error',
+            data: null,
+          );
         }
       }
-      return null;
+      return DashboardNetworthResponse(
+        status: response?.statusCode ?? 0,
+        message: 'Unknown error',
+        data: null,
+      );
     } catch (e) {
       AppLogger.error(
         'Get Total Networth Error',
         error: e,
         tag: 'TotalNetworthService',
       );
-      return null;
+      return DashboardNetworthResponse(
+        status: 0,
+        message: e.toString(),
+        data: null,
+      );
     } finally {
       onLoading(false);
     }

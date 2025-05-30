@@ -6,7 +6,6 @@ import 'package:nwt_app/constants/storage_keys.dart';
 import 'package:nwt_app/screens/dashboard/dashboard.dart';
 import 'package:nwt_app/screens/fetch-holdings/layouts/layouts.dart';
 import 'package:nwt_app/screens/fetch-holdings/types/mf_fetching.dart';
-import 'package:nwt_app/services/assets/investments/investments.dart';
 import 'package:nwt_app/services/global_storage.dart';
 import 'package:nwt_app/services/mf_onboarding/mf_onboarding_service.dart';
 import 'package:sms_autofill/sms_autofill.dart';
@@ -198,7 +197,7 @@ class _MutualFundHoldingsJourneyScreenState
     if (result.data != null) {
       StorageService.write(
         StorageKeys.MF_SAVINGS_KEY,
-        result.data!.switchsavings ?? 0,
+        result.data!.switchsavings,
       );
     }
 
@@ -295,10 +294,10 @@ class _MutualFundHoldingsJourneyScreenState
         onError: (message) => setState(() => _errorMessage = message),
       );
 
-      if (mounted && result?.data.decryptedcasdetails != null) {
+      if (mounted && result.data?.decryptedcasdetails != null) {
         setState(() {
-          _casDetails = result!.data.decryptedcasdetails;
-          _token = result.data.token ?? '';
+          _casDetails = result.data!.decryptedcasdetails;
+          _token = result.data!.token;
         });
         _startResendTimer();
       }

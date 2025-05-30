@@ -6,7 +6,7 @@ import 'package:nwt_app/utils/logger.dart';
 import 'package:nwt_app/utils/network_api_helper.dart';
 
 class BankService {
-  Future<BankSummaryResponse?> getBankSummary({
+  Future<BankSummaryResponse> getBankSummary({
     required Function(bool isLoading) onLoading,
   }) async {
     onLoading(true);
@@ -18,9 +18,21 @@ class BankService {
           'Get Bank Summary Response: ${responseData.toString()}',
           tag: 'BankService',
         );
-        return BankSummaryResponse.fromJson(responseData);
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          return BankSummaryResponse.fromJson(responseData);
+        } else {
+          return BankSummaryResponse(
+            status: response.statusCode,
+            message: responseData['message'] ?? 'Unknown error',
+            data: null,
+          );
+        }
       }
-      return null;
+      return BankSummaryResponse(
+        status: 0,
+        message: 'Unknown error',
+        data: null,
+      );
     } catch (e, stackTrace) {
       AppLogger.error(
         'Get Bank Summary Error',

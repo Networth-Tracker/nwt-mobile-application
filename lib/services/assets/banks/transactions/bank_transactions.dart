@@ -6,7 +6,7 @@ import 'package:nwt_app/utils/logger.dart';
 import 'package:nwt_app/utils/network_api_helper.dart';
 
 class BankTransactionService {
-  Future<BankTransactionResponse?> getBankTransactions({
+  Future<BankTransactionResponse> getBankTransactions({
     required String bankGUID,
     required Function(bool isLoading) onLoading,
   }) async {
@@ -25,10 +25,18 @@ class BankTransactionService {
         if (response.statusCode == 200 || response.statusCode == 201) {
           return parsedResponse;
         } else {
-          return parsedResponse;
+          return BankTransactionResponse(
+            status: response.statusCode,
+            message: responseData['message'] ?? 'Unknown error',
+            data: null,
+          );
         }
       }
-      return null;
+      return BankTransactionResponse(
+        status: 0,
+        message: 'Unknown error',
+        data: null,
+      );
     } catch (e) {
       AppLogger.error(
         'Get Bank Transactions Error',

@@ -50,13 +50,10 @@ class _DashboardState extends State<Dashboard>
   bool isZerodhaLoading = false;
 
   final ScrollController _scrollController = ScrollController();
-  final GlobalKey _targetKey = GlobalKey();
-  double _lastScrollPosition = 0;
 
   // Networth data
   double _networthAmount = 0.0;
   List<Currentprojection>? _currentProjection;
-  List<Futureprojection>? _futureProjection;
   String _lastFetchedTime = "";
 
   @override
@@ -69,31 +66,7 @@ class _DashboardState extends State<Dashboard>
     initData();
   }
 
-  bool _handleScrollNotification(ScrollNotification notification) {
-    if (notification is ScrollUpdateNotification) {
-      final metrics = notification.metrics;
-      final isExpanded =
-          metrics.pixels <= _lastScrollPosition || metrics.pixels <= 0;
-
-      if (isExpanded != _isExpanded) {
-        setState(() {
-          _isExpanded = isExpanded;
-        });
-      }
-
-      _lastScrollPosition = metrics.pixels;
-    }
-    return false; // Continue bubbling the notification
-  }
-
   final UserController _userController = Get.find<UserController>();
-  bool _isExpanded = false;
-
-  void _toggleExpand() {
-    setState(() {
-      _isExpanded = !_isExpanded;
-    });
-  }
 
   void initData() async {
     try {
@@ -112,7 +85,7 @@ class _DashboardState extends State<Dashboard>
       await Future.wait([fetchDashboardAssets(), fetchTotalNetworth()]);
 
       // Check if user is MF verified and bottom sheet hasn't been shown yet
-      if (userResponse?.data.user.ismfverified == true) {
+      if (userResponse.data?.user.ismfverified == true) {
         // Check if we've already shown the bottom sheet before
         final hasShownBottomSheet =
             StorageService.read(StorageKeys.MF_BOTTOMSHEET_SHOWN_KEY) ?? false;
@@ -176,13 +149,13 @@ class _DashboardState extends State<Dashboard>
           },
         )
         .then((response) {
-          if (response != null && response.data != null) {
+          if (response.data != null) {
             if (mounted) {
               setState(() {
                 // Format the networth amount with rupee symbol
                 _networthAmount = response.data!.totalNetWorth;
                 _currentProjection = response.data!.currentprojection;
-                _futureProjection = response.data!.futureprojection;
+                // _futureProjection = response.data!.futureprojection;
                 // Format the timestamp
                 _lastFetchedTime = response.data!.currentdatetime;
               });
@@ -568,10 +541,6 @@ class _DashboardState extends State<Dashboard>
                               ),
                             ),
                             SingleChildScrollView(
-                              physics:
-                                  _isExpanded
-                                      ? AlwaysScrollableScrollPhysics()
-                                      : const NeverScrollableScrollPhysics(),
                               child: Column(
                                 children: [
                                   Container(
@@ -584,7 +553,7 @@ class _DashboardState extends State<Dashboard>
                                             duration: const Duration(
                                               milliseconds: 300,
                                             ),
-                                            height: _isExpanded ? 40 : 15,
+                                            height: 15,
                                             curve: Curves.easeInOut,
                                           ),
                                           Padding(

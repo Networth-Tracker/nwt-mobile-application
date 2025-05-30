@@ -6,7 +6,7 @@ import 'package:nwt_app/utils/logger.dart';
 import 'package:nwt_app/utils/network_api_helper.dart';
 
 class MFOnboardingService {
-  Future<MfCentralOtpResponse?> sendOTP({
+  Future<MfCentralOtpResponse> sendOTP({
     required Function(bool isLoading) onLoading,
     required Function(String message) onError,
   }) async {
@@ -33,12 +33,19 @@ class MFOnboardingService {
         } else {
           final errorMessage = responseData['message'] ?? 'Failed to send OTP';
           onError(errorMessage);
-          return null;
+          return MfCentralOtpResponse(
+            status: response.statusCode,
+            message: errorMessage,
+          );
         }
       }
 
-      onError('Network error occurred');
-      return null;
+      const errorMessage = 'Network error occurred';
+      onError(errorMessage);
+      return MfCentralOtpResponse(
+        status: 0,
+        message: errorMessage,
+      );
     } catch (e, stackTrace) {
       AppLogger.error(
         'MF OTP Error',
@@ -46,8 +53,13 @@ class MFOnboardingService {
         stackTrace: stackTrace,
         tag: 'MFOnboardingService',
       );
-      onError('An unexpected error occurred');
-      return null;
+      const errorMessage = 'An unexpected error occurred';
+      onError(errorMessage);
+      return MfCentralOtpResponse(
+        status: 0,
+        message: errorMessage,
+       
+      );
     } finally {
       onLoading(false);
     }
@@ -96,7 +108,10 @@ class MFOnboardingService {
           final errorMessage =
               responseData['message'] ?? 'Failed to verify OTP';
           onError(errorMessage);
-          return MfCentralVerifyOtpResponse(status: 0, message: errorMessage);
+          return MfCentralVerifyOtpResponse(
+            status: response.statusCode,
+            message: errorMessage,
+          );
         }
       }
 

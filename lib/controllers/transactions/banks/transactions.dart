@@ -16,7 +16,7 @@ class BankTransactionController extends GetxController {
         onLoading(isLoading);
       },
     ).then((value) {
-      transactionData = value?.data;
+      transactionData = value.data;
       update();
     });
   }

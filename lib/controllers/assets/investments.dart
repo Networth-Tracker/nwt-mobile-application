@@ -29,7 +29,7 @@ class InvestmentController extends GetxController {
       final value = await investmentService.getHoldings(
         onLoading: onLoading,
       );
-      holdings = value?.data;
+      holdings = value.data;
       update();
     } catch (e) {
       rethrow;

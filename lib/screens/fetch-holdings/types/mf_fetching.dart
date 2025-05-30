@@ -1,25 +1,26 @@
 class MfCentralOtpResponse {
   int status;
   String message;
-  MFCentralOTPData data;
+  MFCentralOTPData? data;
 
   MfCentralOtpResponse({
     required this.status,
     required this.message,
-    required this.data,
+    this.data,
   });
 
-  factory MfCentralOtpResponse.fromJson(Map<String, dynamic> json) =>
-      MfCentralOtpResponse(
-        status: json["status"],
-        message: json["message"],
-        data: MFCentralOTPData.fromJson(json["data"]),
-      );
+  factory MfCentralOtpResponse.fromJson(
+    Map<String, dynamic> json,
+  ) => MfCentralOtpResponse(
+    status: json["status"],
+    message: json["message"],
+    data: json["data"] != null ? MFCentralOTPData.fromJson(json["data"]) : null,
+  );
 
   Map<String, dynamic> toJson() => {
     "status": status,
     "message": message,
-    "data": data.toJson(),
+    "data": data?.toJson(),
   };
 }
 
@@ -100,13 +101,13 @@ class MfCentralVerifyOtpResponse {
 
 class MFCOTPData {
   bool ismffetched;
-  int switchsavings;
+  double switchsavings;
 
   MFCOTPData({required this.ismffetched, required this.switchsavings});
 
   factory MFCOTPData.fromJson(Map<String, dynamic> json) => MFCOTPData(
     ismffetched: json["ismffetched"],
-    switchsavings: json["switchsavings"],
+    switchsavings: (json["switchsavings"] ?? 0.0),
   );
 
   Map<String, dynamic> toJson() => {

@@ -107,7 +107,7 @@ class AuthService {
     userController.clearUserData();
   }
 
-  Future<UserDataResponse?> getUserProfile({
+  Future<UserDataResponse> getUserProfile({
     required Function(bool) onLoading,
   }) async {
     onLoading(true);
@@ -122,6 +122,12 @@ class AuthService {
         if (response.statusCode == 200 || response.statusCode == 201) {
           final userDataResponse = UserDataResponse.fromJson(responseData);
           return userDataResponse;
+        } else {
+          return UserDataResponse(
+            status: response.statusCode,
+            message: responseData['message'] ?? 'Unknown error',
+            data: null,
+          );
         }
       } else {
         AppLogger.info(
@@ -129,7 +135,7 @@ class AuthService {
           tag: 'AuthService',
         );
       }
-      return null;
+      return UserDataResponse(status: 0, message: 'Unknown error', data: null);
     } catch (e, stackTrace) {
       AppLogger.error(
         'Get User Profile Error',
@@ -137,13 +143,13 @@ class AuthService {
         stackTrace: stackTrace,
         tag: 'AuthService',
       );
-      return null;
+      return UserDataResponse(status: 0, message: e.toString(), data: null);
     } finally {
       onLoading(false);
     }
   }
 
-  Future<PanVerificationResponse?> verifyPanCard({
+  Future<PanVerificationResponse> verifyPanCard({
     required String panNumber,
     required Function(bool isLoading) onLoading,
   }) async {
@@ -186,7 +192,11 @@ class AuthService {
           tag: 'AuthService',
         );
       }
-      return null;
+      return PanVerificationResponse(
+        status: 0,
+        message: 'Unknown error',
+        data: null,
+      );
     } catch (e, stackTrace) {
       AppLogger.error(
         'PAN Verification Error',
@@ -194,7 +204,11 @@ class AuthService {
         stackTrace: stackTrace,
         tag: 'AuthService',
       );
-      return null;
+      return PanVerificationResponse(
+        status: 0,
+        message: e.toString(),
+        data: null,
+      );
     } finally {
       onLoading(false);
     }

@@ -95,13 +95,13 @@ class _StartingJourneyLayoutState extends State<StartingJourneyLayout>
 
     if (mounted) {
       setState(() {
-        _casDetails = result?.data.decryptedcasdetails;
+        _casDetails = result.data?.decryptedcasdetails;
       });
     }
 
     if (_casDetails != null) {
       if (widget.onCasDetailsReceived != null && mounted) {
-        widget.onCasDetailsReceived!(_casDetails, result?.data.token ?? '');
+        widget.onCasDetailsReceived!(_casDetails, result.data?.token ?? '');
       }
 
       if (!_showStartingScreen) {
@@ -175,7 +175,7 @@ class _StartingJourneyLayoutState extends State<StartingJourneyLayout>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const SizedBox(height: 20), 
+          const SizedBox(height: 20),
           Column(
             children: [
               Row(
