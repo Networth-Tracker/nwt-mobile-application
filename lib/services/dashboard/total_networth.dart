@@ -6,6 +6,8 @@ import 'package:nwt_app/utils/logger.dart';
 import 'package:nwt_app/utils/network_api_helper.dart';
 
 class TotalNetworthService {
+  List<Currentprojection>? currentProjection;
+
   Future<DashboardNetworthResponse?> getTotalNetworth({
     required Function(bool isLoading) onLoading,
   }) async {
@@ -21,7 +23,9 @@ class TotalNetworthService {
         );
 
         if (response.statusCode == 200 || response.statusCode == 201) {
-          return DashboardNetworthResponse.fromJson(responseData);
+          final result = DashboardNetworthResponse.fromJson(responseData);
+          currentProjection = result.data?.currentprojection;
+          return result;
         }
       }
       return null;

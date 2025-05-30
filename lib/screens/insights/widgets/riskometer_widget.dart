@@ -29,7 +29,7 @@ class RiskometerWidget extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 16.0, top: 8.0),
             child: Center(
               child: AppText(
-                'This fund has $riskLevel Risk',
+                'This fund has $riskLevel risk',
                 variant: AppTextVariant.bodyLarge,
                 weight: AppTextWeight.medium,
                 colorType: AppTextColorType.primary,
@@ -51,7 +51,10 @@ class RiskometerWidget extends StatelessWidget {
             // Semicircular gauge background
             CustomPaint(
               size: Size(size, size / 2),
-              painter: RiskometerPainter(riskValue: riskValue),
+              painter: RiskometerPainter(
+                riskValue: riskValue,
+                riskLevel: riskLevel,
+              ),
             ),
           ],
         );
@@ -62,8 +65,9 @@ class RiskometerWidget extends StatelessWidget {
 
 class RiskometerPainter extends CustomPainter {
   final double riskValue;
+  final String riskLevel;
 
-  RiskometerPainter({required this.riskValue});
+  RiskometerPainter({required this.riskValue, required this.riskLevel});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -75,17 +79,17 @@ class RiskometerPainter extends CustomPainter {
     final arcPaint =
         Paint()
           ..style = PaintingStyle.stroke
-          ..strokeWidth = 50.0
+          ..strokeWidth = 80.0
           ..strokeCap = StrokeCap.butt;
 
     // Define segment colors and angles
     final segmentColors = [
-      const Color(0xFF00B050), // Low risk - Green
-      const Color(0xFFAEE239), // Low to Moderate - Light Green
-      const Color(0xFFFFFF00), // Moderate - Yellow
-      const Color(0xFFFFC000), // Moderate to High - Orange
-      const Color(0xFFFF0000), // High - Red
-      const Color(0xFFAA0078), // Very High - Pink
+      const Color(0xFF5EC213), // Low risk - Green
+      const Color(0xFFBDD527), // Low to Moderate - Light Green
+      const Color(0xFFFFD607), // Moderate - Yellow
+      const Color(0xFFFE9105), // Moderate to High - Orange
+      const Color(0xFFFD5501), // High - Red
+      const Color(0xFFE00003), // Very High - Pink
     ];
 
     // Draw each segment as a separate arc
@@ -97,9 +101,36 @@ class RiskometerPainter extends CustomPainter {
       canvas.drawArc(rect, startAngle, sweepAngle, false, arcPaint);
     }
 
-    // Draw the needle
+    // Draw the needle based on risk level name
     final needleLength = radius * 0.85;
-    final needleAngle = math.pi + (riskValue / 100 * math.pi);
+
+    // Map risk level names to specific angles
+    double needleAngle;
+    switch (riskLevel.toLowerCase()) {
+      case 'low':
+        needleAngle = math.pi + (math.pi / 12); // Center of first segment
+        break;
+      case 'low to moderate':
+        needleAngle = math.pi + (3 * math.pi / 12); // Center of second segment
+        break;
+      case 'moderate':
+        needleAngle = math.pi + (5 * math.pi / 12); // Center of third segment
+        break;
+      case 'moderately high':
+      case 'moderate to high':
+        needleAngle = math.pi + (7 * math.pi / 12); // Center of fourth segment
+        break;
+      case 'high':
+        needleAngle = math.pi + (9 * math.pi / 12); // Center of fifth segment
+        break;
+      case 'very high':
+        needleAngle = math.pi + (11 * math.pi / 12); // Center of sixth segment
+        break;
+      default:
+        // Fallback to using the risk value if the name isn't recognized
+        needleAngle = math.pi + (riskValue / 100 * math.pi);
+    }
+
     final needleEnd = Offset(
       center.dx + needleLength * math.cos(needleAngle),
       center.dy + needleLength * math.sin(needleAngle),
@@ -132,5 +163,5 @@ class RiskometerPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(RiskometerPainter oldDelegate) =>
-      oldDelegate.riskValue != riskValue;
+      oldDelegate.riskValue != riskValue || oldDelegate.riskLevel != riskLevel;
 }

@@ -44,19 +44,14 @@ class FundDetailsWidget extends StatelessWidget {
           _buildGridItem(
             label: 'Fund Manager',
             value: fundManager,
-            suffix: GestureDetector(
-              onTap:
-                  () => _showInfoBottomSheet(
-                    context,
-                    'Fund Manager',
-                    'R. Janakiraman is a seasoned fund manager with over 15 years of experience in equity markets. He specializes in large-cap growth stocks and has consistently delivered above-market returns.',
-                  ),
-              child: const Icon(
-                Icons.info_outline,
-                size: 12,
-                color: AppColors.darkTextSecondary,
-              ),
-            ),
+            // suffix: GestureDetector(
+            //   onTap: () => _showFundManagerBottomSheet(context),
+            //   child: const Icon(
+            //     Icons.info_outline,
+            //     size: 12,
+            //     color: AppColors.darkTextSecondary,
+            //   ),
+            // ),
           ),
           // AUM
           _buildGridItem(label: 'AUM', value: aum),
@@ -64,12 +59,12 @@ class FundDetailsWidget extends StatelessWidget {
           _buildGridItem(
             label: 'Exit Load',
             value: exitLoad,
-            suffix: GestureDetector(
+            labelSuffix: GestureDetector(
               onTap:
                   () => _showInfoBottomSheet(
                     context,
-                    'Exit Load',
-                    'Exit load of 1% is applicable if units are redeemed within 90 days of purchase. This is to discourage short-term trading and encourage long-term investment in the fund.',
+                    'What is Exit Load?',
+                    'Exit load is a penalty that a mutual fund company charges if you sell your units before the specified exit load period.',
                   ),
               child: const Icon(
                 Icons.info_outline,
@@ -87,24 +82,33 @@ class FundDetailsWidget extends StatelessWidget {
     required String label,
     required String value,
     Widget? suffix,
+    Widget? labelSuffix,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        AppText(
-          label,
-          variant: AppTextVariant.bodyMedium,
-          colorType: AppTextColorType.secondary,
+        Row(
+          children: [
+            AppText(
+              label,
+              variant: AppTextVariant.bodyMedium,
+              colorType: AppTextColorType.secondary,
+            ),
+            if (labelSuffix != null) ...[const SizedBox(width: 4), labelSuffix],
+          ],
         ),
         const SizedBox(height: 4),
         Row(
           children: [
-            AppText(
-              value,
-              variant: AppTextVariant.bodyMedium,
-              weight: AppTextWeight.semiBold,
-              colorType: AppTextColorType.primary,
+            Expanded(
+              child: AppText(
+                value,
+                variant: AppTextVariant.bodyMedium,
+                weight: AppTextWeight.semiBold,
+                colorType: AppTextColorType.primary,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
             if (suffix != null) ...[const SizedBox(width: 4), suffix],
           ],
@@ -120,7 +124,9 @@ class FundDetailsWidget extends StatelessWidget {
   ) {
     if (title == 'Fund Manager') {
       _showFundManagerBottomSheet(context);
-    } else if (title == 'Exit Load') {
+    } else if (title.contains('Exit Load')) {
+      _showSimpleBottomSheet(context, title, description);
+    } else {
       _showSimpleBottomSheet(context, title, description);
     }
   }

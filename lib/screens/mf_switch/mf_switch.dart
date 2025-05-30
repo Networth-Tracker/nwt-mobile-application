@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:nwt_app/constants/colors.dart';
@@ -10,6 +9,15 @@ import 'package:nwt_app/services/mutual_fund_switch/mf_switch_advice.dart';
 import 'package:nwt_app/utils/currency_formatter.dart';
 import 'package:nwt_app/widgets/common/custom_checkbox.dart';
 import 'package:nwt_app/widgets/common/text_widget.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
+
+// Chart data class
+class ChartData {
+  final double year;
+  final double value;
+
+  ChartData({required this.year, required this.value});
+}
 
 class MutualFundSwitchScreen extends StatefulWidget {
   const MutualFundSwitchScreen({super.key});
@@ -117,8 +125,8 @@ class _MutualFundSwitchScreenState extends State<MutualFundSwitchScreen> {
     );
   }
 
-  // Returns chart data for FL Chart
-  LineChartData getChartData() {
+  // Returns chart data for SyncFusion Chart
+  SfCartesianChart getChartData() {
     // Calculate compounded returns for both plans
     // Direct plan gets full return (no distributor commission)
     final double directPlanBaseReturn = returnPercentage;
@@ -131,110 +139,89 @@ class _MutualFundSwitchScreenState extends State<MutualFundSwitchScreen> {
     final double yearFactor = investmentYears / 10.0;
 
     // Generate data points for direct plan (higher returns)
-    final List<FlSpot> directPlanSpots = [];
+    final List<ChartData> directPlanData = [];
     for (int i = 0; i <= 10; i++) {
       // Compounded growth formula: P(1+r)^t
       // Starting with a value of 1.0 at x=0
       final double years = i * yearFactor;
       final double value = 1.0 * pow(1 + (directPlanBaseReturn / 100), years);
-      directPlanSpots.add(FlSpot(i.toDouble(), value));
+      directPlanData.add(ChartData(year: i.toDouble(), value: value));
     }
 
     // Generate data points for regular plan (lower returns due to commission)
-    final List<FlSpot> regularPlanSpots = [];
+    final List<ChartData> regularPlanData = [];
     for (int i = 0; i <= 10; i++) {
       // Compounded growth formula: P(1+r)^t
       // Starting with a value of 1.0 at x=0
       final double years = i * yearFactor;
       final double value = 1.0 * pow(1 + (regularPlanBaseReturn / 100), years);
-      regularPlanSpots.add(FlSpot(i.toDouble(), value));
+      regularPlanData.add(ChartData(year: i.toDouble(), value: value));
     }
 
     // Find the maximum Y value to set appropriate chart range
     double maxY = 0;
-    for (var spot in directPlanSpots) {
-      if (spot.y > maxY) maxY = spot.y;
+    for (var data in directPlanData) {
+      if (data.value > maxY) maxY = data.value;
     }
     // Add 10% padding to the top
     maxY = maxY * 1.1;
 
-    return LineChartData(
-      gridData: FlGridData(show: false),
-      titlesData: FlTitlesData(show: false),
-      borderData: FlBorderData(show: false),
-      minX: 0,
-      maxX: 10,
-      minY: 1.0, // Start from 1.0 (initial investment)
-      maxY: maxY,
-      lineTouchData: LineTouchData(enabled: false),
-      lineBarsData: [
+    return SfCartesianChart(
+      plotAreaBorderWidth: 0,
+      primaryXAxis: NumericAxis(
+        minimum: 0,
+        maximum: 10,
+        isVisible: false,
+        majorGridLines: const MajorGridLines(width: 0),
+      ),
+      primaryYAxis: NumericAxis(
+        minimum: 1.0,
+        maximum: maxY,
+        isVisible: false,
+        majorGridLines: const MajorGridLines(width: 0),
+      ),
+      series: <CartesianSeries<ChartData, double>>[
         // Regular plan line (gray)
-        LineChartBarData(
-          spots: regularPlanSpots,
-          isCurved: true,
-          curveSmoothness: 0.35,
-          color: Colors.grey.withValues(alpha: 0.7),
-          barWidth: 3,
-          isStrokeCapRound: true,
-          dotData: FlDotData(show: false),
-          belowBarData: BarAreaData(
-            show: true,
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Colors.grey.withOpacity(0.5),
-                Colors.grey.withOpacity(0.05),
-              ],
-            ),
-          ),
-          shadow: const Shadow(
-            color: Colors.black26,
-            blurRadius: 4,
-            offset: Offset(0, 2),
+        SplineAreaSeries<ChartData, double>(
+          dataSource: regularPlanData,
+          xValueMapper: (ChartData data, _) => data.year,
+          yValueMapper: (ChartData data, _) => data.value,
+          color: Colors.grey.withOpacity(0.3),
+          borderColor: Colors.grey.withOpacity(0.7),
+          borderWidth: 3,
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.grey.withOpacity(0.5),
+              Colors.grey.withOpacity(0.05),
+            ],
           ),
         ),
 
         // Direct plan line (white, dotted)
-        LineChartBarData(
-          spots: directPlanSpots,
-          isCurved: true,
-          curveSmoothness: 0.35,
+        SplineSeries<ChartData, double>(
+          dataSource: directPlanData,
+          xValueMapper: (ChartData data, _) => data.year,
+          yValueMapper: (ChartData data, _) => data.value,
           color: Colors.white,
-          barWidth: 3,
-          isStrokeCapRound: true,
-          dotData: FlDotData(show: false),
-          dashArray: const [5, 5], // Make the line dotted
-          belowBarData: BarAreaData(
-            show: true,
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Colors.white.withOpacity(0.4),
-                Colors.white.withOpacity(0.05),
-              ],
-            ),
-          ),
-          shadow: const Shadow(
-            color: Colors.black26,
-            blurRadius: 4,
-            offset: Offset(0, 2),
-          ),
+          width: 3,
+          dashArray: const <double>[5, 5],
+        ),
+
+        // Vertical marker line
+        LineSeries<ChartData, double>(
+          dataSource: [
+            ChartData(year: currentMarkerPosition, value: 1.0),
+            ChartData(year: currentMarkerPosition, value: maxY),
+          ],
+          xValueMapper: (ChartData data, _) => data.year,
+          yValueMapper: (ChartData data, _) => data.value,
+          color: Colors.white.withOpacity(0.7),
+          width: 1.5,
+          dashArray: const <double>[5, 5],
         ),
       ],
-      // Add a vertical line at the current position
-      extraLinesData: ExtraLinesData(
-        verticalLines: [
-          VerticalLine(
-            x: currentMarkerPosition,
-            color: Colors.white.withValues(alpha: 0.7),
-            strokeWidth: 1.5,
-            dashArray: [5, 5],
-            label: VerticalLineLabel(show: false),
-          ),
-        ],
-      ),
     );
   }
 
@@ -537,51 +524,12 @@ class _MutualFundSwitchScreenState extends State<MutualFundSwitchScreen> {
 
                             // Chart
                             Container(
-                              height: 140,
+                              height: 200,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(16),
                                 color: Colors.transparent,
                               ),
-                              child: Stack(
-                                children: [
-                                  // FL Chart
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                      right: 16,
-                                      left: 8,
-                                      top: 16,
-                                      bottom: 16,
-                                    ),
-                                    child: LineChart(getChartData()),
-                                  ),
-
-                                  // Current point indicator
-                                  Positioned(
-                                    top: 40,
-                                    right: 120,
-                                    child: Container(
-                                      width: 10,
-                                      height: 10,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        border: Border.all(
-                                          color: AppColors.darkPrimary,
-                                          width: 2.5,
-                                        ),
-                                        shape: BoxShape.circle,
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: AppColors.darkPrimary
-                                                .withValues(alpha: 0.4),
-                                            blurRadius: 6,
-                                            offset: const Offset(0, 2),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              child: getChartData(),
                             ),
 
                             // Returns slider

@@ -168,6 +168,7 @@ class _PhoneNumberInputScreenState extends State<PhoneNumberInputScreen> {
                               ),
                               const SizedBox(height: 20),
                               AnimatedErrorMessage(errorMessage: _errorMessage),
+                              SizedBox(height: 10),
                               Row(
                                 children: [
                                   Expanded(
