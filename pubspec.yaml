@@ -1,8 +1,8 @@
 name: nwt_app
-description: "A new Flutter project."
+description: "Make your money grow"
 publish_to: 'none'
 
-version: 0.1.4+10
+version: 0.1.4+11
 
 environment:
   sdk: ^3.7.2
