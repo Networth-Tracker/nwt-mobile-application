@@ -2,17 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:nwt_app/constants/colors.dart';
 
 class AppTheme {
-    /// Defines the light theme for the application, specifying colors, typography, 
-    /// and component styles. This theme includes settings for app bar, text selection,
-    /// text styles, input decoration, and button themes, ensuring a cohesive and 
-    /// visually appealing design across the app in light mode.
   static ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,
     scaffoldBackgroundColor: AppColors.lightBackground,
     primaryColor: AppColors.lightPrimary,
     fontFamily: 'Montserrat',
 
-    // Make sure to use ColorScheme to properly handle theme transitions
     colorScheme: ColorScheme.light(
       primary: AppColors.lightPrimary,
       secondary: AppColors.lightSecondary,
@@ -21,7 +16,6 @@ class AppTheme {
       onPrimary: AppColors.lightButtonPrimaryText,
     ),
 
-    // App Bar Theme
     appBarTheme: const AppBarTheme(
       surfaceTintColor: Colors.transparent,
       backgroundColor: AppColors.lightBackground,
@@ -38,8 +32,8 @@ class AppTheme {
 
     textSelectionTheme: const TextSelectionThemeData(
       cursorColor: AppColors.lightPrimary,
-      selectionColor: Color(0x1F000000), // Black with 12% opacity
-      selectionHandleColor: Color(0x8A000000), // Black with 54% opacity
+      selectionColor: Color(0x1F000000),
+      selectionHandleColor: Color(0x8A000000),
     ),
 
     textTheme: const TextTheme(
@@ -49,7 +43,7 @@ class AppTheme {
     ),
 
     inputDecorationTheme: InputDecorationTheme(
-      fillColor: AppColors.lightInputPrimaryBackground, // Exact match to keypad
+      fillColor: AppColors.lightInputPrimaryBackground,
       filled: true,
       contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       border: OutlineInputBorder(
@@ -88,7 +82,6 @@ class AppTheme {
       ),
     ),
     
-    // Chip Theme
     chipTheme: ChipThemeData(
       backgroundColor: AppColors.darkBackground,
       disabledColor: AppColors.darkBackground,
@@ -118,7 +111,6 @@ class AppTheme {
       ),
     ),
     
-    // Icon button theme
     iconButtonTheme: IconButtonThemeData(
       style: ButtonStyle(
         backgroundColor: WidgetStateProperty.all(AppColors.lightBackground),
@@ -133,7 +125,6 @@ class AppTheme {
       ),
     ),
 
-    // Add extension data to store our custom text colors
     extensions: <ThemeExtension<dynamic>>[AppTextThemeColors.light],
   );
 
@@ -142,8 +133,6 @@ class AppTheme {
     scaffoldBackgroundColor: AppColors.darkBackground,
     primaryColor: AppColors.darkPrimary,
     fontFamily: 'Montserrat',
-
-    // Make sure to use ColorScheme to properly handle theme transitions
     colorScheme: ColorScheme.dark(
       primary: AppColors.darkPrimary,
       surface: AppColors.darkBackground,
@@ -151,7 +140,6 @@ class AppTheme {
       onPrimary: AppColors.darkButtonPrimaryText,
     ),
 
-    // App Bar Theme
     appBarTheme: const AppBarTheme(
           surfaceTintColor: Colors.transparent,
       backgroundColor: AppColors.darkBackground,
@@ -179,7 +167,7 @@ class AppTheme {
     ),
 
     inputDecorationTheme: InputDecorationTheme(
-      fillColor: AppColors.darkInputBackground, // Matches surface.withValues(alpha: 0.8)
+      fillColor: AppColors.darkInputBackground,
       filled: true,
       contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       border: OutlineInputBorder(
@@ -218,7 +206,6 @@ class AppTheme {
       ),
     ),
     
-    // Icon button theme
     iconButtonTheme: IconButtonThemeData(
       style: ButtonStyle(
         backgroundColor: WidgetStateProperty.all(AppColors.darkRoundedButtonBackground),

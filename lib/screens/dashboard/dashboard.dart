@@ -54,6 +54,7 @@ class _DashboardState extends State<Dashboard>
   // Networth data
   double _networthAmount = 0.0;
   List<Currentprojection>? _currentProjection;
+  List<Futureprojection>? _futureProjection;
   String _lastFetchedTime = "";
 
   @override
@@ -155,7 +156,7 @@ class _DashboardState extends State<Dashboard>
                 // Format the networth amount with rupee symbol
                 _networthAmount = response.data!.totalNetWorth;
                 _currentProjection = response.data!.currentprojection;
-                // _futureProjection = response.data!.futureprojection;
+                _futureProjection = response.data!.futureprojection;
                 // Format the timestamp
                 _lastFetchedTime = response.data!.currentdatetime;
               });
@@ -514,6 +515,7 @@ class _DashboardState extends State<Dashboard>
                                       NetworthChartMain(
                                         currentProjection:
                                             _currentProjection ?? [],
+                                        futureProjection: _futureProjection,
                                         isLoading: isNetworthLoading,
                                       ),
                                       const SizedBox(height: 12),

@@ -1,23 +1,18 @@
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 
 class ApiURLs {
-  // Get base URL from Firebase Remote Config, with fallback value
   static String get baseUrl {
     try {
       final remoteConfig = FirebaseRemoteConfig.instance;
       final configBaseUrl = remoteConfig.getString('api_base_url');
-
-      // If remote config has a value, use it, otherwise use the default
-      return configBaseUrl.isNotEmpty
+    return configBaseUrl.isNotEmpty
           ? configBaseUrl
           : "https://lab.networthtracker.in/api/v1";
     } catch (e) {
-      // Fallback to default URL if remote config fails
       return "https://lab.networthtracker.in/api/v1";
     }
   }
 
-  // Generate dynamic endpoint getters that use the current baseUrl
   static String get GENERATE_OTP => "$baseUrl/auth/send-otp";
   static String get VERIFY_OTP => "$baseUrl/auth/verify-otp";
   static String get PAN_CARD_VERIFICATION => "$baseUrl/pan-verification/verify";
@@ -35,7 +30,6 @@ class ApiURLs {
   static String get MF_HOLDINGS_VERIFY => "$baseUrl/mfcentral/submit-otp";
   static String get GET_TOTAL_NETWORTH => "$baseUrl/dashboard/graph";
 
-  // Mutual Fund Switch Advice endpoints
   static String get GET_MF_SWITCH_ADVICE => "$baseUrl/mfcentral/switch/details";
   static String get GET_MF_TOP_PERFORMERS => "$baseUrl/mf-performers/top-mf";
   static String get GET_MF_INSIGHTS => "$baseUrl/mf-performers/insight";

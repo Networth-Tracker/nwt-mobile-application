@@ -24,24 +24,19 @@ class AuthFlow {
       },
     );
 
-    // Check if user data is available
     if (_userController.userData != null) {
       final user = _userController.userData!;
 
-      // Check all verification statuses at once
       if (user.isverified && user.ispanverified && user.ismfverified) {
-        // All verifications are complete, go directly to dashboard
         AppLogger.info(
           'User is fully verified, redirecting to dashboard',
           tag: 'AuthFlow',
         );
         _navigateToDashboard();
       } else {
-        // Handle verification status normally
         _handleUserVerificationStatus(user);
       }
     } else {
-      // If user data couldn't be fetched, redirect to onboarding
       AppLogger.info(
         'Failed to fetch user data after OTP verification, redirecting to onboarding',
         tag: 'AuthFlow',
@@ -74,7 +69,7 @@ class AuthFlow {
     if (userData.data?.user != null) {
       _handleUserVerificationStatus(userData.data!.user);
     }
-    }
+  }
 
   void _handleUserVerificationStatus(User user) {
     if (!user.isverified) {
@@ -95,7 +90,6 @@ class AuthFlow {
       return;
     }
 
-    // After PAN is verified, check if mutual funds have been fetched
     if (!user.ismfverified) {
       AppLogger.info(
         'Mutual Fund not verified, redirecting to Mutual Fund verification',

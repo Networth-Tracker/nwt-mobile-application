@@ -5,11 +5,13 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 
 class NetworthChartMain extends StatefulWidget {
   final List<Currentprojection> currentProjection;
+  final List<Futureprojection>? futureProjection;
   final bool isLoading;
 
   const NetworthChartMain({
     super.key,
     required this.currentProjection,
+    this.futureProjection,
     this.isLoading = false,
   });
 
@@ -19,6 +21,7 @@ class NetworthChartMain extends StatefulWidget {
 
 class _NetworthChartMainState extends State<NetworthChartMain> {
   List<NetworthData> chartData = [];
+  List<NetworthData> futureChartData = [];
   TrackballBehavior? _trackballBehavior;
 
   @override
@@ -30,21 +33,37 @@ class _NetworthChartMainState extends State<NetworthChartMain> {
   @override
   void didUpdateWidget(NetworthChartMain oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.currentProjection != widget.currentProjection) {
+    if (oldWidget.currentProjection != widget.currentProjection ||
+        oldWidget.futureProjection != widget.futureProjection) {
       _processData();
     }
   }
 
   void _processData() {
-    if (widget.currentProjection.isNotEmpty) {
-      setState(() {
+    setState(() {
+      // Process current projection data
+      if (widget.currentProjection.isNotEmpty) {
         chartData =
             widget.currentProjection
                 .map((data) => NetworthData(data.date, data.value))
                 .toList();
-        _initializeTrackballBehavior();
-      });
-    }
+      } else {
+        chartData = [];
+      }
+
+      // Process future projection data
+      if (widget.futureProjection != null &&
+          widget.futureProjection!.isNotEmpty) {
+        futureChartData =
+            widget.futureProjection!
+                .map((data) => NetworthData(data.date, data.projectedValue))
+                .toList();
+      } else {
+        futureChartData = [];
+      }
+
+      _initializeTrackballBehavior();
+    });
   }
 
   void _initializeTrackballBehavior() {
@@ -162,7 +181,7 @@ class _NetworthChartMainState extends State<NetworthChartMain> {
     return SizedBox(
       height: 180,
       child:
-          widget.isLoading || chartData.isEmpty
+          widget.isLoading || (chartData.isEmpty && futureChartData.isEmpty)
               ? const Center(child: CircularProgressIndicator())
               : SfCartesianChart(
                 plotAreaBorderWidth: 0,
@@ -181,30 +200,61 @@ class _NetworthChartMainState extends State<NetworthChartMain> {
                 ),
                 trackballBehavior: _trackballBehavior!,
                 series: <CartesianSeries<NetworthData, DateTime>>[
-                  AreaSeries<NetworthData, DateTime>(
-                    dataSource: chartData,
-                    xValueMapper: (NetworthData data, _) => data.date,
-                    yValueMapper: (NetworthData data, _) => data.amount,
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.white.withOpacity(0.5),
-                        Colors.white.withOpacity(0.1),
-                      ],
-                    ),
-                    borderColor: Colors.white,
-                    borderWidth: 2,
-                    markerSettings: const MarkerSettings(
-                      isVisible: true,
-                      height: 8,
-                      width: 8,
-                      shape: DataMarkerType.circle,
-                      borderWidth: 2,
+                  // Current projection series
+                  if (chartData.isNotEmpty)
+                    AreaSeries<NetworthData, DateTime>(
+                      name: 'Current Projection',
+                      dataSource: chartData,
+                      xValueMapper: (NetworthData data, _) => data.date,
+                      yValueMapper: (NetworthData data, _) => data.amount,
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.white.withOpacity(0.5),
+                          Colors.white.withOpacity(0.1),
+                        ],
+                      ),
                       borderColor: Colors.white,
-                      color: Colors.transparent,
+                      borderWidth: 2,
+                      markerSettings: const MarkerSettings(
+                        isVisible: true,
+                        height: 8,
+                        width: 8,
+                        shape: DataMarkerType.circle,
+                        borderWidth: 2,
+                        borderColor: Colors.white,
+                        color: Colors.transparent,
+                      ),
                     ),
-                  ),
+                  // Future projection series
+                  if (futureChartData.isNotEmpty)
+                    AreaSeries<NetworthData, DateTime>(
+                      name: 'Future Projection',
+                      dataSource: futureChartData,
+                      xValueMapper: (NetworthData data, _) => data.date,
+                      yValueMapper: (NetworthData data, _) => data.amount,
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.white.withOpacity(0.5),
+                          Colors.white.withOpacity(0.1),
+                        ],
+                      ),
+                      borderColor: Colors.white,
+                      borderWidth: 2,
+                      dashArray: const <double>[5, 3],
+                      markerSettings: const MarkerSettings(
+                        isVisible: true,
+                        height: 8,
+                        width: 8,
+                        shape: DataMarkerType.circle,
+                        borderWidth: 2,
+                        borderColor: Colors.white,
+                        color: Colors.transparent,
+                      ),
+                    ),
                 ],
               ),
     );
