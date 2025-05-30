@@ -195,54 +195,16 @@ class _LoadingLayoutState extends State<LoadingLayout> {
                   FadeInUp(
                     delay: const Duration(milliseconds: 600),
                     duration: const Duration(milliseconds: 500),
-                    child:
-                        _showTimeout
-                            ? AppText(
-                              "Taking too long",
-                              variant: AppTextVariant.bodyLarge,
-                              colorType: AppTextColorType.error,
-                              textAlign: TextAlign.center,
-                              decoration: TextDecoration.none,
-                            )
-                            : AppText(
-                              "This may take a few moments",
-                              variant: AppTextVariant.bodyLarge,
-                              colorType: AppTextColorType.muted,
-                              textAlign: TextAlign.center,
-                              decoration: TextDecoration.none,
-                            ),
+                    child: AppText(
+                      "This may take a few moments",
+                      variant: AppTextVariant.bodyLarge,
+                      colorType: AppTextColorType.muted,
+                      textAlign: TextAlign.center,
+                      decoration: TextDecoration.none,
+                    ),
                   ),
                 ],
               ),
-
-              // Show retry button when timeout occurs
-              if (_showTimeout) ...[
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    FadeInUp(
-                      delay: const Duration(milliseconds: 800),
-                      duration: const Duration(milliseconds: 500),
-                      child: TextButton(
-                        onPressed: () => widget.onPrevious(),
-                        style: TextButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                        ),
-                        child: const AppText(
-                          "Go Back",
-                          variant: AppTextVariant.bodyLarge,
-                          colorType: AppTextColorType.muted,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
             ],
           ),
         ],
