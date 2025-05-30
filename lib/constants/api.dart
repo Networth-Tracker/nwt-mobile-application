@@ -5,11 +5,11 @@ class ApiURLs {
     try {
       final remoteConfig = FirebaseRemoteConfig.instance;
       final configBaseUrl = remoteConfig.getString('api_base_url');
-    return configBaseUrl.isNotEmpty
+      return configBaseUrl.isNotEmpty
           ? configBaseUrl
-          : "https://lab.networthtracker.in/api/v1";
+          : "https://app.networthtracker.in/api/v1";
     } catch (e) {
-      return "https://lab.networthtracker.in/api/v1";
+      return "https://app.networthtracker.in/api/v1";
     }
   }
 

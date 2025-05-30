@@ -12,9 +12,7 @@ class InvestmentController extends GetxController {
     required Function(bool isLoading) onLoading,
   }) async {
     try {
-      final value = await investmentService.getPortfolio(
-        onLoading: onLoading,
-      );
+      final value = await investmentService.getPortfolio(onLoading: onLoading);
       portfolio = value?.data;
       update();
     } catch (e) {
@@ -26,9 +24,7 @@ class InvestmentController extends GetxController {
     required Function(bool isLoading) onLoading,
   }) async {
     try {
-      final value = await investmentService.getHoldings(
-        onLoading: onLoading,
-      );
+      final value = await investmentService.getHoldings(onLoading: onLoading);
       holdings = value.data;
       update();
     } catch (e) {

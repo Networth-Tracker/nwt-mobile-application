@@ -68,6 +68,8 @@ class AuthFlow {
     );
     if (userData.data?.user != null) {
       _handleUserVerificationStatus(userData.data!.user);
+    } else {
+      _navigateToOnboarding();
     }
   }
 

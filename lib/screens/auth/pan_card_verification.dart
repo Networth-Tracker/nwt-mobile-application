@@ -99,7 +99,7 @@ class _PanCardVerificationState extends State<PanCardVerification> {
           _errorMessage = response.message;
         });
       }
-        } catch (e) {
+    } catch (e) {
       AppLogger.error(
         'PAN Verification Error',
         error: e,

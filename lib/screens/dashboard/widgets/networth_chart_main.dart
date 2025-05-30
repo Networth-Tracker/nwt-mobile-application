@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nwt_app/screens/dashboard/types/dashboard_networth.dart';
+import 'package:nwt_app/utils/currency_formatter.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class NetworthChartMain extends StatefulWidget {
@@ -249,11 +250,7 @@ class _NetworthChartMainState extends State<NetworthChartMain> {
             children: [
               // Amount value
               Text(
-                NumberFormat.currency(
-                  locale: 'en_IN',
-                  symbol: '₹',
-                  decimalDigits: 0,
-                ).format(pointAmount),
+                CurrencyFormatter.formatRupee(pointAmount),
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w600,
@@ -286,11 +283,7 @@ class _NetworthChartMainState extends State<NetworthChartMain> {
                     const SizedBox(width: 8),
                     // Show absolute change value
                     Text(
-                      NumberFormat.currency(
-                        locale: 'en_IN',
-                        symbol: '₹',
-                        decimalDigits: 0,
-                      ).format(changeValue),
+                      CurrencyFormatter.formatRupee(changeValue),
                       style: TextStyle(
                         color: isPositive ? Colors.green : Colors.red,
                         fontSize: 12,

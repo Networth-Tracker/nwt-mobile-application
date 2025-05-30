@@ -107,7 +107,7 @@ class MFCOTPData {
 
   factory MFCOTPData.fromJson(Map<String, dynamic> json) => MFCOTPData(
     ismffetched: json["ismffetched"],
-    switchsavings: (json["switchsavings"] ?? 0.0),
+    switchsavings: (json["switchsavings"] + 0.0 ?? 0.0),
   );
 
   Map<String, dynamic> toJson() => {

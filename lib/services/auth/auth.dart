@@ -74,8 +74,13 @@ class AuthService {
               verifyResponse.data?.token,
             );
           }
-
           return verifyResponse;
+        } else {
+          return VerifyOtpResponse(
+            status: response.statusCode,
+            message: responseData['message'] ?? 'Unknown error',
+            data: null,
+          );
         }
       }
       return null;
@@ -182,9 +187,20 @@ class AuthService {
                 onLoading(loading);
               },
             );
+            return verificationResponse;
+          } else {
+            return PanVerificationResponse(
+              status: response.statusCode,
+              message: verificationResponse.message,
+              data: null,
+            );
           }
-
-          return verificationResponse;
+        } else {
+          return PanVerificationResponse(
+            status: response.statusCode,
+            message: responseData['message'] ?? 'Unknown error',
+            data: null,
+          );
         }
       } else {
         AppLogger.info(

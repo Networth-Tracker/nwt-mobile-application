@@ -26,8 +26,10 @@ class _LoadingLayoutState extends State<LoadingLayout> {
   int _currentMessageIndex = 0;
   late Timer _messageTimer;
   Timer? _redirectTimer;
-  final bool _isRedirecting = false;
+  Timer? _timeoutTimer;
+  bool _isRedirecting = false;
   final bool _dataReceived = false;
+  bool _showTimeout = false;
 
   final List<String> _loadingMessages = [
     "Fetching your\nMutual Fund details",
@@ -62,13 +64,68 @@ class _LoadingLayoutState extends State<LoadingLayout> {
         );
       }
     });
+
+    // Set up a 10-second timeout timer to show retry option
+    _timeoutTimer = Timer(const Duration(seconds: 10), () {
+      if (mounted && !_isRedirecting && !_dataReceived) {
+        setState(() {
+          _showTimeout = true;
+        });
+        AppLogger.info(
+          '10 seconds passed, showing timeout message',
+          tag: 'LoadingLayout',
+        );
+      }
+    });
   }
 
   @override
   void dispose() {
     _messageTimer.cancel();
     _redirectTimer?.cancel();
+    _timeoutTimer?.cancel();
     super.dispose();
+  }
+
+  // Method to restart the flow when retry is pressed
+  void _retryFlow() {
+    // Reset state
+    setState(() {
+      _showTimeout = false;
+      _currentMessageIndex = 0;
+      _isRedirecting = false;
+    });
+
+    // Cancel existing timers
+    _messageTimer.cancel();
+    _redirectTimer?.cancel();
+    _timeoutTimer?.cancel();
+
+    // Restart message timer
+    _messageTimer = Timer.periodic(const Duration(seconds: 2), (timer) {
+      if (mounted) {
+        setState(() {
+          if (_currentMessageIndex < _loadingMessages.length - 1) {
+            _currentMessageIndex++;
+          } else {
+            // Stop the timer when we reach the last message
+            timer.cancel();
+          }
+        });
+      }
+    });
+
+    // Restart timeout timer
+    _timeoutTimer = Timer(const Duration(seconds: 10), () {
+      if (mounted && !_isRedirecting && !_dataReceived) {
+        setState(() {
+          _showTimeout = true;
+        });
+      }
+    });
+
+    // Call onPrevious to restart the flow
+    widget.onPrevious();
   }
 
   @override
@@ -138,16 +195,54 @@ class _LoadingLayoutState extends State<LoadingLayout> {
                   FadeInUp(
                     delay: const Duration(milliseconds: 600),
                     duration: const Duration(milliseconds: 500),
-                    child: AppText(
-                      "This may take a few moments",
-                      variant: AppTextVariant.bodyLarge,
-                      colorType: AppTextColorType.muted,
-                      textAlign: TextAlign.center,
-                      decoration: TextDecoration.none,
-                    ),
+                    child:
+                        _showTimeout
+                            ? AppText(
+                              "Taking too long",
+                              variant: AppTextVariant.bodyLarge,
+                              colorType: AppTextColorType.error,
+                              textAlign: TextAlign.center,
+                              decoration: TextDecoration.none,
+                            )
+                            : AppText(
+                              "This may take a few moments",
+                              variant: AppTextVariant.bodyLarge,
+                              colorType: AppTextColorType.muted,
+                              textAlign: TextAlign.center,
+                              decoration: TextDecoration.none,
+                            ),
                   ),
                 ],
               ),
+
+              // Show retry button when timeout occurs
+              if (_showTimeout) ...[
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    FadeInUp(
+                      delay: const Duration(milliseconds: 800),
+                      duration: const Duration(milliseconds: 500),
+                      child: TextButton(
+                        onPressed: () => widget.onPrevious(),
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                        ),
+                        child: const AppText(
+                          "Go Back",
+                          variant: AppTextVariant.bodyLarge,
+                          colorType: AppTextColorType.muted,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ],
           ),
         ],

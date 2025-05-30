@@ -6,6 +6,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:nwt_app/constants/storage_keys.dart';
 import 'package:nwt_app/constants/theme.dart';
 import 'package:nwt_app/controllers/theme_controller.dart';
 import 'package:nwt_app/controllers/user_controller.dart';
@@ -38,7 +39,6 @@ void main() async {
   debugPaintPointersEnabled = false;
   debugPaintLayerBordersEnabled = false;
 
-
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // // Initialize Firebase Remote Config
@@ -55,6 +55,7 @@ void main() async {
   Get.put(UserController());
   await Get.putAsync(() => NotificationPermissionService().init());
   await NotificationPermissionService.to.retryPendingTokens();
+  // StorageService.remove(StorageKeys.AUTH_TOKEN_KEY);
   runApp(
     ScreenUtilInit(
       minTextAdapt: true,
@@ -76,7 +77,7 @@ Future<void> setupRemoteConfig() async {
     );
 
     await remoteConfig.setDefaults({
-      'api_base_url': 'https://lab.networthtracker.in/api/v1',
+      'api_base_url': 'https://app.networthtracker.in/api/v1',
     });
 
     bool updated = await remoteConfig.fetchAndActivate();
@@ -94,7 +95,7 @@ Future<void> setupRemoteConfig() async {
       );
     }
   } catch (e) {
-        AppLogger.error('Error setting up Remote Config: $e', tag: 'RemoteConfig');
+    AppLogger.error('Error setting up Remote Config: $e', tag: 'RemoteConfig');
   }
 }
 

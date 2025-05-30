@@ -655,11 +655,12 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
 
       _refreshController.stop();
     } catch (e) {
-      setState(() {
-        isPortfolioLoading = false;
-        isHoldingLoading = false;
-      });
-
+      if (mounted) {
+        setState(() {
+          isPortfolioLoading = false;
+          isHoldingLoading = false;
+        });
+      }
       _refreshController.stop();
     }
   }
@@ -843,12 +844,14 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
                                       2,
                                     ) ??
                                     "0.00",
-                                currentAmount: investment.currentmktvalue
-                                    ?.toStringAsFixed(2) ??
+                                currentAmount:
+                                    investment.currentmktvalue?.toStringAsFixed(
+                                      2,
+                                    ) ??
                                     "0.00",
-                                gainAmount: investment.gainloss?.toStringAsFixed(
-                                  2,
-                                ) ?? "0.00",
+                                gainAmount:
+                                    investment.gainloss?.toStringAsFixed(2) ??
+                                    "0.00",
                               ),
                             ],
                           );
@@ -863,9 +866,14 @@ class _AssetInvestmentScreenState extends State<AssetInvestmentScreen>
                             investedAmount:
                                 investment.closingbalance?.toStringAsFixed(2) ??
                                 "0.00",
-                            currentAmount: investment.currentmktvalue
-                                ?.toStringAsFixed(2) ?? "0.00",
-                            gainAmount: investment.gainloss?.toStringAsFixed(2) ?? "0.00",
+                            currentAmount:
+                                investment.currentmktvalue?.toStringAsFixed(
+                                  2,
+                                ) ??
+                                "0.00",
+                            gainAmount:
+                                investment.gainloss?.toStringAsFixed(2) ??
+                                "0.00",
                           ),
                         );
                       },
