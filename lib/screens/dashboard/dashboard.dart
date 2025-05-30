@@ -86,7 +86,7 @@ class _DashboardState extends State<Dashboard>
     return false; // Continue bubbling the notification
   }
 
-  final UserController _userController = UserController();
+  final UserController _userController = Get.find<UserController>();
   bool _isExpanded = false;
 
   void _toggleExpand() {
@@ -97,6 +97,7 @@ class _DashboardState extends State<Dashboard>
 
   void initData() async {
     try {
+      // Ensure user data is refreshed when dashboard loads
       final userResponse = await _userController.fetchUserProfile(
         onLoading: (isLoading) {
           if (mounted) {
